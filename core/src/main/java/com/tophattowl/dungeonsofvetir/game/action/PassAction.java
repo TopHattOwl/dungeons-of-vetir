@@ -9,7 +9,7 @@ public class PassAction extends Action {
     }
 
     @Override
-    public boolean execute(GameWorld gameWorld) {
-        return true;
+    public Action execute(GameWorld gameWorld) {
+        return this;
     }
 }

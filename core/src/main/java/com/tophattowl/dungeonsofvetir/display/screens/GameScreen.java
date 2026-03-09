@@ -2,12 +2,10 @@ package com.tophattowl.dungeonsofvetir.display.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.tophattowl.dungeonsofvetir.display.camera.CameraController;
 import com.tophattowl.dungeonsofvetir.display.renderer.FovOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
@@ -21,6 +19,8 @@ import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
 import com.tophattowl.dungeonsofvetir.game.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
+import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
@@ -37,6 +37,8 @@ public class GameScreen implements Screen {
     public  static final int VIEWPORT_X  = 0;
     public  static final int VIEWPORT_Y  = BOTTOM_H;         // 96
 
+    public  static final int ACTOR_PROCESS_COUNT = 10;
+
     // display
     private SpriteBatch batch;
     private BitmapFont font;
@@ -49,6 +51,7 @@ public class GameScreen implements Screen {
     private GameWorld gameWorld;
     private ActionHandler actionHandler;
     private InputHandler inputHandler;
+    private TimeTurnManager timeTurnManager;
     private FovSystem fovSystem;
 
     @Override
@@ -62,6 +65,7 @@ public class GameScreen implements Screen {
         fovOverlayRenderer = new FovOverlayRenderer();
         worldRenderer.setFovOverlayRenderer(fovOverlayRenderer);
 
+        timeTurnManager = new TimeTurnManager();
         gameWorld = new GameWorld();
         actionHandler = new ActionHandler(gameWorld);
         fovSystem = new FovSystem();
@@ -91,19 +95,6 @@ public class GameScreen implements Screen {
 
         PositionComponent pos = gameWorld.getPlayer().getComponent(PositionComponent.class);
         pos.set(spawn[0], spawn[1]);
-
-        // Force camera to snap directly to player — no margin check, just center it
-        float worldX = spawn[0] * Tileset.TILE_W + Tileset.TILE_W / 2f;
-        float worldY = (Level.HEIGHT - 1 - spawn[1]) * Tileset.TILE_H + Tileset.TILE_H / 2f;
-
-        // Clamp to level bounds
-        float halfW = VIEWPORT_W / 2f;
-        float halfH = VIEWPORT_H / 2f;
-        float totalW = Level.WIDTH  * Tileset.TILE_W;
-        float totalH = Level.HEIGHT * Tileset.TILE_H;
-
-        worldX = Math.max(halfW, Math.min(totalW - halfW, worldX));
-        worldY = Math.max(halfH, Math.min(totalH - halfH, worldY));
 
         cameraController.centerOn(spawn[0], spawn[1]);
     }
@@ -139,19 +130,30 @@ public class GameScreen implements Screen {
         Action action = inputHandler.getPendingAction();
 
         if (action != null) {
-            boolean isSuccess = actionHandler.processAction(player, action);
+            Action actionFinal = actionHandler.processAction(player, action);
 
-            if (isSuccess) {
+            if (actionFinal.isSuccess()) {
+                playerComp.isPlayersTurn = false;
                 fovSystem.process(gameWorld);
                 PositionComponent posComp = player.getComponent(PositionComponent.class);
                 cameraController.centerOn(posComp.getX(), posComp.getY());
+                timeTurnManager.onPlayerActionCompleted(gameWorld);
             }
         }
 
     }
 
     private void logic() {
+        Entity player = gameWorld.getPlayer();
+        PlayerComponent playerComp = player.getComponent(PlayerComponent.class);
 
+        if (playerComp.isPlayersTurn) return;
+
+        // process several actors in a frame
+        for (int i = 0; i < ACTOR_PROCESS_COUNT; i++) {
+            timeTurnManager.processNext(gameWorld);
+            if (gameWorld.getPlayer().getComponent(PlayerComponent.class).isPlayersTurn) break;
+        }
     }
 
     private void draw() {
@@ -161,22 +163,6 @@ public class GameScreen implements Screen {
         // Set the GL viewport to the game area only
         // this makes the camera render into the correct screen region and not clip it
         HdpiUtils.glViewport(VIEWPORT_X, VIEWPORT_Y, VIEWPORT_W, VIEWPORT_H);
-
-        // DEBUG
-//        Entity player = gameWorld.getPlayer();
-//        PositionComponent pos = player.getComponent(PositionComponent.class);
-//
-//        int tx = pos.getX();
-//        int ty = pos.getY();
-//        float worldX = tx * Tileset.TILE_W + Tileset.TILE_W / 2f;
-//        float worldY = (Level.HEIGHT - 1 - ty) * Tileset.TILE_H + Tileset.TILE_H / 2f;
-//        float camX = cameraController.getCamera().position.x;
-//        float camY = cameraController.getCamera().position.y;
-//
-//        System.out.println("tile=(" + tx + "," + ty + ")"
-//            + " expectedWorld=(" + worldX + "," + worldY + ")"
-//            + " cam=(" + camX + "," + camY + ")");
-        // DEBUG END
 
         batch.setProjectionMatrix(cameraController.getCamera().combined);
         batch.begin();
@@ -216,6 +202,7 @@ public class GameScreen implements Screen {
         font.dispose();
         tileset.dispose();
         fovOverlayRenderer.dispose();
+        EventBus.clear();
         Gdx.input.setInputProcessor(null);
     }
 }

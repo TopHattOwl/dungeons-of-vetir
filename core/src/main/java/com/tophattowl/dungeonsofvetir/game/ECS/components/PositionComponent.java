@@ -36,6 +36,10 @@ public class PositionComponent implements Component{
         return position.y;
     }
 
+    public Point getPosition() {
+        return position;
+    }
+
     @Override
     public String toString() {
         return "Position(" + position.x + ", " + position.y + ")";

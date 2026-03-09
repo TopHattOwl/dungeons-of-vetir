@@ -63,7 +63,7 @@ public class FovSystem implements GameSystem{
         for (int col = 0; col <= row; col++) {
             // slopes for left and right edges of this tile
             float leftSlope  = (col - 0.5f) / (row + 0.5f);
-            float rightSlope = (col + 0.5f) / (row - 0.5f <= 0 ? 0.0001f : row - 0.5f);
+            float rightSlope = (col + 0.5f) / (row - 0.5f); // tries with row - 0.5 and row + 0.5 both work the same
 
             // skip if outside current sector
             if (leftSlope > endSlope || rightSlope < startSlope) continue;
@@ -75,8 +75,11 @@ public class FovSystem implements GameSystem{
             if (!level.isInBounds(wx, wy)) continue;
 
             // circular distance check
-            float dist = (float) Math.sqrt(col * col + row * row);
-            if (dist <= fov.radius) {
+//            float dist = (float) Math.sqrt(col * col + row * row);
+//            if (dist <= fov.radius) {
+//                markVisible(fov, wx, wy);
+//            }
+            if (col * col + row * row <= fov.radius * fov.radius) {
                 markVisible(fov, wx, wy);
             }
 

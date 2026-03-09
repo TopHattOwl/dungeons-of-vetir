@@ -5,6 +5,6 @@ public class PlayerComponent implements Component{
     public boolean isPlayersTurn;
 
     public PlayerComponent() {
-        isPlayersTurn = true;
+        isPlayersTurn = false;
     }
 }

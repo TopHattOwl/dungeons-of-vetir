@@ -15,14 +15,10 @@ public class MoveAction extends Action {
     }
 
     @Override
-    public boolean execute(GameWorld gameWorld) {
+    public Action execute(GameWorld gameWorld) {
         MovementSystem moveSystem = gameWorld.getSystem(MovementSystem.class);
-        boolean isSuccess = moveSystem.tryMove(this, gameWorld);
 
-        if (isSuccess) {
-            // add energy cost to user
-        }
-        return isSuccess;
+        return moveSystem.tryMove(this, gameWorld);
     }
 
     @Override

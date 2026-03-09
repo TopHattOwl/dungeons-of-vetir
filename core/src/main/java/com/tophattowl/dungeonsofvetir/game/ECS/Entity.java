@@ -1,6 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.ECS;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.components.Component;
+import com.tophattowl.dungeonsofvetir.game.ECS.components.IdentityComponent;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +43,9 @@ public class Entity {
 
     @Override
     public String toString() {
+        if (hasComponent(IdentityComponent.class)) {
+            return getComponent(IdentityComponent.class).name;
+        }
         return "Entity #" + id;
     }
 

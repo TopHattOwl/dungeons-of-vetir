@@ -2,7 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.world;
 
 public enum TileType {
     WALL(false, false),
-    FLOOR(true, false),
+    FLOOR(true, true),
 
     BORDER_WALL(false, false),
 

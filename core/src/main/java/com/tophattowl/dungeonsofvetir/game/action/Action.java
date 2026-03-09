@@ -7,14 +7,16 @@ public abstract class Action {
     protected int cost;
     protected ActionType actionType;
     protected Entity owner;
+    protected boolean isSuccess;
 
     public Action(ActionType actionType, Entity owner) {
         this.actionType = actionType;
         this.owner = owner;
         this.cost = actionType.getBaseCost();
+        this.isSuccess = false;
     }
 
-    public abstract boolean execute(GameWorld gameWorld);
+    public abstract Action execute(GameWorld gameWorld);
 
     public int getCost() {
         return cost;
@@ -26,6 +28,14 @@ public abstract class Action {
 
     public Entity getOwner() {
         return owner;
+    }
+
+    public boolean isSuccess() {
+        return isSuccess;
+    }
+
+    public void sucess() {
+        isSuccess = true;
     }
 
     public String toString() {

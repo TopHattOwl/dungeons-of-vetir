@@ -5,6 +5,10 @@ import com.tophattowl.dungeonsofvetir.game.ECS.components.*;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.GameSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.dungeon.DungeonGenerator;
+import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
+import com.tophattowl.dungeonsofvetir.game.factory.EntityFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +22,8 @@ public class GameWorld {
     private List<Entity> entities = new ArrayList<>();
     private List<GameSystem> systems = new ArrayList<>();
 
+    private Entity[][] entityMap = new Entity[Level.WIDTH][Level.HEIGHT];
+
     private Level currentLevel;
     private Entity player;
 
@@ -27,21 +33,21 @@ public class GameWorld {
 
     public GameWorld() {
         // PLACEHOLDER fast player making for now
-        player = new Entity();
-        player.addComponent(new PlayerComponent())
-                .addComponent(new PositionComponent(0, 0))
-                .addComponent(new EnergyComponent())
-                .addComponent(new FovComponent(10, Level.WIDTH, Level.HEIGHT))
-                .addComponent(new RenderableComponent("player", 10));
+        player = EntityFactory.makePlayer();
+        addEntity(player);
 
-        entities.add(player);
+        // PLACEHOLDER enemy
+        Entity enemy1 = EntityFactory.makeEnemy(12, 12);
+        addEntity(enemy1);
 
-        systems.add(new MovementSystem());
+        Entity entity2 = EntityFactory.makeEnemy(11, 11);
+        addEntity(entity2);
+
+        addSystem(new MovementSystem());
 
         dungeonGenerator = new DungeonGenerator();
         //placeholder level
         currentLevel = dungeonGenerator.generateLevel(1);
-
     }
 
     public Level getCurrentLevel() {
@@ -59,16 +65,39 @@ public class GameWorld {
             .collect(Collectors.toList());
     }
 
+    public Entity getEntityAt(int x, int y) {
+        return entityMap[x][y];
+    }
+    public Entity getEntityAt(Point point) {
+        return entityMap[point.x][point.y];
+    }
+
+    public void moveEntity(Entity entity, Point newPos) {
+        PositionComponent posComp = entity.getComponent(PositionComponent.class);
+        Point oldPos = posComp.getPosition();
+
+        entityMap[oldPos.x][oldPos.y] = null;
+        entityMap[newPos.x][newPos.y] = entity;
+    }
+
     public Entity getPlayer() {
         return player;
     }
 
     public void addEntity(Entity entity) {
         entities.add(entity);
+        PositionComponent posComp = entity.getComponent(PositionComponent.class);
+        entityMap[posComp.getX()][posComp.getY()] = entity;
+
+        System.out.println("emitting entity added event");
+        EventBus.emit(new EntityAddedEvent(entity));
     }
 
     public void removeEntity(Entity entity) {
         entities.remove(entity);
+        PositionComponent posComp = entity.getComponent(PositionComponent.class);
+        entityMap[posComp.getX()][posComp.getY()] = null;
+        EventBus.emit(new EntityRemovedEvent(entity));
     }
 
     public void addSystem(GameSystem system) {
