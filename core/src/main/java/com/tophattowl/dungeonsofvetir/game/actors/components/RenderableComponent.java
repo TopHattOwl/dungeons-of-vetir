@@ -1,6 +1,8 @@
-package com.tophattowl.dungeonsofvetir.game.ECS.components;
+package com.tophattowl.dungeonsofvetir.game.actors.components;
 
-public class RenderableComponent implements Component{
+import com.tophattowl.dungeonsofvetir.game.ECS.Component;
+
+public class RenderableComponent implements Component {
     public final String spriteId;
     public final int renderOrder;
     public boolean visible;

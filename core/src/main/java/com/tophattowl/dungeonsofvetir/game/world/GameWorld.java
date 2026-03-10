@@ -1,14 +1,16 @@
 package com.tophattowl.dungeonsofvetir.game.world;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.*;
-import com.tophattowl.dungeonsofvetir.game.ECS.systems.GameSystem;
+import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
+import com.tophattowl.dungeonsofvetir.game.actors.components.*;
+import com.tophattowl.dungeonsofvetir.game.combat.CombatSystem;
+import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.dungeon.DungeonGenerator;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
-import com.tophattowl.dungeonsofvetir.game.factory.EntityFactory;
+import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,13 +39,12 @@ public class GameWorld {
         addEntity(player);
 
         // PLACEHOLDER enemy
-        Entity enemy1 = EntityFactory.makeEnemy(12, 12);
-        addEntity(enemy1);
+        EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(12, 12));
 
-        Entity entity2 = EntityFactory.makeEnemy(11, 11);
-        addEntity(entity2);
+        EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(11, 11));
 
         addSystem(new MovementSystem());
+        addSystem(new CombatSystem());
 
         dungeonGenerator = new DungeonGenerator();
         //placeholder level

@@ -5,13 +5,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.FovComponent;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.PlayerComponent;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.PositionComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
-
-import java.util.List;
 
 /**
  * Draws on top of the world renderer to apply FOV visibility.

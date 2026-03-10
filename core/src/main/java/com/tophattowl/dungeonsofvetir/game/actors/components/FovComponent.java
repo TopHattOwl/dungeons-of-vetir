@@ -1,15 +1,17 @@
-package com.tophattowl.dungeonsofvetir.game.ECS.components;
+package com.tophattowl.dungeonsofvetir.game.actors.components;
+
+import com.tophattowl.dungeonsofvetir.game.ECS.Component;
 
 import java.util.Arrays;
 
-public class FovComponent implements Component{
-    public int radius;
+public class FovComponent implements Component {
+    public int visionRadius;
 
     public boolean[][] visibleTiles;
     public boolean[][] exploredTiles;
 
-    public FovComponent(int radius, int levelWidth, int levelHeight) {
-        this.radius = radius;
+    public FovComponent(int visionRadius, int levelWidth, int levelHeight) {
+        this.visionRadius = visionRadius;
         this.visibleTiles = new boolean[levelWidth][levelHeight];
         this.exploredTiles = new boolean[levelWidth][levelHeight];
     }

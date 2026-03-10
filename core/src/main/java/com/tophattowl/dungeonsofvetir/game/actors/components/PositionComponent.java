@@ -1,8 +1,9 @@
-package com.tophattowl.dungeonsofvetir.game.ECS.components;
+package com.tophattowl.dungeonsofvetir.game.actors.components;
 
+import com.tophattowl.dungeonsofvetir.game.ECS.Component;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 
-public class PositionComponent implements Component{
+public class PositionComponent implements Component {
     public Point position;
 
     public PositionComponent(int x, int y) {

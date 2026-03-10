@@ -1,7 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.ECS;
 
-import com.tophattowl.dungeonsofvetir.game.ECS.components.Component;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.IdentityComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 
 import java.util.Arrays;
 import java.util.HashMap;

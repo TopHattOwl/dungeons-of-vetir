@@ -1,4 +1,6 @@
-package com.tophattowl.dungeonsofvetir.game.ECS.components;
+package com.tophattowl.dungeonsofvetir.game.actors.components;
+
+import com.tophattowl.dungeonsofvetir.game.ECS.Component;
 
 public class TimeValueComponent implements Component {
     public float baseSpeed;
@@ -10,12 +12,15 @@ public class TimeValueComponent implements Component {
     }
 
     public TimeValueComponent() {
-        baseSpeed = 1.0f;
-        timeValueSum = 0;
+        this(1.0f, 0);
     }
 
     public TimeValueComponent(int timeValueSum) {
-        this.timeValueSum = timeValueSum;
+        this(1.0f, timeValueSum);
+    }
+
+    public TimeValueComponent(float baseSpeed) {
+        this(baseSpeed, 0);
     }
 
     public void addTime(int time) {

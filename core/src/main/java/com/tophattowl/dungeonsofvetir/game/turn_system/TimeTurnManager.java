@@ -1,12 +1,11 @@
 package com.tophattowl.dungeonsofvetir.game.turn_system;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.PlayerComponent;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.TimeValueComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
-import com.tophattowl.dungeonsofvetir.game.event.events.TestEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
@@ -23,10 +22,27 @@ public class TimeTurnManager {
         // entity with the lowest time value is at front
         actorQueue = new PriorityQueue<>(
             (a, b) -> {
-                int timeCompA = a.getComponent(TimeValueComponent.class).timeValueSum;
-                int timeCompB = b.getComponent(TimeValueComponent.class).timeValueSum;
+                int timeA = a.getComponent(TimeValueComponent.class).timeValueSum;
+                int timeB = b.getComponent(TimeValueComponent.class).timeValueSum;
 
-                return Integer.compare(timeCompA,  timeCompB);
+                // primary sort
+                if (timeA != timeB) {
+                    return Integer.compare(timeA, timeB);
+                }
+
+                // tiebreaker for turn event
+                boolean aIsTurnEvent = a == turnEvent;
+                boolean bIsTurnEvent = b == turnEvent;
+                if (aIsTurnEvent) return -1;
+                if (bIsTurnEvent) return 1;
+
+                // tiebreaker for player (player goes first)
+                boolean aIsPlayer = a.hasComponent(PlayerComponent.class);
+                boolean bIsPlayer = b.hasComponent(PlayerComponent.class);
+                if (aIsPlayer) return -1;
+                if (bIsPlayer) return 1;
+
+                return 0;
             }
         );
 

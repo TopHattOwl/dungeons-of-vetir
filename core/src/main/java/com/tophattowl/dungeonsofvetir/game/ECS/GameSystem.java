@@ -1,4 +1,4 @@
-package com.tophattowl.dungeonsofvetir.game.ECS.systems;
+package com.tophattowl.dungeonsofvetir.game.ECS;
 
 
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;

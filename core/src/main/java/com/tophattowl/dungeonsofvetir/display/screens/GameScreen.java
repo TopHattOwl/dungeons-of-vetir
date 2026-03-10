@@ -12,9 +12,9 @@ import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
 import com.tophattowl.dungeonsofvetir.display.tilesets.PlaceholderTileset;
 import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.FovComponent;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.PlayerComponent;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.PositionComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
 import com.tophattowl.dungeonsofvetir.game.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
@@ -133,6 +133,8 @@ public class GameScreen implements Screen {
             Action actionFinal = actionHandler.processAction(player, action);
 
             if (actionFinal.isSuccess()) {
+                System.out.println("[Input processed] action by player: ");
+                System.out.println(actionFinal);
                 playerComp.isPlayersTurn = false;
                 fovSystem.process(gameWorld);
                 PositionComponent posComp = player.getComponent(PositionComponent.class);

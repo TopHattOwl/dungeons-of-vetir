@@ -1,8 +1,9 @@
 package com.tophattowl.dungeonsofvetir.game.ECS.systems;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.FovComponent;
-import com.tophattowl.dungeonsofvetir.game.ECS.components.PositionComponent;
+import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
+import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * Runs every turn for every entity with Position and Fov components
  * Updates visibleTiles and exploredTiles
  */
-public class FovSystem implements GameSystem{
+public class FovSystem implements GameSystem {
 
     @Override
     public void process(GameWorld gameWorld) {
@@ -55,7 +56,7 @@ public class FovSystem implements GameSystem{
                             int octant, int row,
                             float startSlope, float endSlope) {
         if (startSlope >= endSlope) return;
-        if (row > fov.radius) return;
+        if (row > fov.visionRadius) return;
 
         boolean prevBlocked = false;
         float newStart = startSlope;
@@ -79,7 +80,7 @@ public class FovSystem implements GameSystem{
 //            if (dist <= fov.radius) {
 //                markVisible(fov, wx, wy);
 //            }
-            if (col * col + row * row <= fov.radius * fov.radius) {
+            if (col * col + row * row <= fov.visionRadius * fov.visionRadius) {
                 markVisible(fov, wx, wy);
             }
 

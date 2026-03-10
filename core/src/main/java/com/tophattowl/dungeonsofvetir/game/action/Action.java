@@ -34,7 +34,7 @@ public abstract class Action {
         return isSuccess;
     }
 
-    public void sucess() {
+    public void success() {
         isSuccess = true;
     }
 
