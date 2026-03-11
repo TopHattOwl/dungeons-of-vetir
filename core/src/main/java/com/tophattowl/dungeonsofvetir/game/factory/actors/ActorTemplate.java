@@ -30,6 +30,14 @@ public class ActorTemplate {
     // --- FOV ---
     public final int visionRange;
 
+    // --- OFFENSIVE STATS ---
+    public final int baseDamage;
+    public final float weaponDamageModifier;
+    public final float mainHandEfficiency;
+    public final float offHandEfficiencyModifier;
+    public final float accuracy;
+
+
     private ActorTemplate(Builder b) {
         this.actorId = b.actorId;
         this.name = b.name;
@@ -40,6 +48,11 @@ public class ActorTemplate {
         this.maxHp = b.maxHp;
         this.baseSpeed = b.baseSpeed;
         this.visionRange = b.visionRange;
+        this.baseDamage = b.baseDamage;
+        this.weaponDamageModifier = b.weaponDamageModifier;
+        this.mainHandEfficiency = b.mainHandEfficiency;
+        this.offHandEfficiencyModifier = b.offHandEfficiencyModifier;
+        this.accuracy = b.accuracy;
     }
 
     public static class Builder {
@@ -55,6 +68,13 @@ public class ActorTemplate {
         public int maxHp = 100;
         public float baseSpeed = 1.0f;
         public int visionRange = 8;
+        public int baseDamage = 25;
+        public float weaponDamageModifier = 1.0f;
+        public float mainHandEfficiency = 1.0f;
+        public float offHandEfficiencyModifier = 0.9f;
+        public float accuracy = 1.0f;
+
+
 
         public Builder(ActorId actorId, String name) {
             this.actorId = actorId;
@@ -68,6 +88,14 @@ public class ActorTemplate {
         public Builder maxHp(int v) {this.maxHp = v; return this; }
         public Builder baseSpeed(float v) {this.baseSpeed = v; return this; }
         public Builder visionRange(int v) {this.visionRange = v; return this; }
+        public Builder baseDamage(int v) {this.baseDamage = v; return this; }
+        public Builder weaponDamageModifier(float v) {this.weaponDamageModifier = v; return this; }
+        public Builder mainHandEfficiency(float v) {this.mainHandEfficiency = v; return this; }
+        public Builder offHandEfficiencyModifier(float v) {this.offHandEfficiencyModifier = v; return this; }
+        public Builder accuracy(float v) {this.accuracy = v; return this; }
+
+
+
 
         public ActorTemplate build() {
             return new ActorTemplate(this);

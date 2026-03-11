@@ -24,10 +24,14 @@ public class EntityFactory {
         player.addComponent(new PositionComponent(0, 0))
             .addComponent(new RenderableComponent("player", 10))
             .addComponent(new TimeValueComponent())
-            .addComponent(new FovComponent(8, Level.WIDTH, Level.HEIGHT))
+            .addComponent(new FovComponent(10, Level.WIDTH, Level.HEIGHT))
             .addComponent(new PlayerComponent())
             .addComponent(new IdentityComponent("player", ActorId.PLAYER))
-            .addComponent(new HealthComponent(25));
+            .addComponent(new HealthComponent(25))
+            .addComponent(new OffensiveStatsComponent(
+                30, 1.0f,
+                1.0f, 1.0f,
+                1.0f));
 
         return player;
     }
@@ -39,6 +43,7 @@ public class EntityFactory {
             .addComponent(new RenderableComponent(template.spriteId, template.renderOrder))
             .addComponent(new TimeValueComponent(template.baseSpeed))
             .addComponent(new HealthComponent(115))
+            .addComponent(new IdentityComponent(template.name, template.actorId))
         ;
         BodyComponent bodyComp = BodyTemplateBuilder.build(template.bodyTemplate, template.maxHp);
         entity.addComponent(bodyComp);

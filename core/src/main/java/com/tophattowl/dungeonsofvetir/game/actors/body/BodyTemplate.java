@@ -34,9 +34,9 @@ public enum BodyTemplate {
         new BodyPartDefinition("head", BodyPartType.HEAD, BodyPartRole.VITAL, 0.15f, 0.15f),
         new BodyPartDefinition("segment1", BodyPartType.SEGMENT, BodyPartRole.LIMB, 0.2f, 0.2f),
         new BodyPartDefinition("segment2", BodyPartType.SEGMENT, BodyPartRole.LIMB, 0.2f, 0.2f),
-        new BodyPartDefinition("segment2", BodyPartType.SEGMENT, BodyPartRole.LIMB, 0.2f, 0.2f),
+        new BodyPartDefinition("segment3", BodyPartType.SEGMENT, BodyPartRole.LIMB, 0.2f, 0.2f),
         new BodyPartDefinition("tail", BodyPartType.TAIL, BodyPartRole.APPENDAGE, 0.15f, 0.15f)
-));
+    ));
 
     public final List<BodyPartDefinition> parts;
 

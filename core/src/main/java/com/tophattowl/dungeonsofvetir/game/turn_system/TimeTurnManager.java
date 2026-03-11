@@ -62,7 +62,11 @@ public class TimeTurnManager {
 
 
     public void processNext(GameWorld gameWorld) {
-        System.out.println(Arrays.toString(actorQueue.toArray()));
+//        System.out.print("\n ACTORS IN TURN MANAGER:\n[ ");
+//        for (Entity entity : actorQueue) {
+//            System.out.print(entity + " | ");
+//        }
+//        System.out.print("]\n");
 
         Entity currentEntity = actorQueue.poll();
         if (currentEntity == null) throw new RuntimeException("TimeTurnManager has no actors in the queue");
@@ -71,21 +75,21 @@ public class TimeTurnManager {
 
         // turn event is next -> pass turn
         if (currentEntity == turnEvent) {
-            System.out.println("[TimeTurnManager] Turn event up next, passing turn]");
+//            System.out.println("[TimeTurnManager] Turn event up next, passing turn]");
             passTurn();
             return;
         }
 
         // if player next up -> wait for input
         if (currentEntity == gameWorld.getPlayer()) {
-            System.out.println("[TimeTurnManager] Player up next, waiting for input");
+//            System.out.println("[TimeTurnManager] Player up next, waiting for input");
             PlayerComponent playerComp = gameWorld.getPlayer().getComponent(PlayerComponent.class);
             playerComp.isPlayersTurn = true;
             return;
         }
 
         // other actors
-        System.out.println("[TimeTurnManager] processing action for actor: " + currentEntity);
+//        System.out.println("[TimeTurnManager] processing action for actor: " + currentEntity);
         timeValueComp.addTime(100);   // PLACEHOLDER for enemy action
         addActor(currentEntity);
     }

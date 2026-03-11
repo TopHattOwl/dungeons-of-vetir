@@ -69,11 +69,12 @@ public class BodyPart {
     @Override
     public String toString() {
         return
-            "<<<<<<<<< BODY PART >>>>>>>>>\n"
+            "\n<<<<<<<<< BODY PART >>>>>>>>>\n"
             + "{BodyPart} " + name + "\n"
             + "type: " + type + ", " + "role: " + role + "\n"
             + "HP: " + hp + "/" + maxHp + "\n"
             + "Status: " + status + "\n"
+            + "HitChance: " + hitChance + "\n"
             + "<<<<<<<<< BODY PART >>>>>>>>>\n";
     }
 }

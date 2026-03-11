@@ -31,6 +31,8 @@ public class ActorRegistry {
                 .baseSpeed(1.0f)
                 .visionRange(7)
                 .maxHp(115)
+                .baseDamage(20)
+                .weaponDamageModifier(0.9f)
                 .build()
         );
     }

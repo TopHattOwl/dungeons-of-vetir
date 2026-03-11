@@ -6,6 +6,8 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.AttackAction;
 import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
+import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 
@@ -29,6 +31,7 @@ public class MovementSystem implements GameSystem {
         posComp.set(newPos);
 
         moveAction.success();
+        EventBus.emit(new EntityMovedEvent(entity, newPos));
 
         return moveAction;
     }
