@@ -89,8 +89,6 @@ public class GameWorld {
         entities.add(entity);
         PositionComponent posComp = entity.getComponent(PositionComponent.class);
         entityMap[posComp.getX()][posComp.getY()] = entity;
-
-        System.out.println("emitting entity added event");
         EventBus.emit(new EntityAddedEvent(entity));
     }
 

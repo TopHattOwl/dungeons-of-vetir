@@ -15,7 +15,6 @@ public class BodyComponent implements Component {
         this.bodyParts = bodyParts;
     }
 
-    // weighted calc might not be that grate TODO: check
     public BodyPart getRandomBodyPart() {
         float roll = rng.nextFloat();
         float cumulative = 0f;

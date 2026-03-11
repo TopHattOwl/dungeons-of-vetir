@@ -16,9 +16,10 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
-import com.tophattowl.dungeonsofvetir.game.InputHandler;
+import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
+import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
@@ -81,10 +82,6 @@ public class GameScreen implements Screen {
             for (int y = 0; y < Level.HEIGHT; y++)
                 if (fov.visibleTiles[x][y]) visibleCount++;
 
-        System.out.println("Player at: " + pos.getX() + ", " + pos.getY());
-        System.out.println("Visible tiles: " + visibleCount);
-        System.out.println("Tile at player pos walkable: " + gameWorld.getCurrentLevel().isWalkable(pos.getX(), pos.getY()));
-
         inputHandler = new InputHandler(gameWorld.getPlayer());
         Gdx.input.setInputProcessor(inputHandler);
     }
@@ -133,8 +130,9 @@ public class GameScreen implements Screen {
             Action actionFinal = actionHandler.processAction(player, action);
 
             if (actionFinal.isSuccess()) {
-                System.out.println("[Input processed] action by player: ");
-                System.out.println(actionFinal);
+                DebugLogger.log(DebugLogger.Category.ACTION, "GameWorld",
+                    "Action successful by player\n" + actionFinal
+                );
                 playerComp.isPlayersTurn = false;
                 fovSystem.process(gameWorld);
                 PositionComponent posComp = player.getComponent(PositionComponent.class);

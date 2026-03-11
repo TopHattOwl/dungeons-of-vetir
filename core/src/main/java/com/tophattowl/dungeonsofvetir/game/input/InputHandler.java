@@ -1,10 +1,12 @@
-package com.tophattowl.dungeonsofvetir.game;
+package com.tophattowl.dungeonsofvetir.game.input;
 
 import com.badlogic.gdx.InputProcessor;
+import com.tophattowl.dungeonsofvetir.game.Direction;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
 import com.tophattowl.dungeonsofvetir.game.action.PassAction;
+import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 
 public class InputHandler implements InputProcessor {
 

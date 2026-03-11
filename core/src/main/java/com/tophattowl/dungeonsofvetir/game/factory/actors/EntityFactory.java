@@ -2,8 +2,10 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
-import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplateBuilder;
+import com.tophattowl.dungeonsofvetir.game.actors.body.BodyComponentBuilder;
+import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartDefinition;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
+import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
@@ -45,13 +47,15 @@ public class EntityFactory {
             .addComponent(new HealthComponent(115))
             .addComponent(new IdentityComponent(template.name, template.actorId))
         ;
-        BodyComponent bodyComp = BodyTemplateBuilder.build(template.bodyTemplate, template.maxHp);
+
+        BodyComponent bodyComp = BodyComponentBuilder.build(template.bodyTemplate, template.maxHp);
         entity.addComponent(bodyComp);
 
         gameWorld.addEntity(entity);
 
-        System.out.println("entity created and added to GameWorld\nBodyComp:");
-        System.out.println(entity.getComponent(BodyComponent.class));
+        DebugLogger.log(DebugLogger.Category.FACTORY, "EntityFactory",
+            "Entity created:\n" + entity + "\nBodyComponent:\n" + bodyComp
+        );
         return entity;
     }
 

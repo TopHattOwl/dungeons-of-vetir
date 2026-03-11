@@ -28,11 +28,19 @@ public class ActorRegistry {
                 .spawnCost(5)
                 .spriteId("iron_worm")
                 .bodyTemplate(BodyTemplate.WORM)
-                .baseSpeed(1.0f)
                 .visionRange(7)
                 .maxHp(115)
                 .baseDamage(20)
                 .weaponDamageModifier(0.9f)
+                .build()
+        );
+        register(
+            new ActorTemplate.Builder(ActorId.SCAVENGER, "Scavenger")
+                .spawnCost(8)
+                .baseDamage(10)
+                .accuracy(1.0f)
+                .maxHp(145)
+                .visionRange(11)
                 .build()
         );
     }

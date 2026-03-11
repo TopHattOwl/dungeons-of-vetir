@@ -8,6 +8,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.AttackAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
+import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class CombatSystem implements GameSystem {
@@ -22,12 +23,14 @@ public class CombatSystem implements GameSystem {
         // body part based damage calc
         BodyComponent targetBodyComp = target.getComponent(BodyComponent.class);
         BodyPart targetedBodyPart = targetBodyComp.getRandomBodyPart();
-        System.out.println("random bodypart: " + targetedBodyPart);
         int damage = attackerOffensiveComp.baseDamage / 2;
         if (targetedBodyPart.applyDamage(damage) && targetedBodyPart.isVital()) {
             die(target, gameWorld);
         }
 
+        DebugLogger.log(DebugLogger.Category.COMBAT, "CombatSystem",
+            "Random rolled bodypart: \n" + targetedBodyPart
+        );
 
         attackAction.success();
 

@@ -8,4 +8,5 @@ public enum BodyPartType {
     TAIL,
     WING,
     SEGMENT,
+    THORAX,
 }

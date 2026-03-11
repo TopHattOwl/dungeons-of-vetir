@@ -9,7 +9,7 @@ import java.util.List;
  * Builds a BodyComponent from a template
  * Distributes hp to segments, min hp customizable
  */
-public class BodyTemplateBuilder {
+public class BodyComponentBuilder {
     private static final int MIN_PART_HP = 5;
 
     public static BodyComponent build(BodyTemplate bodyTemplate, int maxHp) {

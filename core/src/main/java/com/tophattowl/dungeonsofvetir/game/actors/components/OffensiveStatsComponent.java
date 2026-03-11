@@ -5,7 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Component;
 
 public class OffensiveStatsComponent implements Component {
 
-    // base damage of attack with no weapons equipped
+    // base damage of the attack with no weapons equipped
     public int baseDamage;
 
     // modifies weapon damage
