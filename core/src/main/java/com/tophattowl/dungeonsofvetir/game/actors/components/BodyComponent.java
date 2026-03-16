@@ -50,14 +50,6 @@ public class BodyComponent implements Component {
         return matchingParts[rng.nextInt(matchingParts.length)];
     }
 
-    public int getTotalCurrentHp() {
-        return bodyParts.stream().mapToInt(p -> p.hp).sum();
-    }
-
-    public int getTotalMaxHp() {
-        return bodyParts.stream().mapToInt(p -> p.maxHp).sum();
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

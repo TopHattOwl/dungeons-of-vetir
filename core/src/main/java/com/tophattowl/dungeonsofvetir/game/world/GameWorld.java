@@ -21,17 +21,15 @@ import java.util.stream.Collectors;
  *
  */
 public class GameWorld {
-    private List<Entity> entities = new ArrayList<>();
-    private List<GameSystem> systems = new ArrayList<>();
+    private final List<Entity> entities = new ArrayList<>();
+    private final List<GameSystem> systems = new ArrayList<>();
 
-    private Entity[][] entityMap = new Entity[Level.WIDTH][Level.HEIGHT];
+    private final Entity[][] entityMap = new Entity[Level.WIDTH][Level.HEIGHT];
 
     private Level currentLevel;
-    private Entity player;
+    private final Entity player;
 
     private DungeonGenerator dungeonGenerator;
-
-    private List<String> messageLog = new ArrayList<>();
 
     public GameWorld() {
         // PLACEHOLDER fast player making for now

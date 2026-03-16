@@ -62,10 +62,13 @@ public class HudRenderer {
 
     private void onActionCompleted(ActionCompletedEvent event) {
         Action action = event.action();
-        if (action instanceof AttackAction attackAction) {
-            if (attackAction.getOwner() == player) {
-                targetEntity = attackAction.getTarget();
-            }
+        if (!(action instanceof AttackAction attackAction)) return;
+
+        Entity target = attackAction.getTarget();
+        if (target.getComponent(HealthComponent.class).hp == 0) return;
+
+        if (attackAction.getOwner() == player) {
+            targetEntity = attackAction.getTarget();
         }
     }
 
