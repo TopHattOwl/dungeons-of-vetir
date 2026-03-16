@@ -26,7 +26,15 @@ public class CombatSystem implements GameSystem {
         BodyComponent targetBodyComp = target.getComponent(BodyComponent.class);
         BodyPart targetedBodyPart = targetBodyComp.getRandomBodyPart();
         int damage = attackerOffensiveComp.baseDamage / 2;
+        float damageMulti = targetedBodyPart.damageMultiplier;
+
+        // apply damage to body part
         if (targetedBodyPart.applyDamage(damage) && targetedBodyPart.isVital()) {
+            die(target, gameWorld);
+        }
+
+        // apply damage to health comp
+        if (targetHealthComp.takeDamage((int) (damage * damageMulti))) {
             die(target, gameWorld);
         }
 

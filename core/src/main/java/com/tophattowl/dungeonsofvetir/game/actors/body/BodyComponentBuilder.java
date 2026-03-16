@@ -19,7 +19,7 @@ public class BodyComponentBuilder {
             int partHp = Math.max(MIN_PART_HP, Math.round(maxHp * def.hpShare()));
             BodyPart part = new BodyPart(
                 def.name(), def.type(), def.role(),
-                def.equippableSlots(), partHp, def.hpShare(), def.hitChance()
+                def.equippableSlots(), partHp, def.hpShare(), def.hitWeight(), def.damageMultiplier()
             );
             parts.add(part);
         }

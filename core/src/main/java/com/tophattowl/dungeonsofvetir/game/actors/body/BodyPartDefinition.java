@@ -9,12 +9,13 @@ public record BodyPartDefinition(
     BodyPartType type,
     BodyPartRole role,
     float hpShare,
-    float hitChance,
+    float hitWeight,
+    float damageMultiplier,
     List<EquipmentSlot> equippableSlots
 ) {
     // constructor for bodyguards with no equipment slot
     public BodyPartDefinition(String name, BodyPartType type, BodyPartRole role,
-                              float hpShare, float hitChance) {
-        this(name, type, role, hpShare, hitChance, null);
+                              float hpShare, float hitChance, float hitMultiplier) {
+        this(name, type, role, hpShare, hitChance, hitMultiplier,null);
     }
 }

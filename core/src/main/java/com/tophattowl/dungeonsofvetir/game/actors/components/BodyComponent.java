@@ -19,7 +19,7 @@ public class BodyComponent implements Component {
         float roll = rng.nextFloat();
         float cumulative = 0f;
         for (BodyPart part : bodyParts) {
-            cumulative += part.hitChance;;
+            cumulative += part.hitWeight;;
             if (roll < cumulative) return part;
         }
 

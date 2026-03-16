@@ -8,6 +8,8 @@ public class BodyPart {
     private static final float CRIPPLED_THRESHOLD = 0.3f;
     private static final float INJURED_THRESHOLD = 0.6f;
 
+    private static final float BODY_PART_DAMAGE_MULTIPLIER = 0.4f;
+
     public final String name;
     public final BodyPartType type;
     public final BodyPartRole role;
@@ -19,15 +21,16 @@ public class BodyPart {
     public int maxHp;
     public int hp;
 
-    public float hitChance; // weight for hit selection, all parts sum to 1.0
+    public float hitWeight; // weight for hit selection
     public float hpShare;
+    public float damageMultiplier; // damage multiplier for hp damage
 
     public BodyPartStatus status;
 
 
-    public BodyPart(String name,BodyPartType type, BodyPartRole role,
+    public BodyPart(String name, BodyPartType type, BodyPartRole role,
                     List<EquipmentSlot> equippableSlots, int maxHp, float hpShare,
-                    float hitChance) {
+                    float hitWeight, float damageMultiplier) {
         this.name = name;
         this.type = type;
         this.role = role;
@@ -35,7 +38,8 @@ public class BodyPart {
         this.maxHp = maxHp;
         this.hp = maxHp;
         this.hpShare = hpShare;
-        this.hitChance = hitChance;
+        this.hitWeight = hitWeight;
+        this.damageMultiplier = damageMultiplier;
         this.status = BodyPartStatus.HEALTHY;
     }
 
@@ -52,7 +56,7 @@ public class BodyPart {
      * @return true if body part was just destroyed
      */
     public boolean applyDamage(int damage) {
-        hp = Math.max(0, hp - damage);
+        hp = (int) Math.max(0, hp - damage * BODY_PART_DAMAGE_MULTIPLIER);
         updateStatus();
         return hp == 0;
     }
@@ -74,7 +78,7 @@ public class BodyPart {
             + "type: " + type + ", " + "role: " + role + "\n"
             + "HP: " + hp + "/" + maxHp + "\n"
             + "Status: " + status + "\n"
-            + "HitChance: " + hitChance + "\n"
+            + "HitChance: " + hitWeight + "\n"
             + "<<<<<<<<< BODY PART >>>>>>>>>\n";
     }
 }

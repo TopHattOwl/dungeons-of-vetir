@@ -8,6 +8,7 @@ import com.tophattowl.dungeonsofvetir.display.theme.Theme;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.AttackAction;
@@ -118,13 +119,18 @@ public class HudRenderer {
 
     private void renderTarget(SpriteBatch batch, int y) {
         String targetName = "TARGET";
+        String targetHealthStatus = "";
         IdentityComponent idComp = targetEntity.getComponent(IdentityComponent.class);
         if (idComp != null) {
             targetName = "TARGET: " + idComp.name;
         }
+        HealthComponent healthComp = targetEntity.getComponent(HealthComponent.class);
+        if (healthComp != null) {
+            targetHealthStatus = healthComp.status.toString();
+        }
 
         titleFont.setColor(Theme.HUD_TITLE);
-        titleFont.draw(batch, targetName, sidebarX + PADDING, y);
+        titleFont.draw(batch, targetName + targetHealthStatus, sidebarX + PADDING, y);
 
         // gap for larger text
         // TODO: do better
