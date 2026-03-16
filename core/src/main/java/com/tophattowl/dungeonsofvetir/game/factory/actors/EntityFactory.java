@@ -4,6 +4,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyComponentBuilder;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartDefinition;
+import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
@@ -29,11 +30,16 @@ public class EntityFactory {
             .addComponent(new FovComponent(10, Level.WIDTH, Level.HEIGHT))
             .addComponent(new PlayerComponent())
             .addComponent(new IdentityComponent("player", ActorId.PLAYER))
-            .addComponent(new HealthComponent(25))
+            .addComponent(new HealthComponent(213))
             .addComponent(new OffensiveStatsComponent(
                 30, 1.0f,
                 1.0f, 1.0f,
-                1.0f));
+                1.0f))
+        ;
+
+        int maxHp = player.getComponent(HealthComponent.class).getMaxHp();
+        BodyComponent bodyComp = BodyComponentBuilder.build(BodyTemplate.HUMANOID, maxHp);
+        player.addComponent(bodyComp);
 
         return player;
     }

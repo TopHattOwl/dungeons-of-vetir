@@ -13,6 +13,7 @@ import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
 import com.tophattowl.dungeonsofvetir.display.tilesets.PlaceholderTileset;
 import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
 import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
+import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
@@ -34,7 +35,7 @@ public class GameScreen implements Screen {
     private static final int WIN_W       = 1280;
     private static final int WIN_H       = 800;
     private static final int TOP_BAR_H   = 32;
-    private static final int SIDE_W      = 256;
+    private static final int SIDE_W      = HudRenderer.SIDE_W;
     private static final int BOTTOM_H    = 96;
     public  static final int VIEWPORT_W  = WIN_W - SIDE_W;   // 1024
     public  static final int VIEWPORT_H  = WIN_H - TOP_BAR_H - BOTTOM_H; // 672
@@ -51,6 +52,7 @@ public class GameScreen implements Screen {
     private FovOverlayRenderer fovOverlayRenderer;
     private CameraController cameraController;
     private DebugConsoleRenderer  debugConsoleRenderer;
+    private HudRenderer hudRenderer;
 
     // game
     private GameWorld gameWorld;
@@ -72,6 +74,7 @@ public class GameScreen implements Screen {
         fovOverlayRenderer = new FovOverlayRenderer();
         worldRenderer.setFovOverlayRenderer(fovOverlayRenderer);
         debugConsoleRenderer = new DebugConsoleRenderer(WIN_W, WIN_H, font);
+        hudRenderer = new HudRenderer(WIN_W, WIN_H, font);
 
 
         // game
@@ -85,6 +88,7 @@ public class GameScreen implements Screen {
 
         debugConsole.setGameWorld(gameWorld);
         debugConsoleRenderer.setDebugConsole(debugConsole);
+        hudRenderer.setPlayer(gameWorld.getPlayer());
 
         spawnPlayer();
 
@@ -186,8 +190,8 @@ public class GameScreen implements Screen {
 
         batch.begin();
         debugConsoleRenderer.render(batch);
+        hudRenderer.render(batch);
         batch.end();
-        //TODO: render hud
     }
 
     @Override
@@ -218,6 +222,7 @@ public class GameScreen implements Screen {
         fovOverlayRenderer.dispose();
         timeTurnManager.dispose();
         debugConsoleRenderer.dispose();
+        hudRenderer.dispose();
         debugConsole.dispose();
         EventBus.clear();
         Gdx.input.setInputProcessor(null);

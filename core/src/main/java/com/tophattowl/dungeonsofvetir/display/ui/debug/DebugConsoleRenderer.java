@@ -1,9 +1,9 @@
 package com.tophattowl.dungeonsofvetir.display.ui.debug;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.tophattowl.dungeonsofvetir.display.theme.Theme;
 import com.tophattowl.dungeonsofvetir.util.DebugConsole;
 
 public class DebugConsoleRenderer {
@@ -12,10 +12,6 @@ public class DebugConsoleRenderer {
     private static final int CONSOLE_H = 500;
     private static final int PADDING = 8;
     private static final int LINE_H = 16;
-    private static final Color BG = new Color(0f, 0f, 0f, 0.85f);
-    private static final Color BORDER = new Color(0.4f, 0.8f, 0.4f, 1f);
-    private static final Color TEXT = new Color(0.9f, 0.9f, 0.9f, 1f);
-    private static final Color INPUT_TEXT = new Color(0.4f, 1f, 0.4f, 1f);
 
     private DebugConsole console;
     private final ShapeRenderer shapeRenderer;
@@ -45,7 +41,7 @@ public class DebugConsoleRenderer {
         com.badlogic.gdx.Gdx.gl.glEnable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(BG);
+        shapeRenderer.setColor(Theme.CONSOLE_BG);
         shapeRenderer.rect(consoleX, consoleY, CONSOLE_W, CONSOLE_H);
         shapeRenderer.end();
 
@@ -54,7 +50,7 @@ public class DebugConsoleRenderer {
         int separatorY = consoleY + inputAreaHeight;
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(BORDER);
+        shapeRenderer.setColor(Theme.CONSOLE_BORDER);
         shapeRenderer.rect(consoleX, consoleY, CONSOLE_W, CONSOLE_H);
         // Input separator line
         shapeRenderer.line(consoleX, separatorY, consoleX + CONSOLE_W, separatorY);
@@ -64,13 +60,13 @@ public class DebugConsoleRenderer {
         batch.begin();
 
         // Input line - at bottom, above separator
-        font.setColor(INPUT_TEXT);
+        font.setColor(Theme.CONSOLE_INPUT);
         font.draw(batch, "> " + console.getInputString(),
             consoleX + PADDING,
             consoleY + PADDING + LINE_H);
 
         // Output lines - draw from top down
-        font.setColor(TEXT);
+        font.setColor(Theme.CONSOLE_TEXT);
         var lines = console.getOutputLines();
         int maxLines = (CONSOLE_H - inputAreaHeight - PADDING) / LINE_H;
         int start = Math.max(0, lines.size() - maxLines);

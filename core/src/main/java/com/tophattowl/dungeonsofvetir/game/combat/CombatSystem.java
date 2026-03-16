@@ -9,6 +9,8 @@ import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.AttackAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
+import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.events.ActionCompletedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class CombatSystem implements GameSystem {
@@ -33,6 +35,7 @@ public class CombatSystem implements GameSystem {
         );
 
         attackAction.success();
+        EventBus.emit(new ActionCompletedEvent(attacker, attackAction));
 
         return attackAction;
     }
