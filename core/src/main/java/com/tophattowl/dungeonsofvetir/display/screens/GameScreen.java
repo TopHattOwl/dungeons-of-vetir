@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.tophattowl.dungeonsofvetir.display.camera.CameraController;
 import com.tophattowl.dungeonsofvetir.display.renderer.FovOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
@@ -181,6 +182,8 @@ public class GameScreen implements Screen {
 
         // restore full viewport for HUD rendering
         HdpiUtils.glViewport(0, 0, WIN_W, WIN_H);
+        batch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0 , WIN_W, WIN_H));
+
         batch.begin();
         debugConsoleRenderer.render(batch);
         batch.end();

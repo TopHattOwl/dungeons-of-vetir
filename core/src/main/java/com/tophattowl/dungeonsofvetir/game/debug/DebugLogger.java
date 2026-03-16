@@ -6,9 +6,9 @@ import java.util.Set;
 public class DebugLogger {
 
     private static final Set<Category> active = EnumSet.of(
-        Category.COMBAT,
-        Category.BODY,
-        Category.ACTION
+        Category.EVENT,
+        Category.CONSOLE,
+        Category.INPUT
     );
 
     public enum Category {
@@ -22,6 +22,8 @@ public class DebugLogger {
         AI,
         INVENTORY,
         FACTORY,
+        CONSOLE,
+        INPUT,
     }
 
     public enum Level {
@@ -32,7 +34,7 @@ public class DebugLogger {
 
     // toggles entire logging on/off
     private static boolean enabled = true;
-    private static boolean logAll = true;
+    private static boolean logAll = false;
 
     public static void log(Category category, Level level, String location, String message) {
         if(!enabled) return;

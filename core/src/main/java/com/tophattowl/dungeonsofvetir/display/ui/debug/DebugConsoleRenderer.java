@@ -49,35 +49,36 @@ public class DebugConsoleRenderer {
         shapeRenderer.rect(consoleX, consoleY, CONSOLE_W, CONSOLE_H);
         shapeRenderer.end();
 
+        // Input area at bottom, output area at top
+        int inputAreaHeight = LINE_H + PADDING * 3;
+        int separatorY = consoleY + inputAreaHeight;
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(BORDER);
         shapeRenderer.rect(consoleX, consoleY, CONSOLE_W, CONSOLE_H);
         // Input separator line
-        shapeRenderer.line(
-            consoleX,
-            consoleY + LINE_H + PADDING * 2,
-            consoleX + CONSOLE_W,
-            consoleY + LINE_H + PADDING * 2);
+        shapeRenderer.line(consoleX, separatorY, consoleX + CONSOLE_W, separatorY);
         shapeRenderer.end();
         com.badlogic.gdx.Gdx.gl.glDisable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
 
         batch.begin();
 
-        // Input line
+        // Input line - at bottom, above separator
         font.setColor(INPUT_TEXT);
         font.draw(batch, "> " + console.getInputString(),
             consoleX + PADDING,
             consoleY + PADDING + LINE_H);
 
-        // Output lines — draw from bottom up, most recent at bottom
+        // Output lines - draw from top down
         font.setColor(TEXT);
         var lines = console.getOutputLines();
-        int maxLines = (CONSOLE_H - LINE_H - PADDING * 3) / LINE_H;
+        int maxLines = (CONSOLE_H - inputAreaHeight - PADDING) / LINE_H;
         int start = Math.max(0, lines.size() - maxLines);
 
+        int outputTop = consoleY + CONSOLE_H - PADDING - LINE_H;
         for (int i = start; i < lines.size(); i++) {
-            int lineY = consoleY + LINE_H + PADDING * 3 + (i - start) * LINE_H;
-            font.draw(batch, lines.get(i), PADDING, lineY);
+            int lineY = outputTop - (i - start) * LINE_H;
+            font.draw(batch, lines.get(i), consoleX + PADDING, lineY);
         }
     }
 
