@@ -11,6 +11,7 @@ import com.tophattowl.dungeonsofvetir.display.renderer.FovOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
 import com.tophattowl.dungeonsofvetir.display.tilesets.PlaceholderTileset;
 import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
+import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
@@ -25,6 +26,7 @@ import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
+import com.tophattowl.dungeonsofvetir.util.DebugConsole;
 
 public class GameScreen implements Screen {
     // Layout constants
@@ -47,6 +49,7 @@ public class GameScreen implements Screen {
     private WorldRenderer worldRenderer;
     private FovOverlayRenderer fovOverlayRenderer;
     private CameraController cameraController;
+    private DebugConsoleRenderer  debugConsoleRenderer;
 
     // game
     private GameWorld gameWorld;
@@ -54,9 +57,11 @@ public class GameScreen implements Screen {
     private InputHandler inputHandler;
     private TimeTurnManager timeTurnManager;
     private FovSystem fovSystem;
+    private DebugConsole debugConsole;
 
     @Override
     public void show() {
+        // display
         batch = new SpriteBatch();
         font = new BitmapFont();
         tileset = new PlaceholderTileset();
@@ -65,24 +70,25 @@ public class GameScreen implements Screen {
         worldRenderer = new WorldRenderer(batch, tileset);
         fovOverlayRenderer = new FovOverlayRenderer();
         worldRenderer.setFovOverlayRenderer(fovOverlayRenderer);
+        debugConsoleRenderer = new DebugConsoleRenderer(WIN_W, WIN_H, font);
 
+
+        // game
         timeTurnManager = new TimeTurnManager();
         gameWorld = new GameWorld();
+        inputHandler = new InputHandler(gameWorld.getPlayer());
         actionHandler = new ActionHandler(gameWorld);
         fovSystem = new FovSystem();
+        debugConsole = new DebugConsole();
+
+
+        debugConsole.setGameWorld(gameWorld);
+        debugConsoleRenderer.setDebugConsole(debugConsole);
 
         spawnPlayer();
 
         fovSystem.process(gameWorld);
 
-        FovComponent fov = gameWorld.getPlayer().getComponent(FovComponent.class);
-        PositionComponent pos = gameWorld.getPlayer().getComponent(PositionComponent.class);
-        int visibleCount = 0;
-        for (int x = 0; x < Level.WIDTH; x++)
-            for (int y = 0; y < Level.HEIGHT; y++)
-                if (fov.visibleTiles[x][y]) visibleCount++;
-
-        inputHandler = new InputHandler(gameWorld.getPlayer());
         Gdx.input.setInputProcessor(inputHandler);
     }
 
@@ -126,19 +132,21 @@ public class GameScreen implements Screen {
 
         Action action = inputHandler.getPendingAction();
 
-        if (action != null) {
-            Action actionFinal = actionHandler.processAction(player, action);
+        // if input made no action it's still players turn
+        if (action == null) return;
 
-            if (actionFinal.isSuccess()) {
-                DebugLogger.log(DebugLogger.Category.ACTION, "GameWorld",
-                    "Action successful by player\n" + actionFinal
-                );
-                playerComp.isPlayersTurn = false;
-                fovSystem.process(gameWorld);
-                PositionComponent posComp = player.getComponent(PositionComponent.class);
-                cameraController.centerOn(posComp.getX(), posComp.getY());
-                timeTurnManager.onPlayerActionCompleted(gameWorld);
-            }
+        Action actionFinal = actionHandler.processAction(player, action);
+
+        if (actionFinal.isSuccess()) {
+            DebugLogger.log(DebugLogger.Category.ACTION, "GameWorld",
+                "Action successful by player\n" + actionFinal
+            );
+            playerComp.isPlayersTurn = false;
+            fovSystem.process(gameWorld);
+            PositionComponent posComp = player.getComponent(PositionComponent.class);
+            cameraController.centerOn(posComp.getX(), posComp.getY());
+            timeTurnManager.onPlayerActionCompleted(gameWorld);
+
         }
 
     }
@@ -173,6 +181,9 @@ public class GameScreen implements Screen {
 
         // restore full viewport for HUD rendering
         HdpiUtils.glViewport(0, 0, WIN_W, WIN_H);
+        batch.begin();
+        debugConsoleRenderer.render(batch);
+        batch.end();
         //TODO: render hud
     }
 
@@ -202,6 +213,9 @@ public class GameScreen implements Screen {
         font.dispose();
         tileset.dispose();
         fovOverlayRenderer.dispose();
+        timeTurnManager.dispose();
+        debugConsoleRenderer.dispose();
+        debugConsole.dispose();
         EventBus.clear();
         Gdx.input.setInputProcessor(null);
     }

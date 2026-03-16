@@ -6,6 +6,7 @@ import com.tophattowl.dungeonsofvetir.game.input.InputMode;
 
 public class PlayerComponent implements Component {
     public boolean isPlayersTurn;
+
     private InputMode inputMode;
     private InputMode savedInputMode;
 

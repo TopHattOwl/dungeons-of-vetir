@@ -1,5 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.event;
 
+import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,9 @@ public class EventBus {
         // copy list before iterating, dummy!!!
         // a listener might unsubscribe during emit
         for (ListenerHandle<?> handle : new ArrayList<>(list)) {
+            DebugLogger.log(DebugLogger.Category.EVENT, "EventBus",
+                "emitting event: " + event.getClass().getSimpleName()
+            );
             ((Consumer<T>) handle.listener).accept(event);
         }
     }

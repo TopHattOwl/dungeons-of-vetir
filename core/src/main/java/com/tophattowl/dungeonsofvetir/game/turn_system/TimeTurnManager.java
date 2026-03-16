@@ -10,12 +10,16 @@ import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class TimeTurnManager {
+    private final List<EventBus.ListenerHandle<?>> listenerHandles = new ArrayList<>();
 
-    PriorityQueue<Entity> actorQueue;
-    TurnEvent turnEvent;
+
+    private PriorityQueue<Entity> actorQueue;
+    private TurnEvent turnEvent;
     public TimeTurnManager() {
 
         // entity with the lowest time value is at front
@@ -48,12 +52,12 @@ public class TimeTurnManager {
         turnEvent = new TurnEvent(100);
         actorQueue.add(turnEvent);
 
-        EventBus.on(EntityAddedEvent.class, e -> {
+        listenerHandles.add(EventBus.on(EntityAddedEvent.class, e -> {
             addActor(e.entity());
-        });
-        EventBus.on(EntityRemovedEvent.class, e -> {
+        }));
+        listenerHandles.add(EventBus.on(EntityRemovedEvent.class, e -> {
             removeActor(e.entity());
-        });
+        }));
     }
 
 
@@ -91,7 +95,7 @@ public class TimeTurnManager {
 
         // other actors
 //        System.out.println("[TimeTurnManager] processing action for actor: " + currentEntity);
-        timeValueComp.addTime(100);   // PLACEHOLDER for enemy actionna
+        timeValueComp.addTime(100);   // PLACEHOLDER for enemy actions
         addActor(currentEntity);
     }
 
@@ -124,6 +128,11 @@ public class TimeTurnManager {
         // add turn event back after calling its pass turn method
         addActor(turnEvent);
         EventBus.emit(new TurnPassedEvent());
+    }
+
+    public void dispose() {
+        listenerHandles.forEach(EventBus::off);
+        actorQueue.clear();
     }
 
 }
