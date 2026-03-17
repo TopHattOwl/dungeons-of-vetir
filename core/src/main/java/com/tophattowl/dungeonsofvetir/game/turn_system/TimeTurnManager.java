@@ -1,7 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.turn_system;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.PassAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.AiComponent;

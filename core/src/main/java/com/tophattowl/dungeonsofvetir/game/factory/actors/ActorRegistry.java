@@ -1,8 +1,8 @@
 package com.tophattowl.dungeonsofvetir.game.factory.actors;
 
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
-import com.tophattowl.dungeonsofvetir.game.ai.ChaserStrategy;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class ActorRegistry {
 
     static {
         register(
-            new ActorTemplate.Builder(ActorId.IRON_WORM, "Iron Worm")
+            new ActorTemplate.Builder(ActorId.IRON_WORM, "Iron Worm", Faction.MONSTER)
                 .spawnCost(5)
                 .spriteId("iron_worm")
                 .bodyTemplate(BodyTemplate.WORM)
@@ -33,17 +33,15 @@ public class ActorRegistry {
                 .maxHp(115)
                 .baseDamage(12)
                 .weaponDamageModifier(0.9f)
-                .aiStrategy(new ChaserStrategy())
                 .build()
         );
         register(
-            new ActorTemplate.Builder(ActorId.SCAVENGER, "Scavenger")
+            new ActorTemplate.Builder(ActorId.SCAVENGER, "Scavenger", Faction.MONSTER)
                 .spawnCost(8)
                 .baseDamage(10)
                 .accuracy(1.0f)
                 .maxHp(145)
                 .visionRange(11)
-                .aiStrategy(new ChaserStrategy())
                 .build()
         );
     }

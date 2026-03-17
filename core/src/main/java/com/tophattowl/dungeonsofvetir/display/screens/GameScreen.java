@@ -29,6 +29,8 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
 import com.tophattowl.dungeonsofvetir.util.DebugConsole;
+import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
+import com.tophattowl.dungeonsofvetir.util.dijkstra.PlayerDijkstraMap;
 
 public class GameScreen implements Screen {
     // Layout constants
@@ -93,6 +95,10 @@ public class GameScreen implements Screen {
         spawnPlayer();
 
         fovSystem.process(gameWorld);
+
+        gameWorld.addDijkstraMapManager(
+            new DijkstraMapManager(gameWorld, new PlayerDijkstraMap(Level.WIDTH, Level.HEIGHT))
+        );
 
         Gdx.input.setInputProcessor(inputHandler);
     }

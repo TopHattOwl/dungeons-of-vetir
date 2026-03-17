@@ -5,6 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyComponentBuilder;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
@@ -28,7 +29,7 @@ public class EntityFactory {
             .addComponent(new TimeValueComponent())
             .addComponent(new FovComponent(10, Level.WIDTH, Level.HEIGHT))
             .addComponent(new PlayerComponent())
-            .addComponent(new IdentityComponent("player", ActorId.PLAYER))
+            .addComponent(new IdentityComponent("player", ActorId.PLAYER, Faction.HUNTER))
             .addComponent(new HealthComponent(213))
             .addComponent(new OffensiveStatsComponent(
                 30, 1.0f,
@@ -50,9 +51,8 @@ public class EntityFactory {
             .addComponent(new RenderableComponent(template.spriteId, template.renderOrder))
             .addComponent(new TimeValueComponent(template.baseSpeed))
             .addComponent(new HealthComponent(template.maxHp))
-            .addComponent(new IdentityComponent(template.name, template.actorId))
+            .addComponent(new IdentityComponent(template.name, template.actorId, template.faction))
             .addComponent(new FovComponent(template.visionRange, Level.WIDTH, Level.HEIGHT))
-            .addComponent(new AiComponent(template.aiStrategy))
             .addComponent(new OffensiveStatsComponent(template.baseDamage, template.weaponDamageModifier,
                 template.mainHandEfficiency, template.offHandEfficiencyModifier, template.accuracy))
         ;

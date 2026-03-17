@@ -1,8 +1,8 @@
 package com.tophattowl.dungeonsofvetir.game.factory.actors;
 
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.ai.AiStrategy;
-import com.tophattowl.dungeonsofvetir.game.ai.ChaserStrategy;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 
 /**
@@ -12,6 +12,7 @@ public class ActorTemplate {
     // --- IDENTITY ---
     public final ActorId actorId;
     public final String name;
+    public final Faction faction;
 
     // --- SPAWNING ---
     public final int spawnCost;
@@ -40,12 +41,12 @@ public class ActorTemplate {
     public final float accuracy;
 
     // --- AI ---
-    public final AiStrategy aiStrategy;
 
 
     private ActorTemplate(Builder b) {
         this.actorId = b.actorId;
         this.name = b.name;
+        this.faction = b.faction;
         this.spawnCost = b.spawnCost;
         this.spriteId = b.spriteId;
         this.renderOrder = b.renderOrder;
@@ -58,13 +59,13 @@ public class ActorTemplate {
         this.mainHandEfficiency = b.mainHandEfficiency;
         this.offHandEfficiencyModifier = b.offHandEfficiencyModifier;
         this.accuracy = b.accuracy;
-        this.aiStrategy = b.aiStrategy;
     }
 
     public static class Builder {
         // required
         private final ActorId actorId;
         private final String name;
+        private final Faction faction;
 
         // defaults
         public int spawnCost = 10;
@@ -79,13 +80,12 @@ public class ActorTemplate {
         public float mainHandEfficiency = 1.0f;
         public float offHandEfficiencyModifier = 0.9f;
         public float accuracy = 1.0f;
-        public AiStrategy aiStrategy = new ChaserStrategy();
 
 
-
-        public Builder(ActorId actorId, String name) {
+        public Builder(ActorId actorId, String name, Faction faction) {
             this.actorId = actorId;
             this.name = name;
+            this.faction = faction;
         }
 
         public Builder spawnCost(int v) {this.spawnCost = v; return this; }
@@ -100,7 +100,6 @@ public class ActorTemplate {
         public Builder mainHandEfficiency(float v) {this.mainHandEfficiency = v; return this; }
         public Builder offHandEfficiencyModifier(float v) {this.offHandEfficiencyModifier = v; return this; }
         public Builder accuracy(float v) {this.accuracy = v; return this; }
-        public Builder aiStrategy(AiStrategy v) {this.aiStrategy = v; return this; }
 
 
 
