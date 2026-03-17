@@ -1,6 +1,10 @@
 package com.tophattowl.dungeonsofvetir.game.turn_system;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
+import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
+import com.tophattowl.dungeonsofvetir.game.action.Action;
+import com.tophattowl.dungeonsofvetir.game.action.PassAction;
+import com.tophattowl.dungeonsofvetir.game.actors.components.AiComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
@@ -62,12 +66,6 @@ public class TimeTurnManager {
 
 
     public void processNext(GameWorld gameWorld) {
-//        System.out.print("\n ACTORS IN TURN MANAGER:\n[ ");
-//        for (Entity entity : actorQueue) {
-//            System.out.print(entity + " | ");
-//        }
-//        System.out.print("]\n");
-
         Entity currentEntity = actorQueue.poll();
         if (currentEntity == null) {
             DebugLogger.log(DebugLogger.Category.TURN, DebugLogger.Level.WARNING, "TimeTurnManager",
@@ -80,22 +78,19 @@ public class TimeTurnManager {
 
         // turn event is next -> pass turn
         if (currentEntity == turnEvent) {
-//            System.out.println("[TimeTurnManager] Turn event up next, passing turn]");
             passTurn();
             return;
         }
 
         // if player next up -> wait for input
         if (currentEntity == gameWorld.getPlayer()) {
-//            System.out.println("[TimeTurnManager] Player up next, waiting for input");
             PlayerComponent playerComp = gameWorld.getPlayer().getComponent(PlayerComponent.class);
             playerComp.isPlayersTurn = true;
             return;
         }
 
         // other actors
-//        System.out.println("[TimeTurnManager] processing action for actor: " + currentEntity);
-        timeValueComp.addTime(100);   // PLACEHOLDER for enemy actions
+        processActor(currentEntity, gameWorld);
         addActor(currentEntity);
     }
 
@@ -104,11 +99,29 @@ public class TimeTurnManager {
         addActor(gameWorld.getPlayer());
     }
 
-    public void addActor(Entity entity) {
+
+    private void processActor(Entity entity, GameWorld gameWorld) {
+        TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
+
+        Action action;
+        AiComponent aiComp = entity.getComponent(AiComponent.class);
+
+        if (aiComp != null && aiComp.aiStrategy != null) {
+            action = aiComp.aiStrategy.chooseAction(entity, gameWorld);
+        } else {
+            action = new PassAction(entity);
+        }
+
+        Action resultAction = action.execute(gameWorld);
+
+        if(resultAction.isSuccess()) timeComp.addTime(resultAction.getCost());
+    }
+
+    private void addActor(Entity entity) {
         actorQueue.add(entity);
     }
 
-    public void removeActor(Entity entity) {
+    private void removeActor(Entity entity) {
         actorQueue.remove(entity);
     }
 

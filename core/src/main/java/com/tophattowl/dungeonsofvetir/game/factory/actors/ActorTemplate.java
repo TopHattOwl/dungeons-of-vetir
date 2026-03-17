@@ -1,6 +1,8 @@
 package com.tophattowl.dungeonsofvetir.game.factory.actors;
 
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
+import com.tophattowl.dungeonsofvetir.game.ai.AiStrategy;
+import com.tophattowl.dungeonsofvetir.game.ai.ChaserStrategy;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 
 /**
@@ -37,6 +39,9 @@ public class ActorTemplate {
     public final float offHandEfficiencyModifier;
     public final float accuracy;
 
+    // --- AI ---
+    public final AiStrategy aiStrategy;
+
 
     private ActorTemplate(Builder b) {
         this.actorId = b.actorId;
@@ -53,6 +58,7 @@ public class ActorTemplate {
         this.mainHandEfficiency = b.mainHandEfficiency;
         this.offHandEfficiencyModifier = b.offHandEfficiencyModifier;
         this.accuracy = b.accuracy;
+        this.aiStrategy = b.aiStrategy;
     }
 
     public static class Builder {
@@ -73,6 +79,7 @@ public class ActorTemplate {
         public float mainHandEfficiency = 1.0f;
         public float offHandEfficiencyModifier = 0.9f;
         public float accuracy = 1.0f;
+        public AiStrategy aiStrategy = new ChaserStrategy();
 
 
 
@@ -93,7 +100,7 @@ public class ActorTemplate {
         public Builder mainHandEfficiency(float v) {this.mainHandEfficiency = v; return this; }
         public Builder offHandEfficiencyModifier(float v) {this.offHandEfficiencyModifier = v; return this; }
         public Builder accuracy(float v) {this.accuracy = v; return this; }
-
+        public Builder aiStrategy(AiStrategy v) {this.aiStrategy = v; return this; }
 
 
 

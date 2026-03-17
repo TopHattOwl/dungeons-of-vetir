@@ -1,6 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.factory.actors;
 
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
+import com.tophattowl.dungeonsofvetir.game.ai.ChaserStrategy;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 
 import java.util.HashMap;
@@ -30,8 +31,9 @@ public class ActorRegistry {
                 .bodyTemplate(BodyTemplate.WORM)
                 .visionRange(7)
                 .maxHp(115)
-                .baseDamage(20)
+                .baseDamage(12)
                 .weaponDamageModifier(0.9f)
+                .aiStrategy(new ChaserStrategy())
                 .build()
         );
         register(
@@ -41,6 +43,7 @@ public class ActorRegistry {
                 .accuracy(1.0f)
                 .maxHp(145)
                 .visionRange(11)
+                .aiStrategy(new ChaserStrategy())
                 .build()
         );
     }

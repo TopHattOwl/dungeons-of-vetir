@@ -3,7 +3,6 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyComponentBuilder;
-import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartDefinition;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
@@ -50,8 +49,12 @@ public class EntityFactory {
         entity.addComponent(new PositionComponent(spawnPos))
             .addComponent(new RenderableComponent(template.spriteId, template.renderOrder))
             .addComponent(new TimeValueComponent(template.baseSpeed))
-            .addComponent(new HealthComponent(115))
+            .addComponent(new HealthComponent(template.maxHp))
             .addComponent(new IdentityComponent(template.name, template.actorId))
+            .addComponent(new FovComponent(template.visionRange, Level.WIDTH, Level.HEIGHT))
+            .addComponent(new AiComponent(template.aiStrategy))
+            .addComponent(new OffensiveStatsComponent(template.baseDamage, template.weaponDamageModifier,
+                template.mainHandEfficiency, template.offHandEfficiencyModifier, template.accuracy))
         ;
 
         BodyComponent bodyComp = BodyComponentBuilder.build(template.bodyTemplate, template.maxHp);

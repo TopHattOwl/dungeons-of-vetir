@@ -224,6 +224,7 @@ public class GameScreen implements Screen {
         debugConsoleRenderer.dispose();
         hudRenderer.dispose();
         debugConsole.dispose();
+        gameWorld.dispose();
         EventBus.clear();
         Gdx.input.setInputProcessor(null);
     }

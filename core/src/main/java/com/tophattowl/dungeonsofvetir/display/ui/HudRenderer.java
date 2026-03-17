@@ -108,8 +108,12 @@ public class HudRenderer {
     }
 
     private void renderPlayer(SpriteBatch batch, int y) {
+
+        HealthComponent healthComp = player.getComponent(HealthComponent.class);
+        String playerHealthStatus = healthComp.status.toString();
+
         titleFont.setColor(Theme.HUD_TITLE);
-        titleFont.draw(batch, "PLAYER", sidebarX + PADDING, y);
+        titleFont.draw(batch, "PLAYER " + playerHealthStatus, sidebarX + PADDING, y);
 
         // gap for larger text
         // TODO: do better
