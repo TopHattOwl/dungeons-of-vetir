@@ -36,7 +36,7 @@ public class ActorRegistry {
                 .build()
         );
         register(
-            new ActorTemplate.Builder(ActorId.SCAVENGER, "Scavenger", Faction.MONSTER)
+            new ActorTemplate.Builder(ActorId.SCAVENGER, "Scavenger", Faction.LOOTER)
                 .spawnCost(8)
                 .baseDamage(10)
                 .accuracy(1.0f)

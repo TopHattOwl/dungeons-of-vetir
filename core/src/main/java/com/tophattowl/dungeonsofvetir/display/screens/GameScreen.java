@@ -19,6 +19,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
@@ -96,9 +97,7 @@ public class GameScreen implements Screen {
 
         fovSystem.process(gameWorld);
 
-        gameWorld.addDijkstraMapManager(
-            new DijkstraMapManager(gameWorld, new PlayerDijkstraMap(Level.WIDTH, Level.HEIGHT))
-        );
+        gameWorld.addDijkstraMapManager(new DijkstraMapManager(gameWorld));
 
         Gdx.input.setInputProcessor(inputHandler);
     }

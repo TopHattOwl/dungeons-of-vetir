@@ -3,6 +3,8 @@ package com.tophattowl.dungeonsofvetir.game.world;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.combat.CombatSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
@@ -46,6 +48,10 @@ public class GameWorld {
 
         //placeholder level
         currentLevel = dungeonGenerator.generateLevel(1);
+
+        FactionRelation.init();
+
+        System.out.println(FactionRelation.getRelation(Faction.MONSTER, Faction.HUNTER));
     }
 
     public Level getCurrentLevel() {
@@ -115,5 +121,6 @@ public class GameWorld {
     }
 
     public void dispose() {
+        dijkstraMapManager.dispose();
     }
 }

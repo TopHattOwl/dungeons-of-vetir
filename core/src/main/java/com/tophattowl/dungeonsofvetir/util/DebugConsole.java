@@ -1,6 +1,7 @@
 package com.tophattowl.dungeonsofvetir.util;
 
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleRequestedEvent;
@@ -93,6 +94,7 @@ public class DebugConsole {
             case "clear" -> clearCommand();
             case "spawn" -> spawnCommand(args);
             case "log" -> logCommand(args);
+            case "factionrel" -> logFactionRelations();
             case "exit", "quit" -> {
                 toggle();
                 yield "Console closed.";
@@ -108,6 +110,7 @@ public class DebugConsole {
               clear          - Clear the console output
               spawn <actor_id> - Spawn an actor near the player
               log <Category> [on/off] - Toggle debug logging category
+              factionRel     - Logs faction relations in debug logger
               exit, quit     - Close the console
             """;
     }
@@ -171,6 +174,11 @@ public class DebugConsole {
         } catch (IllegalArgumentException e) {
             return "Unknown category: " + categoryName;
         }
+    }
+
+    private String logFactionRelations() {
+        FactionRelation.logFactionRelations();
+        return "Faction relations logged in debug logger";
     }
 
     private void addOutput(String line) {
