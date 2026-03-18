@@ -72,7 +72,6 @@ public enum BodyTemplate {
         new BodyPartDefinition("Leg 8", BodyPartType.LEG, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f)
     )),
-//    SNAKE,
     WORM(List.of(
         new BodyPartDefinition("head", BodyPartType.HEAD, BodyPartRole.VITAL,
             0.15f, 0.15f, 1.2f),

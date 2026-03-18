@@ -1,4 +1,4 @@
-package com.tophattowl.dungeonsofvetir.util.dijkstra;
+package com.tophattowl.dungeonsofvetir.util.dijkstra.maps;
 
 
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
@@ -7,11 +7,11 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import java.util.Arrays;
 
 public abstract class DijkstraMap {
-    protected static final int BASE_VALUE = 100;
-    protected static final int OBSTACLE_VALUE = Integer.MAX_VALUE;
-    protected static final int GOAL_VALUE = 0;
+    public static final int BASE_VALUE = 100;
+    public static final int OBSTACLE_VALUE = 42069;
+    public static final int GOAL_VALUE = 0;
 
-    protected int[][] map;
+    public int[][] map;
 
     public DijkstraMap(int width, int height) {
         map = new int[width][height];
@@ -37,14 +37,14 @@ public abstract class DijkstraMap {
         int lowestValue = map[x][y];
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
-
+                int nx = x + dx, ny = y + dy;
                 // skip self, walls and out of bounds
-                if (x + dx < 0 || y + dy < 0 || x + dx >= map.length || y + dy >= map[x].length) continue;
+                if (nx < 0 || ny < 0 || nx >= map.length || ny >= map[x].length) continue;
                 if (dx == 0 && dy == 0) continue;
-                if (map[x+dx][y+dy] == OBSTACLE_VALUE) continue;
+                if (map[nx][ny] == OBSTACLE_VALUE) continue;
 
-                if (map[x+dx][y+dy] < lowestValue) {
-                    lowestValue = map[x+dx][y+dy];
+                if (map[nx][ny] < lowestValue) {
+                    lowestValue = map[nx][ny];
                 }
             }
         }

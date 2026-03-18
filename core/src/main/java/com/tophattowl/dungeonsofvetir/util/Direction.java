@@ -1,4 +1,4 @@
-package com.tophattowl.dungeonsofvetir.game;
+package com.tophattowl.dungeonsofvetir.util;
 
 import com.badlogic.gdx.Input;
 
@@ -32,7 +32,7 @@ public enum Direction {
         return fromDxDy(-dx, -dy);
     }
 
-    public Direction fromDxDy(int dx, int dy) {
+    public static Direction fromDxDy(int dx, int dy) {
         for (Direction dir : values()) {
             if (dir.getDx() == dx && dir.getDy() == dy) {
                 return dir;

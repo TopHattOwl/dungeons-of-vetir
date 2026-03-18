@@ -1,4 +1,4 @@
-package com.tophattowl.dungeonsofvetir.util.dijkstra;
+package com.tophattowl.dungeonsofvetir.util.dijkstra.maps;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
@@ -37,7 +37,7 @@ public class FactionDijkstraMap extends DijkstraMap {
             switch (relation) {
                 case HOSTILE -> map[x][y] = GOAL_VALUE;
                 case NEUTRAL -> map[x][y] = BASE_VALUE;
-                case FRIENDLY -> map[x][y] = OBSTACLE_VALUE;
+                case FRIENDLY -> map[x][y] = BASE_VALUE * 4;
             }
             return;
         }

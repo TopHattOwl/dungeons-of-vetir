@@ -1,10 +1,13 @@
 package com.tophattowl.dungeonsofvetir.game.turn_system;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
+import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
+import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
 import com.tophattowl.dungeonsofvetir.game.action.PassAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.AiComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
@@ -12,7 +15,9 @@ import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
+import com.tophattowl.dungeonsofvetir.util.Direction;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -101,19 +106,18 @@ public class TimeTurnManager {
 
     private void processActor(Entity entity, GameWorld gameWorld) {
         TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
-
-        Action action;
         AiComponent aiComp = entity.getComponent(AiComponent.class);
+        PositionComponent posComp = entity.getComponent(PositionComponent.class);
 
-        if (aiComp != null && aiComp.aiStrategy != null) {
-            action = aiComp.aiStrategy.chooseAction(entity, gameWorld);
-        } else {
-            action = new PassAction(entity);
+        Direction dir = gameWorld.dijkstraMapManager.getBestMove(posComp.getX(), posComp.getY(), aiComp.weightMap);
+
+        MoveAction action = new MoveAction(dir, entity);
+
+        action.execute(gameWorld);
+
+        if (action.isSuccess()) {
+            timeComp.addTime(action.getCost());
         }
-
-        Action resultAction = action.execute(gameWorld);
-
-        if(resultAction.isSuccess()) timeComp.addTime(resultAction.getCost());
     }
 
     private void addActor(Entity entity) {

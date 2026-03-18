@@ -15,11 +15,9 @@ import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
 import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
 import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
-import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
@@ -31,7 +29,6 @@ import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
 import com.tophattowl.dungeonsofvetir.util.DebugConsole;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
-import com.tophattowl.dungeonsofvetir.util.dijkstra.PlayerDijkstraMap;
 
 public class GameScreen implements Screen {
     // Layout constants

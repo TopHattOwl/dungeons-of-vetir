@@ -14,7 +14,6 @@ import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
-import com.tophattowl.dungeonsofvetir.util.dijkstra.PlayerDijkstraMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class GameWorld {
     private final Entity player;
 
     private DungeonGenerator dungeonGenerator;
-    private DijkstraMapManager dijkstraMapManager;
+    public DijkstraMapManager dijkstraMapManager;
 
     public GameWorld() {
 
@@ -39,7 +38,7 @@ public class GameWorld {
 
         // PLACEHOLDER enemy
         EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(12, 12));
-        EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(11, 11));
+//        EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(11, 11));
 
         addSystem(new MovementSystem());
         addSystem(new CombatSystem());

@@ -10,6 +10,7 @@ import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
+import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapType;
 
 public class EntityFactory {
 
@@ -55,7 +56,11 @@ public class EntityFactory {
             .addComponent(new FovComponent(template.visionRange, Level.WIDTH, Level.HEIGHT))
             .addComponent(new OffensiveStatsComponent(template.baseDamage, template.weaponDamageModifier,
                 template.mainHandEfficiency, template.offHandEfficiencyModifier, template.accuracy))
+            .addComponent(new AiComponent())
         ;
+        AiComponent aiComp = entity.getComponent(AiComponent.class);
+        aiComp.setWeight(DijkstraMapType.PLAYER, 100); // go to player
+        aiComp.setWeight(DijkstraMapType.FACTION_MONSTER, 30); // spread from allies
 
         BodyComponent bodyComp = BodyComponentBuilder.build(template.bodyTemplate, template.maxHp);
         entity.addComponent(bodyComp);

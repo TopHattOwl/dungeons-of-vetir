@@ -1,13 +1,10 @@
-package com.tophattowl.dungeonsofvetir.util.dijkstra;
+package com.tophattowl.dungeonsofvetir.util.dijkstra.maps;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
-
-import java.util.Arrays;
-
 
 public class PlayerDijkstraMap extends DijkstraMap {
     public PlayerDijkstraMap(int width, int height) {

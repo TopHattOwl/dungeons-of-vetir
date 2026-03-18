@@ -1,6 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.action;
 
-import com.tophattowl.dungeonsofvetir.game.Direction;
+import com.tophattowl.dungeonsofvetir.util.Direction;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;

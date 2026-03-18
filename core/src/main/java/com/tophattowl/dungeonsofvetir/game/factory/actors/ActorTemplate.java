@@ -2,7 +2,6 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors;
 
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
-import com.tophattowl.dungeonsofvetir.game.ai.AiStrategy;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 
 /**

@@ -2,7 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.input;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.tophattowl.dungeonsofvetir.game.Direction;
+import com.tophattowl.dungeonsofvetir.util.Direction;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
