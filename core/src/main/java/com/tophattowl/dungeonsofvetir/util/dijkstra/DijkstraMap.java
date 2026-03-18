@@ -1,11 +1,7 @@
 package com.tophattowl.dungeonsofvetir.util.dijkstra;
 
 
-import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
-import com.tophattowl.dungeonsofvetir.game.world.Level;
-import com.tophattowl.dungeonsofvetir.game.world.Point;
 
 import java.util.Arrays;
 
