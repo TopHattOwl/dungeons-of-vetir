@@ -56,7 +56,6 @@ public class GameScreen implements Screen {
 
     // game
     private GameWorld gameWorld;
-    private ActionHandler actionHandler;
     private InputHandler inputHandler;
     private TimeTurnManager timeTurnManager;
     private FovSystem fovSystem;
@@ -81,7 +80,6 @@ public class GameScreen implements Screen {
         timeTurnManager = new TimeTurnManager();
         gameWorld = new GameWorld();
         inputHandler = new InputHandler(gameWorld.getPlayer());
-        actionHandler = new ActionHandler(gameWorld);
         fovSystem = new FovSystem();
         debugConsole = new DebugConsole();
 
@@ -142,7 +140,7 @@ public class GameScreen implements Screen {
         // if input made no action it's still players turn
         if (action == null) return;
 
-        Action actionFinal = actionHandler.processAction(player, action);
+        Action actionFinal = gameWorld.actionHandler.processAction(player, action);
 
         if (actionFinal.isSuccess()) {
             DebugLogger.log(DebugLogger.Category.ACTION, "GameWorld",

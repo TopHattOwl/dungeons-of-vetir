@@ -113,11 +113,7 @@ public class TimeTurnManager {
 
         MoveAction action = new MoveAction(dir, entity);
 
-        action.execute(gameWorld);
-
-        if (action.isSuccess()) {
-            timeComp.addTime(action.getCost());
-        }
+        Action finalAction = gameWorld.actionHandler.processAction(entity, action);
     }
 
     private void addActor(Entity entity) {

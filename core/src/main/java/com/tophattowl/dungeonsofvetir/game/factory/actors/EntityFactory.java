@@ -31,7 +31,7 @@ public class EntityFactory {
             .addComponent(new FovComponent(10, Level.WIDTH, Level.HEIGHT))
             .addComponent(new PlayerComponent())
             .addComponent(new IdentityComponent("player", ActorId.PLAYER, Faction.HUNTER))
-            .addComponent(new HealthComponent(213))
+            .addComponent(new HealthComponent(350))
             .addComponent(new OffensiveStatsComponent(
                 30, 1.0f,
                 1.0f, 1.0f,
@@ -59,8 +59,8 @@ public class EntityFactory {
             .addComponent(new AiComponent())
         ;
         AiComponent aiComp = entity.getComponent(AiComponent.class);
-        aiComp.setWeight(DijkstraMapType.PLAYER, 100); // go to player
-        aiComp.setWeight(DijkstraMapType.FACTION_MONSTER, 30); // spread from allies
+        aiComp.setWeight(DijkstraMapType.PLAYER, 5); // go to player
+        aiComp.setWeight(DijkstraMapType.FACTION_MONSTER, 2); // spread from allies
 
         BodyComponent bodyComp = BodyComponentBuilder.build(template.bodyTemplate, template.maxHp);
         entity.addComponent(bodyComp);

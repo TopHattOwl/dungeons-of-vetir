@@ -32,14 +32,10 @@ public class FactionDijkstraMap extends DijkstraMap {
         // if entity is at pos, check faction
         if (entity != null) {
             Faction entityFaction = entity.getComponent(IdentityComponent.class).faction;
-            FactionRelation.Relation relation = FactionRelation.getRelation(entityFaction, faction);
-
-            switch (relation) {
-                case HOSTILE -> map[x][y] = GOAL_VALUE;
-                case NEUTRAL -> map[x][y] = BASE_VALUE;
-                case FRIENDLY -> map[x][y] = BASE_VALUE * 4;
+            if (entityFaction == faction) {
+                map[x][y] = GOAL_VALUE;
+                return;
             }
-            return;
         }
 
         if (level.isWalkable(x, y)) {

@@ -1,5 +1,7 @@
 package com.tophattowl.dungeonsofvetir.util.dijkstra;
 
+import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
+import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
@@ -87,12 +89,22 @@ public class DijkstraMapManager {
     }
 
     private void onEntityMoved(EntityMovedEvent event) {
-        if (event.entity() == gameWorld.getPlayer()) {
-            for (DijkstraMap dMap : dijkstraMaps.values()) {
-                dMap.initialize(gameWorld);
-                dMap.calculate();
+        Entity entity = event.entity();
+
+        if (entity == gameWorld.getPlayer()) {
+            DijkstraMap map = dijkstraMaps.get(DijkstraMapType.PLAYER);
+            map.initialize(gameWorld);
+            map.calculate();
+        }
+        Faction faction = entity.getComponent(IdentityComponent.class).faction;
+        switch (faction) {
+            case MONSTER -> {
+                DijkstraMap map = dijkstraMaps.get(DijkstraMapType.FACTION_MONSTER);
+                map.initialize(gameWorld);
+                map.calculate();
             }
         }
+
     }
 
     private void onEntityRemoved(EntityRemovedEvent event) {

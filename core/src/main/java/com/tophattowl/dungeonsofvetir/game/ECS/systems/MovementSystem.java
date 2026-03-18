@@ -35,15 +35,12 @@ public class MovementSystem implements GameSystem {
 
             switch (relation) {
                 case FRIENDLY, NEUTRAL -> {
-                    return new PassAction(owner);
+                    return gameWorld.actionHandler.processAction(owner, new PassAction(owner));
                 }
                 case HOSTILE -> {
-                    return new AttackAction(owner, entityAtPos).execute(gameWorld);
+                    return gameWorld.actionHandler.processAction(owner, new AttackAction(owner, entityAtPos));
                 }
             }
-        }
-        if (gameWorld.getEntityAt(newX, newY) != null) {
-            return new AttackAction(owner, gameWorld.getEntityAt(newX, newY)).execute(gameWorld);
         }
 
         Point newPos = new Point(newX, newY);

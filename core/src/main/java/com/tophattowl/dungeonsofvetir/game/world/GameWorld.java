@@ -1,6 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.world;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
+import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
@@ -30,6 +31,7 @@ public class GameWorld {
 
     private DungeonGenerator dungeonGenerator;
     public DijkstraMapManager dijkstraMapManager;
+    public ActionHandler actionHandler;
 
     public GameWorld() {
 
@@ -47,6 +49,8 @@ public class GameWorld {
 
         //placeholder level
         currentLevel = dungeonGenerator.generateLevel(1);
+
+        actionHandler = new ActionHandler(this);
 
         FactionRelation.init();
 
