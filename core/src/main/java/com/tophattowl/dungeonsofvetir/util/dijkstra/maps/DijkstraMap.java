@@ -7,9 +7,11 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import java.util.Arrays;
 
 public abstract class DijkstraMap {
-    public static final int BASE_VALUE = 100;
+    public static final int BASE_VALUE = 500;
     public static final int OBSTACLE_VALUE = 42069;
     public static final int GOAL_VALUE = 0;
+    public static final int CARDINAL_COST = 2;
+    public static final int DIAGONAL_COST = 3;
 
     public int[][] map;
 
@@ -34,7 +36,7 @@ public abstract class DijkstraMap {
     }
 
     protected boolean checkNeighbors(int x, int y) {
-        int lowestValue = map[x][y];
+        int lowestWeighted = map[x][y];
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 int nx = x + dx, ny = y + dy;
@@ -43,14 +45,18 @@ public abstract class DijkstraMap {
                 if (dx == 0 && dy == 0) continue;
                 if (map[nx][ny] == OBSTACLE_VALUE) continue;
 
-                if (map[nx][ny] < lowestValue) {
-                    lowestValue = map[nx][ny];
+                boolean isDiagonal = (dx != 0 && dy != 0);
+                int moveCost = isDiagonal ? DIAGONAL_COST : CARDINAL_COST;
+
+                int candidate = map[nx][ny] + moveCost;
+                if (candidate < lowestWeighted) {
+                    lowestWeighted = candidate;
                 }
             }
         }
 
-        if (map[x][y] > lowestValue + 1) {
-            map[x][y] = lowestValue + 1;
+        if (lowestWeighted < map[x][y]) {
+            map[x][y] = lowestWeighted;
             return true;
         }
 

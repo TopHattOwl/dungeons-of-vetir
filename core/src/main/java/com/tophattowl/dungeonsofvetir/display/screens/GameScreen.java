@@ -20,7 +20,6 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
-import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
@@ -86,6 +85,7 @@ public class GameScreen implements Screen {
 
         debugConsole.setGameWorld(gameWorld);
         debugConsoleRenderer.setDebugConsole(debugConsole);
+
         hudRenderer.setPlayer(gameWorld.getPlayer());
 
         spawnPlayer();

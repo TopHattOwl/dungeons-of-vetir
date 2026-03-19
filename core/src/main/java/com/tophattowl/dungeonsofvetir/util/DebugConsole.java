@@ -126,7 +126,7 @@ public class DebugConsole {
         }
 
         if (args.isEmpty()) {
-            return "Usage: spawn <actor>. Available: IRON_WORM, CAVE_BAT, SCAVENGER";
+            return "Usage: spawn <actor>. Available: IRON_WORM, SCAVENGER";
         }
 
         String actorName = args.toUpperCase().trim();

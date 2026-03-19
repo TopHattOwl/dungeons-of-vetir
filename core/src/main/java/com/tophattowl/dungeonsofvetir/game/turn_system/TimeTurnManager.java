@@ -105,7 +105,6 @@ public class TimeTurnManager {
 
 
     private void processActor(Entity entity, GameWorld gameWorld) {
-        TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
         AiComponent aiComp = entity.getComponent(AiComponent.class);
         PositionComponent posComp = entity.getComponent(PositionComponent.class);
 
