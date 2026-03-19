@@ -58,7 +58,6 @@ public class GameScreen implements Screen {
     // game
     private GameWorld gameWorld;
     private InputHandler inputHandler;
-    private TimeTurnManager timeTurnManager;
     private FovSystem fovSystem;
     private DebugConsole debugConsole;
 
@@ -79,7 +78,6 @@ public class GameScreen implements Screen {
 
 
         // game
-        timeTurnManager = new TimeTurnManager();
         gameWorld = new GameWorld();
         inputHandler = new InputHandler(gameWorld.getPlayer());
         fovSystem = new FovSystem();
@@ -155,7 +153,7 @@ public class GameScreen implements Screen {
             fovSystem.process(gameWorld);
             PositionComponent posComp = player.getComponent(PositionComponent.class);
             cameraController.centerOn(posComp.getX(), posComp.getY());
-            timeTurnManager.onPlayerActionCompleted(gameWorld);
+            gameWorld.timeTurnManager.onPlayerActionCompleted(gameWorld);
 
         }
 
@@ -169,9 +167,11 @@ public class GameScreen implements Screen {
 
         // process several actors in a frame
         for (int i = 0; i < ACTOR_PROCESS_COUNT; i++) {
-            timeTurnManager.processNext(gameWorld);
+            gameWorld.timeTurnManager.processNext(gameWorld);
             if (gameWorld.getPlayer().getComponent(PlayerComponent.class).isPlayersTurn) break;
         }
+
+//        gameWorld.timeTurnManager.processNext(gameWorld);
     }
 
     private void draw() {
@@ -227,7 +227,6 @@ public class GameScreen implements Screen {
         tileset.dispose();
         fovOverlayRenderer.dispose();
         dijkstraOverlayRenderer.dispose();
-        timeTurnManager.dispose();
         debugConsoleRenderer.dispose();
         hudRenderer.dispose();
         debugConsole.dispose();

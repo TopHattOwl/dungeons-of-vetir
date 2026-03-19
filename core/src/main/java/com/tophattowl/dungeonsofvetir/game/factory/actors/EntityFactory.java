@@ -7,6 +7,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
+import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
@@ -59,8 +60,14 @@ public class EntityFactory {
             .addComponent(new AiComponent())
         ;
         AiComponent aiComp = entity.getComponent(AiComponent.class);
-        aiComp.setWeight(DijkstraMapType.PLAYER, 5); // go to player
-        aiComp.setWeight(DijkstraMapType.FACTION_MONSTER, 2); // spread from allies
+        aiComp.setWeight(DijkstraMapType.PLAYER, template.playerDijkstraWeight);
+        aiComp.setWeight(DijkstraMapType.FACTION_MONSTER, template.monsterDijkstraWeight);
+        aiComp.setWeight(DijkstraMapType.FACTION_HUNTER, template.hunterDijkstraWeight);
+        aiComp.setWeight(DijkstraMapType.FACTION_LOOTER, template.looterDijkstraWeight);
+
+        // normalize time value comp
+        TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
+        timeComp.addTime(gameWorld.timeTurnManager.getTurnEventTime());
 
         BodyComponent bodyComp = BodyComponentBuilder.build(template.bodyTemplate, template.maxHp);
         entity.addComponent(bodyComp);

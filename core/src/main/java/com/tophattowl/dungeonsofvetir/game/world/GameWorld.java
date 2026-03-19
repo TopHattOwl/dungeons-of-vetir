@@ -14,6 +14,7 @@ import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
+import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
 
 import java.util.ArrayList;
@@ -32,8 +33,20 @@ public class GameWorld {
     private DungeonGenerator dungeonGenerator;
     public DijkstraMapManager dijkstraMapManager;
     public ActionHandler actionHandler;
+    public TimeTurnManager timeTurnManager;
 
     public GameWorld() {
+        timeTurnManager = new TimeTurnManager();
+        actionHandler = new ActionHandler(this);
+        dungeonGenerator = new DungeonGenerator();
+
+        addSystem(new MovementSystem());
+        addSystem(new CombatSystem());
+
+        FactionRelation.init();
+
+        //placeholder level
+        currentLevel = dungeonGenerator.generateLevel(1);
 
         player = EntityFactory.makePlayer();
         addEntity(player);
@@ -41,18 +54,6 @@ public class GameWorld {
         // PLACEHOLDER enemy
         EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(12, 12));
         EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(11, 11));
-
-        addSystem(new MovementSystem());
-        addSystem(new CombatSystem());
-
-        dungeonGenerator = new DungeonGenerator();
-
-        //placeholder level
-        currentLevel = dungeonGenerator.generateLevel(1);
-
-        actionHandler = new ActionHandler(this);
-
-        FactionRelation.init();
 
         System.out.println(FactionRelation.getRelation(Faction.MONSTER, Faction.HUNTER));
     }
@@ -125,5 +126,6 @@ public class GameWorld {
 
     public void dispose() {
         dijkstraMapManager.dispose();
+        timeTurnManager.dispose();
     }
 }

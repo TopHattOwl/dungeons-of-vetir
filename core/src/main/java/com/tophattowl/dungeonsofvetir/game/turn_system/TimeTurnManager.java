@@ -15,7 +15,6 @@ import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.util.Direction;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -29,6 +28,11 @@ public class TimeTurnManager {
     public TimeTurnManager() {
         initActorQueue();
         addListeners();
+    }
+
+    public int getTurnEventTime() {
+
+        return turnEvent.getComponent(TimeValueComponent.class).timeValueSum;
     }
 
     public void processNext(GameWorld gameWorld) {

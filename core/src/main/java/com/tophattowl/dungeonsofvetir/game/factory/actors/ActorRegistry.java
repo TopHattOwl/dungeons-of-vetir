@@ -33,6 +33,9 @@ public class ActorRegistry {
                 .maxHp(115)
                 .baseDamage(12)
                 .weaponDamageModifier(0.9f)
+                .hunterDijkstraWeight(10)
+                .looterDijkstraWeight(3)
+                .monsterDijkstraWeight(-2)
                 .build()
         );
         register(

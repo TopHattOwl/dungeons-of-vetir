@@ -148,12 +148,9 @@ public class DijkstraMapManager {
         }
         Faction faction = entity.getComponent(IdentityComponent.class).faction;
         switch (faction) {
-            case MONSTER -> {
-                updateDijkstraMap(DijkstraMapType.FACTION_MONSTER);
-            }
-            case HUNTER -> {
-                updateDijkstraMap(DijkstraMapType.FACTION_HUNTER);
-            }
+            case MONSTER -> updateDijkstraMap(DijkstraMapType.FACTION_MONSTER);
+            case HUNTER -> updateDijkstraMap(DijkstraMapType.FACTION_HUNTER);
+            case LOOTER -> updateDijkstraMap(DijkstraMapType.FACTION_LOOTER);
         }
     }
 
@@ -175,6 +172,14 @@ public class DijkstraMapManager {
         dijkstraMaps.put(
             DijkstraMapType.FACTION_MONSTER,
             new FactionDijkstraMap(Level.WIDTH, Level.HEIGHT, Faction.MONSTER)
+        );
+        dijkstraMaps.put(
+            DijkstraMapType.FACTION_HUNTER,
+            new FactionDijkstraMap(Level.WIDTH, Level.HEIGHT, Faction.HUNTER)
+        );
+        dijkstraMaps.put(
+            DijkstraMapType.FACTION_LOOTER,
+            new FactionDijkstraMap(Level.WIDTH, Level.HEIGHT, Faction.LOOTER)
         );
     }
 
