@@ -3,6 +3,7 @@ package com.tophattowl.dungeonsofvetir.util.dijkstra;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.DijkstraMapUpdatedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
@@ -31,6 +32,11 @@ public class DijkstraMapManager {
 
     public int[][] getMap(DijkstraMapType mapType) {
         if (dijkstraMaps.containsKey(mapType)) return dijkstraMaps.get(mapType).map;
+        else return new int[0][0];
+    }
+
+    public int[][] getMapGoalsBlocked(DijkstraMapType mapType) {
+        if (dijkstraMaps.containsKey(mapType)) return dijkstraMaps.get(mapType).getMapGoalsBlocked();
         else return new int[0][0];
     }
 
@@ -73,7 +79,64 @@ public class DijkstraMapManager {
                 }
             }
         }
+        return bestMove;
+    }
 
+    public Direction getBestMove(int x, int y, EnumMap<DijkstraMapType, Integer> weightMap, Faction faction) {
+        Direction bestMove = null;
+
+        int bestScore = Integer.MAX_VALUE;
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+
+                if (dx == 0 && dy == 0) continue;
+
+                int nx = x + dx, ny = y + dy;
+                if (nx < 0 || ny < 0 || nx >= Level.WIDTH || ny >= Level.HEIGHT) continue;
+
+                int score = 0;
+                boolean blocked = false;
+
+                for (Map.Entry<DijkstraMapType, Integer> entry : weightMap.entrySet()) {
+                    if (entry.getValue() == 0) continue; // skip irrelevant maps
+
+                    DijkstraMap dijkstraMap = dijkstraMaps.get(entry.getKey());
+                    int[][] map;
+
+                    if (dijkstraMap instanceof FactionDijkstraMap factionDijkstraMap) {
+                        FactionRelation.Relation relation = FactionRelation.getRelation(faction,
+                            factionDijkstraMap.faction
+                        );
+
+                        if (relation == FactionRelation.Relation.HOSTILE) {
+                            map = getMap(entry.getKey());
+                        } else {
+                            map = getMapGoalsBlocked(entry.getKey());
+                        }
+                    } else {
+                        map = getMap(entry.getKey());
+                    }
+
+                    int value = map[nx][ny];
+
+                    if (value == DijkstraMap.OBSTACLE_VALUE) {
+                        blocked = true;
+                        break;
+                    }
+
+                    int weight = entry.getValue();
+                    score += weight * value;
+                }
+
+                if (blocked) continue;
+
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestMove = Direction.fromDxDy(dx, dy);
+                }
+            }
+        }
         return bestMove;
     }
 

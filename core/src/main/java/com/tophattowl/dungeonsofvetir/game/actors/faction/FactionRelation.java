@@ -33,7 +33,6 @@ public class FactionRelation {
 
     public static Relation getRelation(Faction faction, Faction other) {
         EnumMap<Faction, Relation> factionRelations = INSTANCE.relations.get(faction);
-
         return factionRelations.getOrDefault(other, Relation.NEUTRAL);
     }
 

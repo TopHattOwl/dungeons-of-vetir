@@ -5,10 +5,8 @@ import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
 import com.tophattowl.dungeonsofvetir.game.action.PassAction;
-import com.tophattowl.dungeonsofvetir.game.actors.components.AiComponent;
-import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
-import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
-import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.*;
+import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
@@ -69,8 +67,12 @@ public class TimeTurnManager {
     private void processActor(Entity entity, GameWorld gameWorld) {
         AiComponent aiComp = entity.getComponent(AiComponent.class);
         PositionComponent posComp = entity.getComponent(PositionComponent.class);
+        Faction faction = entity.getComponent(IdentityComponent.class).faction;
 
-        Direction dir = gameWorld.dijkstraMapManager.getBestMove(posComp.getX(), posComp.getY(), aiComp.weightMap);
+        Direction dir = gameWorld.dijkstraMapManager.getBestMove(
+            posComp.getX(), posComp.getY(),
+            aiComp.weightMap,  faction
+        );
 
         MoveAction action = new MoveAction(dir, entity);
 

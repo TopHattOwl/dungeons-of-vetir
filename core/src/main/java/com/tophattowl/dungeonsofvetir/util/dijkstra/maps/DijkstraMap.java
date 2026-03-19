@@ -19,6 +19,24 @@ public abstract class DijkstraMap {
         map = new int[width][height];
     }
 
+    /**
+     * sets goal values (0) to OBSTACLE_VALUE, leaves all other values unchanged
+     * Used for Ai to navigate around friendlies
+     */
+    public int[][] getMapGoalsBlocked() {
+        int[][] result = new int[map.length][map[0].length];
+        for (int x = 0; x < map.length; x++) {
+            for (int y = 0; y < map[x].length; y++) {
+                if (map[x][y] == GOAL_VALUE) {
+                    result[x][y] = OBSTACLE_VALUE;
+                } else {
+                    result[x][y] = map[x][y];
+                }
+            }
+        }
+        return result;
+    }
+
     public void initialize(GameWorld gameWorld) {}
 
     public void calculate() {
