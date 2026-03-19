@@ -25,49 +25,13 @@ import java.util.PriorityQueue;
 public class TimeTurnManager {
     private final List<EventBus.ListenerHandle<?>> listenerHandles = new ArrayList<>();
 
-
     private PriorityQueue<Entity> actorQueue;
     private TurnEvent turnEvent;
+
     public TimeTurnManager() {
-
-        // entity with the lowest time value is at front
-        actorQueue = new PriorityQueue<>(
-            (a, b) -> {
-                int timeA = a.getComponent(TimeValueComponent.class).timeValueSum;
-                int timeB = b.getComponent(TimeValueComponent.class).timeValueSum;
-
-                // primary sort
-                if (timeA != timeB) {
-                    return Integer.compare(timeA, timeB);
-                }
-
-                // tiebreaker for turn event
-                boolean aIsTurnEvent = a == turnEvent;
-                boolean bIsTurnEvent = b == turnEvent;
-                if (aIsTurnEvent) return -1;
-                if (bIsTurnEvent) return 1;
-
-                // tiebreaker for player (player goes first)
-                boolean aIsPlayer = a.hasComponent(PlayerComponent.class);
-                boolean bIsPlayer = b.hasComponent(PlayerComponent.class);
-                if (aIsPlayer) return -1;
-                if (bIsPlayer) return 1;
-
-                return 0;
-            }
-        );
-
-        turnEvent = new TurnEvent(100);
-        actorQueue.add(turnEvent);
-
-        listenerHandles.add(EventBus.on(EntityAddedEvent.class, e -> {
-            addActor(e.entity());
-        }));
-        listenerHandles.add(EventBus.on(EntityRemovedEvent.class, e -> {
-            removeActor(e.entity());
-        }));
+        initActorQueue();
+        addListeners();
     }
-
 
     public void processNext(GameWorld gameWorld) {
         Entity currentEntity = actorQueue.poll();
@@ -77,8 +41,6 @@ public class TimeTurnManager {
             );
             return;
         }
-
-        TimeValueComponent timeValueComp = currentEntity.getComponent(TimeValueComponent.class);
 
         // turn event is next -> pass turn
         if (currentEntity == turnEvent) {
@@ -129,6 +91,47 @@ public class TimeTurnManager {
 
     private void normalize() {
 
+    }
+
+    private void initActorQueue() {
+        // entity with the lowest time value is at front
+        actorQueue = new PriorityQueue<>(
+            (a, b) -> {
+                int timeA = a.getComponent(TimeValueComponent.class).timeValueSum;
+                int timeB = b.getComponent(TimeValueComponent.class).timeValueSum;
+
+                // primary sort
+                if (timeA != timeB) {
+                    return Integer.compare(timeA, timeB);
+                }
+
+                // tiebreaker for turn event
+                boolean aIsTurnEvent = a == turnEvent;
+                boolean bIsTurnEvent = b == turnEvent;
+                if (aIsTurnEvent) return -1;
+                if (bIsTurnEvent) return 1;
+
+                // tiebreaker for player (player goes first)
+                boolean aIsPlayer = a.hasComponent(PlayerComponent.class);
+                boolean bIsPlayer = b.hasComponent(PlayerComponent.class);
+                if (aIsPlayer) return -1;
+                if (bIsPlayer) return 1;
+
+                return 0;
+            }
+        );
+
+        turnEvent = new TurnEvent(100);
+        actorQueue.add(turnEvent);
+    }
+
+    private void addListeners() {
+        listenerHandles.add(EventBus.on(EntityAddedEvent.class, e -> {
+            addActor(e.entity());
+        }));
+        listenerHandles.add(EventBus.on(EntityRemovedEvent.class, e -> {
+            removeActor(e.entity());
+        }));
     }
 
     private void passTurn() {

@@ -24,21 +24,9 @@ public class DijkstraMapManager {
 
     public DijkstraMapManager(GameWorld gameWorld) {
         this.gameWorld = gameWorld;
-
-
-        dijkstraMaps.put(DijkstraMapType.PLAYER, new PlayerDijkstraMap(Level.WIDTH, Level.HEIGHT));
-        dijkstraMaps.put(
-            DijkstraMapType.FACTION_MONSTER,
-            new FactionDijkstraMap(Level.WIDTH, Level.HEIGHT, Faction.MONSTER)
-        );
-
-        for (DijkstraMap dMap : dijkstraMaps.values()) {
-            dMap.initialize(gameWorld);
-            dMap.calculate();
-        }
-
-        listeners.add(EventBus.on(EntityMovedEvent.class, this::onEntityMoved));
-        listeners.add(EventBus.on(EntityRemovedEvent.class, this::onEntityRemoved));
+        addMaps();
+        initMaps();
+        addListeners();
     }
 
     public int[][] getMap(DijkstraMapType mapType) {
@@ -93,25 +81,50 @@ public class DijkstraMapManager {
         Entity entity = event.entity();
 
         if (entity == gameWorld.getPlayer()) {
-            DijkstraMap map = dijkstraMaps.get(DijkstraMapType.PLAYER);
-            map.initialize(gameWorld);
-            map.calculate();
-            EventBus.emit(new DijkstraMapUpdatedEvent(DijkstraMapType.PLAYER));
+            updateDijkstraMap(DijkstraMapType.PLAYER);
         }
         Faction faction = entity.getComponent(IdentityComponent.class).faction;
         switch (faction) {
             case MONSTER -> {
-                DijkstraMap map = dijkstraMaps.get(DijkstraMapType.FACTION_MONSTER);
-                map.initialize(gameWorld);
-                map.calculate();
-                EventBus.emit(new DijkstraMapUpdatedEvent(DijkstraMapType.FACTION_MONSTER));
+                updateDijkstraMap(DijkstraMapType.FACTION_MONSTER);
+            }
+            case HUNTER -> {
+                updateDijkstraMap(DijkstraMapType.FACTION_HUNTER);
             }
         }
+    }
 
+    private void updateDijkstraMap(DijkstraMapType mapType) {
+        DijkstraMap map = dijkstraMaps.get(mapType);
+        if (map == null) return;
+
+        map.initialize(gameWorld);
+        map.calculate();
+        EventBus.emit(new DijkstraMapUpdatedEvent(mapType));
     }
 
     private void onEntityRemoved(EntityRemovedEvent event) {
         // TODO: complete
+    }
+
+    private void addMaps() {
+        dijkstraMaps.put(DijkstraMapType.PLAYER, new PlayerDijkstraMap(Level.WIDTH, Level.HEIGHT));
+        dijkstraMaps.put(
+            DijkstraMapType.FACTION_MONSTER,
+            new FactionDijkstraMap(Level.WIDTH, Level.HEIGHT, Faction.MONSTER)
+        );
+    }
+
+    private void initMaps() {
+        for (DijkstraMap dMap : dijkstraMaps.values()) {
+            dMap.initialize(gameWorld);
+            dMap.calculate();
+        }
+    }
+
+    private void addListeners() {
+        listeners.add(EventBus.on(EntityMovedEvent.class, this::onEntityMoved));
+        listeners.add(EventBus.on(EntityRemovedEvent.class, this::onEntityRemoved));
     }
 
     public void dispose() {

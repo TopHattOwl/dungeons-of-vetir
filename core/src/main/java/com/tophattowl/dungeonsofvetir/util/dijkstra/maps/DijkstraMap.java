@@ -40,6 +40,7 @@ public abstract class DijkstraMap {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 int nx = x + dx, ny = y + dy;
+
                 // skip self, walls and out of bounds
                 if (nx < 0 || ny < 0 || nx >= map.length || ny >= map[x].length) continue;
                 if (dx == 0 && dy == 0) continue;
