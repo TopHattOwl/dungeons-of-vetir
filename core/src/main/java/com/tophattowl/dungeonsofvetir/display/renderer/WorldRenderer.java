@@ -86,7 +86,7 @@ public class WorldRenderer {
         FovComponent fovComp = player.getComponent(FovComponent.class);
 
 
-        List<Entity> renderables = world.querry(PositionComponent.class, RenderableComponent.class);
+        List<Entity> renderables = world.query(PositionComponent.class, RenderableComponent.class);
         renderables.sort(Comparator.comparingInt(
             e -> e.getComponent(RenderableComponent.class).renderOrder
         ));

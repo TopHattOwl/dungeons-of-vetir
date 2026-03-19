@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.tophattowl.dungeonsofvetir.display.camera.CameraController;
+import com.tophattowl.dungeonsofvetir.display.renderer.DijkstraOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.FovOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
 import com.tophattowl.dungeonsofvetir.display.tilesets.PlaceholderTileset;
@@ -49,6 +50,7 @@ public class GameScreen implements Screen {
     private Tileset tileset;
     private WorldRenderer worldRenderer;
     private FovOverlayRenderer fovOverlayRenderer;
+    private DijkstraOverlayRenderer dijkstraOverlayRenderer;
     private CameraController cameraController;
     private DebugConsoleRenderer  debugConsoleRenderer;
     private HudRenderer hudRenderer;
@@ -71,6 +73,7 @@ public class GameScreen implements Screen {
         worldRenderer = new WorldRenderer(batch, tileset);
         fovOverlayRenderer = new FovOverlayRenderer();
         worldRenderer.setFovOverlayRenderer(fovOverlayRenderer);
+        dijkstraOverlayRenderer = new DijkstraOverlayRenderer(batch, font);
         debugConsoleRenderer = new DebugConsoleRenderer(WIN_W, WIN_H, font);
         hudRenderer = new HudRenderer(WIN_W, WIN_H, font);
 
@@ -84,6 +87,8 @@ public class GameScreen implements Screen {
 
 
         debugConsole.setGameWorld(gameWorld);
+        dijkstraOverlayRenderer.setGameWorld(gameWorld);
+        debugConsole.setDijkstraOverlayRenderer(dijkstraOverlayRenderer);
         debugConsoleRenderer.setDebugConsole(debugConsole);
 
         hudRenderer.setPlayer(gameWorld.getPlayer());
@@ -183,6 +188,7 @@ public class GameScreen implements Screen {
         batch.end();
 
         fovOverlayRenderer.render(gameWorld, cameraController.getCamera());
+        dijkstraOverlayRenderer.render(cameraController.getCamera());
 
         // restore full viewport for HUD rendering
         HdpiUtils.glViewport(0, 0, WIN_W, WIN_H);
@@ -220,6 +226,7 @@ public class GameScreen implements Screen {
         font.dispose();
         tileset.dispose();
         fovOverlayRenderer.dispose();
+        dijkstraOverlayRenderer.dispose();
         timeTurnManager.dispose();
         debugConsoleRenderer.dispose();
         hudRenderer.dispose();

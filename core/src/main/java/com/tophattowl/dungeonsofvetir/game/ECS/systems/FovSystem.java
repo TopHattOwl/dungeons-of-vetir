@@ -22,7 +22,7 @@ public class FovSystem implements GameSystem {
 
         if (level == null) return;
 
-        List<Entity> entities = gameWorld.querry(PositionComponent.class, FovComponent.class);
+        List<Entity> entities = gameWorld.query(PositionComponent.class, FovComponent.class);
         if (entities.isEmpty()) return;
 
         for (Entity entity : entities) {

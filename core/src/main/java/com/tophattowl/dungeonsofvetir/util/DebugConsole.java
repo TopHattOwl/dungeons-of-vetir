@@ -6,9 +6,11 @@ import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleRequestedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.UiKeyTypedEvent;
+import com.tophattowl.dungeonsofvetir.display.renderer.DijkstraOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
+import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ public class DebugConsole {
     private static final int MAX_OUTPUT_LINES = 50;
 
     private GameWorld gameWorld;
+    private DijkstraOverlayRenderer dijkstraOverlayRenderer;
 
     private final List<EventBus.ListenerHandle<?>> listenerHandles = new ArrayList<>();
 
@@ -37,6 +40,10 @@ public class DebugConsole {
 
     public void setGameWorld(GameWorld gameWorld) {
         this.gameWorld = gameWorld;
+    }
+
+    public void setDijkstraOverlayRenderer(DijkstraOverlayRenderer dijkstraOverlayRenderer) {
+        this.dijkstraOverlayRenderer = dijkstraOverlayRenderer;
     }
 
     // --------------------------------------------------
@@ -95,6 +102,7 @@ public class DebugConsole {
             case "spawn" -> spawnCommand(args);
             case "log" -> logCommand(args);
             case "factionrel" -> logFactionRelations();
+            case "dijkstra" -> dijkstraCommand(args);
             case "exit", "quit" -> {
                 toggle();
                 yield "Console closed.";
@@ -111,6 +119,7 @@ public class DebugConsole {
               spawn <actor_id> - Spawn an actor near the player
               log <Category> [on/off] - Toggle debug logging category
               factionRel     - Logs faction relations in debug logger
+              dijkstra [TYPE] - Toggle dijkstra map overlay (PLAYER, FACTION_MONSTER, etc.)
               exit, quit     - Close the console
             """;
     }
@@ -179,6 +188,27 @@ public class DebugConsole {
     private String logFactionRelations() {
         FactionRelation.logFactionRelations();
         return "Faction relations logged in debug logger";
+    }
+
+    private String dijkstraCommand(String args) {
+        if (dijkstraOverlayRenderer == null) {
+            return "Error: Dijkstra overlay not initialized.";
+        }
+
+        if (!args.isEmpty()) {
+            String typeName = args.toUpperCase().trim();
+            try {
+                DijkstraMapType mapType = DijkstraMapType.valueOf(typeName);
+                dijkstraOverlayRenderer.setMapType(mapType);
+            } catch (IllegalArgumentException e) {
+                return "Unknown dijkstra map type: " + typeName + ". Available: PLAYER, FACTION_MONSTER, FACTION_HUNTER, FACTION_LOOTER";
+            }
+        }
+
+        dijkstraOverlayRenderer.toggle();
+        String state = dijkstraOverlayRenderer.isEnabled() ? "enabled" : "disabled";
+        String type = dijkstraOverlayRenderer.getMapType().name();
+        return "Dijkstra overlay " + state + " (type: " + type + ")";
     }
 
     private void addOutput(String line) {

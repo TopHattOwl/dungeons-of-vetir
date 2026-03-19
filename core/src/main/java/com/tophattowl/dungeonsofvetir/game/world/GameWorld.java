@@ -40,7 +40,7 @@ public class GameWorld {
 
         // PLACEHOLDER enemy
         EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(12, 12));
-//        EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(11, 11));
+        EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(11, 11));
 
         addSystem(new MovementSystem());
         addSystem(new CombatSystem());
@@ -66,7 +66,7 @@ public class GameWorld {
      * @param types component types
      * @return a list of entities
      */
-    public List<Entity> querry(Class<?>... types) {
+    public List<Entity> query(Class<?>... types) {
         return entities.stream()
             .filter(e -> e.hasAllComponents(types))
             .collect(Collectors.toList());
