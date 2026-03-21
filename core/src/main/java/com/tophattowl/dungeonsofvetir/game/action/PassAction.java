@@ -8,6 +8,12 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 public class PassAction extends Action {
     public PassAction(Entity owner) {
         super(ActionType.PASS, owner);
+        possible();
+    }
+
+    @Override
+    public Action prepare(GameWorld gameWorld) {
+        return this;
     }
 
     @Override

@@ -15,7 +15,13 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class CombatSystem implements GameSystem {
 
-    public Action tryAttack(AttackAction attackAction, GameWorld gameWorld) {
+
+    public Action prepareAttack(AttackAction attackAction, GameWorld gameWorld) {
+        attackAction.possible();
+        return attackAction;
+    }
+
+    public Action executeAttack(AttackAction attackAction,  GameWorld gameWorld) {
         Entity attacker = attackAction.getOwner();
         Entity target = attackAction.getTarget();
         OffensiveStatsComponent attackerOffensiveComp = attacker.getComponent(OffensiveStatsComponent.class);

@@ -44,10 +44,10 @@ public class EventBus {
         if (list == null) return;
         // copy list before iterating, dummy!!!
         // a listener might unsubscribe during emit
+        DebugLogger.log(DebugLogger.Category.EVENT, "EventBus",
+            "emitting event: " + event.getClass().getSimpleName()
+        );
         for (ListenerHandle<?> handle : new ArrayList<>(list)) {
-            DebugLogger.log(DebugLogger.Category.EVENT, "EventBus",
-                "emitting event: " + event.getClass().getSimpleName()
-            );
             ((Consumer<T>) handle.listener).accept(event);
         }
     }

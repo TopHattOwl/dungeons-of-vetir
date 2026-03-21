@@ -16,6 +16,7 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.util.Direction;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -36,6 +37,13 @@ public class TimeTurnManager {
     }
 
     public void processNext(GameWorld gameWorld) {
+        DebugLogger.log(DebugLogger.Category.TURN, "TimeTurnManager", toString());
+
+
+        DebugLogger.log(DebugLogger.Category.TURN, "TimeTurnManager",
+            "Processing next actor: \n" + peekNext()
+        );
+
         Entity currentEntity = actorQueue.poll();
         if (currentEntity == null) {
             DebugLogger.log(DebugLogger.Category.TURN, DebugLogger.Level.WARNING, "TimeTurnManager",
@@ -46,18 +54,27 @@ public class TimeTurnManager {
 
         // turn event is next -> pass turn
         if (currentEntity == turnEvent) {
+            DebugLogger.log(DebugLogger.Category.TURN, "TimeTurnManager",
+                "Turn event next, passing turn."
+            );
             passTurn();
             return;
         }
 
         // if player next up -> wait for input
         if (currentEntity == gameWorld.getPlayer()) {
+            DebugLogger.log(DebugLogger.Category.TURN, "TimeTurnManager",
+                "player next, exiting method"
+            );
             PlayerComponent playerComp = gameWorld.getPlayer().getComponent(PlayerComponent.class);
             playerComp.isPlayersTurn = true;
             return;
         }
 
         // other actors
+        DebugLogger.log(DebugLogger.Category.TURN, "TimeTurnManager",
+            "Other entity next, processing them."
+        );
         processActor(currentEntity, gameWorld);
         addActor(currentEntity);
     }
@@ -80,7 +97,15 @@ public class TimeTurnManager {
 
         MoveAction action = new MoveAction(dir, entity);
 
-        Action finalAction = gameWorld.actionHandler.processAction(entity, action);
+        Action finalAction = gameWorld.actionHandler.prepareAction(entity, action);
+        if (!finalAction.isPossible()) {
+            gameWorld.actionHandler.executeAction(entity, new PassAction(entity));
+        }
+
+        Action executedAction = gameWorld.actionHandler.executeAction(entity, finalAction);
+        if (!executedAction.isSuccess()) {
+            gameWorld.actionHandler.executeAction(entity, new PassAction(entity));
+        }
     }
 
     private void addActor(Entity entity) {
@@ -100,7 +125,6 @@ public class TimeTurnManager {
     }
 
     private void initActorQueue() {
-        // entity with the lowest time value is at front
         actorQueue = new PriorityQueue<>(
             (a, b) -> {
                 int timeA = a.getComponent(TimeValueComponent.class).timeValueSum;
@@ -123,6 +147,9 @@ public class TimeTurnManager {
                 if (aIsPlayer) return -1;
                 if (bIsPlayer) return 1;
 
+                // fallback tiebreaker
+
+
                 return 0;
             }
         );
@@ -141,13 +168,35 @@ public class TimeTurnManager {
     }
 
     private void passTurn() {
+        System.out.println("PASS TURN METHOD START");
         turnEvent.passTurn();
+
+        System.out.println("TURN EVENT PASS TURN CALLED");
 
         // TODO: process projectiles here
 
         // add turn event back after calling its pass turn method
         addActor(turnEvent);
+
+        System.out.println("TURN EVENT added back to queue");
+
         EventBus.emit(new TurnPassedEvent());
+
+        System.out.println("TURN PASSED EVENT EMITTED");
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        List<Entity> sorted = new ArrayList<>(actorQueue);
+        sorted.sort(actorQueue.comparator());
+
+        for (Entity entity : sorted) {
+            int time =  entity.getComponent(TimeValueComponent.class).timeValueSum;
+            sb.append(entity).append(" | ").append(time).append("\n");
+        }
+
+        return "TimeTurnManager, actor queue:\n" + sb;
     }
 
     public void dispose() {

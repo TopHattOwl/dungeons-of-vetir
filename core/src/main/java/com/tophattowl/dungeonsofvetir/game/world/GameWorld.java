@@ -10,10 +10,14 @@ import com.tophattowl.dungeonsofvetir.game.combat.CombatSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.dungeon.DungeonGenerator;
+import com.tophattowl.dungeonsofvetir.game.dungeon.LevelPopulator;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
+import com.tophattowl.dungeonsofvetir.game.spawn.SpawnConfig;
+import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManager;
+import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManagerRegistry;
 import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
 
@@ -34,6 +38,7 @@ public class GameWorld {
     public DijkstraMapManager dijkstraMapManager;
     public ActionHandler actionHandler;
     public TimeTurnManager timeTurnManager;
+    public SpawnManagerRegistry spawnManagerRegistry;
 
     public GameWorld() {
         timeTurnManager = new TimeTurnManager();
@@ -45,17 +50,17 @@ public class GameWorld {
 
         FactionRelation.init();
 
-        //placeholder level
         currentLevel = dungeonGenerator.generateLevel(1);
-
-        player = EntityFactory.makePlayer();
+        Point playerSpawnPoint = findSpawn(currentLevel);
+        player = EntityFactory.makePlayer(playerSpawnPoint);
         addEntity(player);
 
-        // PLACEHOLDER enemy
-        EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(12, 12));
-        EntityFactory.createEntity(ActorId.IRON_WORM, this, new Point(11, 11));
+        spawnManagerRegistry = new SpawnManagerRegistry();
+        spawnManagerRegistry.setGameWorld(this);
+        spawnManagerRegistry.registerManager(new SpawnManager(SpawnConfig.defaultMonsterConfig()));
+        spawnManagerRegistry.registerManager(new SpawnManager(SpawnConfig.defaultLooterConfig()));
 
-        System.out.println(FactionRelation.getRelation(Faction.MONSTER, Faction.HUNTER));
+        LevelPopulator.populate(this, 1);
     }
 
     public Level getCurrentLevel() {
@@ -124,8 +129,23 @@ public class GameWorld {
         return null;
     }
 
+    private Point findSpawn(Level level) {
+        // Try stairs_up first
+        for (int x = 0; x < Level.WIDTH; x++)
+            for (int y = 0; y < Level.HEIGHT; y++)
+                if (level.getTile(x, y).type == TileType.STAIRS_UP)
+                    return new Point(x, y);
+        // Fall back to any walkable tile
+        for (int x = 1; x < Level.WIDTH - 1; x++)
+            for (int y = 1; y < Level.HEIGHT - 1; y++)
+                if (level.isWalkable(x, y))
+                    return new Point(x, y);
+        return new Point(2, 2);
+    }
+
     public void dispose() {
         dijkstraMapManager.dispose();
         timeTurnManager.dispose();
+        spawnManagerRegistry.dispose();
     }
 }

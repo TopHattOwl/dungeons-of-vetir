@@ -7,18 +7,27 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class MoveAction extends Action {
 
-    private Direction direction;
+    private final Direction direction;
 
     public MoveAction(Direction dir, Entity owner) {
         super(ActionType.MOVE, owner);
         this.direction = dir;
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
+    @Override
+    public Action prepare(GameWorld gameWorld) {
+        return gameWorld.getSystem(MovementSystem.class).prepareMove(this, gameWorld);
+    }
+
     @Override
     public Action execute(GameWorld gameWorld) {
         MovementSystem moveSystem = gameWorld.getSystem(MovementSystem.class);
 
-        return moveSystem.tryMove(this, gameWorld);
+        return moveSystem.executeMove(this, gameWorld);
     }
 
     @Override
@@ -26,7 +35,4 @@ public class MoveAction extends Action {
         return "[MoveAction]: " + direction.toString() + ", cost: " + cost + ", owner: " + owner.toString();
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
 }

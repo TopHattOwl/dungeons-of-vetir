@@ -83,7 +83,7 @@ public class DijkstraMapManager {
     }
 
     public Direction getBestMove(int x, int y, EnumMap<DijkstraMapType, Integer> weightMap, Faction faction) {
-        Direction bestMove = null;
+        Direction bestMove = Direction.fromDxDy(0, 0);
 
         int bestScore = Integer.MAX_VALUE;
 

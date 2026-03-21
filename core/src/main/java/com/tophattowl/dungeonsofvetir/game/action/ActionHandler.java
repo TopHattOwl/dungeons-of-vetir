@@ -5,24 +5,29 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class ActionHandler {
-    private GameWorld gameWorld;
+    private final GameWorld gameWorld;
 
     public ActionHandler(GameWorld gameWorld) {
         this.gameWorld = gameWorld;
     }
 
-    public Action processAction(Entity entity, Action action) {
-        TimeValueComponent energyComp = entity.getComponent(TimeValueComponent.class);
+    public Action prepareAction(Entity entity, Action action) {
+        return action.prepare(gameWorld);
+    }
 
-        Action actionFinal = action.execute(gameWorld);
-
-        if (actionFinal.isSuccess()) {
-            energyComp.addTime(actionFinal.getCost());
-
-            if (entity == gameWorld.getPlayer()) addPlayerActionToHistory();
+    public Action executeAction(Entity entity, Action action) {
+        if (!action.isPossible()) {
+            return action;
         }
 
-        return actionFinal;
+        TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
+        Action executedAction = action.execute(gameWorld);
+
+        if (executedAction.isSuccess()) {
+            timeComp.addTime(executedAction.getCost());
+        }
+
+        return executedAction;
     }
 
     private void addPlayerActionToHistory() {

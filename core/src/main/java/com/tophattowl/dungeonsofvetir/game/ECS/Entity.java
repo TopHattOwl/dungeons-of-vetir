@@ -43,7 +43,7 @@ public class Entity {
     @Override
     public String toString() {
         if (hasComponent(IdentityComponent.class)) {
-            return getComponent(IdentityComponent.class).name;
+            return getComponent(IdentityComponent.class).name + ", ID: #" + id;
         }
         return "Entity #" + id;
     }

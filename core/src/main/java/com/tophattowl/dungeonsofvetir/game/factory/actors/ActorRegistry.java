@@ -23,6 +23,7 @@ public class ActorRegistry {
         return template;
     }
 
+    // singleton, builder and factory
     static {
         register(
             new ActorTemplate.Builder(ActorId.IRON_WORM, "Iron Worm", Faction.MONSTER)
@@ -45,6 +46,9 @@ public class ActorRegistry {
                 .accuracy(1.0f)
                 .maxHp(145)
                 .visionRange(11)
+                .monsterDijkstraWeight(-2)
+                .hunterDijkstraWeight(1)
+                .looterDijkstraWeight(3)
                 .build()
         );
     }

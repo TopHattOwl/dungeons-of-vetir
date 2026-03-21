@@ -13,7 +13,7 @@ public enum ActionType {
     INTERACT(100),
     USE_ITEM(80);
 
-    private int baseCost;
+    private final int baseCost;
 
     ActionType(int baseCost) {
         this.baseCost = baseCost;

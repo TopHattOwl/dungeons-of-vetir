@@ -26,6 +26,7 @@ import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
+import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
 import com.tophattowl.dungeonsofvetir.util.DebugConsole;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
@@ -91,39 +92,15 @@ public class GameScreen implements Screen {
 
         hudRenderer.setPlayer(gameWorld.getPlayer());
 
-        spawnPlayer();
-
         fovSystem.process(gameWorld);
 
         gameWorld.addDijkstraMapManager(new DijkstraMapManager(gameWorld));
 
         Gdx.input.setInputProcessor(inputHandler);
+
+        Point playerPos = gameWorld.getPlayer().getComponent(PositionComponent.class).getPosition();
+        cameraController.centerOn(playerPos.x,  playerPos.y);
     }
-
-    private void spawnPlayer() {
-        Level level = gameWorld.getCurrentLevel();
-        int[] spawn = findSpawn(level);
-
-        PositionComponent pos = gameWorld.getPlayer().getComponent(PositionComponent.class);
-        pos.set(spawn[0], spawn[1]);
-
-        cameraController.centerOn(spawn[0], spawn[1]);
-    }
-
-    private int[] findSpawn(Level level) {
-        // Try stairs_up first
-        for (int x = 0; x < Level.WIDTH; x++)
-            for (int y = 0; y < Level.HEIGHT; y++)
-                if (level.getTile(x, y).type == TileType.STAIRS_UP)
-                    return new int[]{x, y};
-        // Fall back to any walkable tile
-        for (int x = 1; x < Level.WIDTH - 1; x++)
-            for (int y = 1; y < Level.HEIGHT - 1; y++)
-                if (level.isWalkable(x, y))
-                    return new int[]{x, y};
-        return new int[]{1, 1};
-    }
-
 
     @Override
     public void render(float v) {
@@ -143,9 +120,15 @@ public class GameScreen implements Screen {
         // if input made no action it's still players turn
         if (action == null) return;
 
-        Action actionFinal = gameWorld.actionHandler.processAction(player, action);
 
-        if (actionFinal.isSuccess()) {
+        Action actionFinal = gameWorld.actionHandler.prepareAction(player, action);
+        if (!actionFinal.isPossible()) {
+            return;
+        }
+
+        Action executedAction = gameWorld.actionHandler.executeAction(player, actionFinal);
+
+        if (executedAction.isSuccess()) {
             DebugLogger.log(DebugLogger.Category.ACTION, "GameWorld",
                 "Action successful by player\n" + actionFinal
             );
@@ -154,9 +137,7 @@ public class GameScreen implements Screen {
             PositionComponent posComp = player.getComponent(PositionComponent.class);
             cameraController.centerOn(posComp.getX(), posComp.getY());
             gameWorld.timeTurnManager.onPlayerActionCompleted(gameWorld);
-
         }
-
     }
 
     private void logic() {
@@ -170,8 +151,6 @@ public class GameScreen implements Screen {
             gameWorld.timeTurnManager.processNext(gameWorld);
             if (gameWorld.getPlayer().getComponent(PlayerComponent.class).isPlayersTurn) break;
         }
-
-//        gameWorld.timeTurnManager.processNext(gameWorld);
     }
 
     private void draw() {

@@ -14,11 +14,16 @@ import com.tophattowl.dungeonsofvetir.game.event.events.ActionCompletedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
+import com.tophattowl.dungeonsofvetir.util.Direction;
 
 public class MovementSystem implements GameSystem {
 
-    public Action tryMove(MoveAction moveAction, GameWorld gameWorld) {
+    public Action prepareMove(MoveAction moveAction, GameWorld gameWorld) {
         Entity owner = moveAction.getOwner();
+        if (moveAction.getDirection() == Direction.STAY) {
+            return gameWorld.actionHandler.prepareAction(owner, new PassAction(owner));
+        }
+
         PositionComponent posComp = owner.getComponent(PositionComponent.class);
         int newX = posComp.getX() + moveAction.getDirection().getDx();
         int newY = posComp.getY() + moveAction.getDirection().getDy();
@@ -34,14 +39,24 @@ public class MovementSystem implements GameSystem {
             FactionRelation.Relation relation = FactionRelation.getRelation(ownerIdComp.faction, entityIdComp.faction);
 
             switch (relation) {
+                // TODO: talk, or push action
                 case FRIENDLY, NEUTRAL -> {
-                    return gameWorld.actionHandler.processAction(owner, new PassAction(owner));
+                    return gameWorld.actionHandler.prepareAction(owner, new PassAction(owner));
                 }
                 case HOSTILE -> {
-                    return gameWorld.actionHandler.processAction(owner, new AttackAction(owner, entityAtPos));
+                    return gameWorld.actionHandler.prepareAction(owner, new AttackAction(owner, entityAtPos));
                 }
             }
         }
+        moveAction.possible();
+        return moveAction;
+    }
+
+    public Action executeMove(MoveAction moveAction, GameWorld gameWorld) {
+        Entity owner = moveAction.getOwner();
+        PositionComponent posComp = owner.getComponent(PositionComponent.class);
+        int newX = posComp.getX() + moveAction.getDirection().getDx();
+        int newY = posComp.getY() + moveAction.getDirection().getDy();
 
         Point newPos = new Point(newX, newY);
         gameWorld.moveEntity(owner, newPos);

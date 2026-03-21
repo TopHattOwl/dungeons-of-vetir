@@ -24,9 +24,9 @@ public class EntityFactory {
         return buildFromTemplate(template, gameWorld, spawnPos);
     }
 
-    public static Entity makePlayer() {
+    public static Entity makePlayer(Point spawnPoint) {
         Entity player = new Entity();
-        player.addComponent(new PositionComponent(0, 0))
+        player.addComponent(new PositionComponent(spawnPoint))
             .addComponent(new RenderableComponent("player", 10))
             .addComponent(new TimeValueComponent())
             .addComponent(new FovComponent(10, Level.WIDTH, Level.HEIGHT))

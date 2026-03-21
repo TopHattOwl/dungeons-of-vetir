@@ -1,5 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.dungeon;
 
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 
 public class DungeonGenerator {

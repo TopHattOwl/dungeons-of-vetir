@@ -16,9 +16,15 @@ public class AttackAction extends Action {
         return target;
     }
 
+
+    @Override
+    public Action prepare(GameWorld gameWorld) {
+        return gameWorld.getSystem(CombatSystem.class).prepareAttack(this,  gameWorld);
+    }
+
     @Override
     public Action execute(GameWorld gameWorld) {
-        return gameWorld.getSystem(CombatSystem.class).tryAttack(this, gameWorld);
+        return gameWorld.getSystem(CombatSystem.class).executeAttack(this, gameWorld);
     }
 
     @Override
