@@ -38,8 +38,8 @@ public abstract class Action {
         return isSuccess;
     }
 
-    public boolean isPossible() {
-        return possible;
+    public boolean notPossible() {
+        return !possible;
     }
 
     public void possible() {

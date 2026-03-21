@@ -1,7 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.turn_system;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
 import com.tophattowl.dungeonsofvetir.game.action.PassAction;
@@ -16,7 +15,6 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.util.Direction;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -86,6 +84,20 @@ public class TimeTurnManager {
 
 
     private void processActor(Entity entity, GameWorld gameWorld) {
+        Action action = chooseActionForAi(entity , gameWorld);
+
+        Action preparedAction = gameWorld.actionHandler.prepareAction(entity, action);
+        if (preparedAction.notPossible()) {
+            gameWorld.actionHandler.executeAction(entity, new PassAction(entity));
+        }
+
+        Action executedAction = gameWorld.actionHandler.executeAction(entity, preparedAction);
+        if (!executedAction.isSuccess()) {
+            gameWorld.actionHandler.executeAction(entity, new PassAction(entity));
+        }
+    }
+
+    private Action chooseActionForAi(Entity entity , GameWorld gameWorld) {
         AiComponent aiComp = entity.getComponent(AiComponent.class);
         PositionComponent posComp = entity.getComponent(PositionComponent.class);
         Faction faction = entity.getComponent(IdentityComponent.class).faction;
@@ -95,17 +107,7 @@ public class TimeTurnManager {
             aiComp.weightMap,  faction
         );
 
-        MoveAction action = new MoveAction(dir, entity);
-
-        Action finalAction = gameWorld.actionHandler.prepareAction(entity, action);
-        if (!finalAction.isPossible()) {
-            gameWorld.actionHandler.executeAction(entity, new PassAction(entity));
-        }
-
-        Action executedAction = gameWorld.actionHandler.executeAction(entity, finalAction);
-        if (!executedAction.isSuccess()) {
-            gameWorld.actionHandler.executeAction(entity, new PassAction(entity));
-        }
+        return new MoveAction(dir, entity);
     }
 
     private void addActor(Entity entity) {

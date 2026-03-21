@@ -23,11 +23,8 @@ import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
-import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
-import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
-import com.tophattowl.dungeonsofvetir.game.world.TileType;
 import com.tophattowl.dungeonsofvetir.util.DebugConsole;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
 
@@ -84,7 +81,6 @@ public class GameScreen implements Screen {
         fovSystem = new FovSystem();
         debugConsole = new DebugConsole();
 
-
         debugConsole.setGameWorld(gameWorld);
         dijkstraOverlayRenderer.setGameWorld(gameWorld);
         debugConsole.setDijkstraOverlayRenderer(dijkstraOverlayRenderer);
@@ -93,7 +89,6 @@ public class GameScreen implements Screen {
         hudRenderer.setPlayer(gameWorld.getPlayer());
 
         fovSystem.process(gameWorld);
-
         gameWorld.addDijkstraMapManager(new DijkstraMapManager(gameWorld));
 
         Gdx.input.setInputProcessor(inputHandler);
@@ -122,7 +117,7 @@ public class GameScreen implements Screen {
 
 
         Action actionFinal = gameWorld.actionHandler.prepareAction(player, action);
-        if (!actionFinal.isPossible()) {
+        if (actionFinal.notPossible()) {
             return;
         }
 

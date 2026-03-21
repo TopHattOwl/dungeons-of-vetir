@@ -1,8 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.action;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.event.EventBus;
-import com.tophattowl.dungeonsofvetir.game.event.events.ActionCompletedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class PassAction extends Action {
@@ -19,7 +17,6 @@ public class PassAction extends Action {
     @Override
     public Action execute(GameWorld gameWorld) {
         success();
-        EventBus.emit(new ActionCompletedEvent(owner, this));
         return this;
     }
 }

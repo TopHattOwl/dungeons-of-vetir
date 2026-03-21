@@ -2,6 +2,8 @@ package com.tophattowl.dungeonsofvetir.game.action;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
+import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.events.ActionCompletedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class ActionHandler {
@@ -16,7 +18,7 @@ public class ActionHandler {
     }
 
     public Action executeAction(Entity entity, Action action) {
-        if (!action.isPossible()) {
+        if (action.notPossible()) {
             return action;
         }
 
@@ -25,6 +27,7 @@ public class ActionHandler {
 
         if (executedAction.isSuccess()) {
             timeComp.addTime(executedAction.getCost());
+            EventBus.emit(new ActionCompletedEvent(entity, executedAction));
         }
 
         return executedAction;

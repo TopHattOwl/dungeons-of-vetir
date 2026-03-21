@@ -10,7 +10,6 @@ import com.tophattowl.dungeonsofvetir.game.action.AttackAction;
 import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
-import com.tophattowl.dungeonsofvetir.game.event.events.ActionCompletedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
@@ -27,6 +26,7 @@ public class MovementSystem implements GameSystem {
         PositionComponent posComp = owner.getComponent(PositionComponent.class);
         int newX = posComp.getX() + moveAction.getDirection().getDx();
         int newY = posComp.getY() + moveAction.getDirection().getDy();
+        moveAction.setNewPos(new Point(newX, newY));
 
         if (!gameWorld.getCurrentLevel().isWalkable(newX, newY)) return moveAction;
 
@@ -55,17 +55,13 @@ public class MovementSystem implements GameSystem {
     public Action executeMove(MoveAction moveAction, GameWorld gameWorld) {
         Entity owner = moveAction.getOwner();
         PositionComponent posComp = owner.getComponent(PositionComponent.class);
-        int newX = posComp.getX() + moveAction.getDirection().getDx();
-        int newY = posComp.getY() + moveAction.getDirection().getDy();
 
-        Point newPos = new Point(newX, newY);
+        Point newPos = moveAction.getNewPos();
         gameWorld.moveEntity(owner, newPos);
         posComp.set(newPos);
 
         moveAction.success();
         EventBus.emit(new EntityMovedEvent(owner, newPos));
-        EventBus.emit(new ActionCompletedEvent(owner, moveAction));
-
         return moveAction;
     }
 }
