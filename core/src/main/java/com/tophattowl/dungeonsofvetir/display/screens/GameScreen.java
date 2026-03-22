@@ -25,7 +25,7 @@ import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
-import com.tophattowl.dungeonsofvetir.util.DebugConsole;
+import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
 
 public class GameScreen implements Screen {

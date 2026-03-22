@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.tophattowl.dungeonsofvetir.display.theme.Theme;
-import com.tophattowl.dungeonsofvetir.util.DebugConsole;
+import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
 
 public class DebugConsoleRenderer {
 

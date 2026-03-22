@@ -1,8 +1,7 @@
-package com.tophattowl.dungeonsofvetir.util;
+package com.tophattowl.dungeonsofvetir.game.debug;
 
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
-import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleRequestedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.UiKeyTypedEvent;

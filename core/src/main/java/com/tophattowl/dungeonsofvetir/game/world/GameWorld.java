@@ -1,10 +1,9 @@
 package com.tophattowl.dungeonsofvetir.game.world;
 
+import com.tophattowl.dungeonsofvetir.game.ECS.Component;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
-import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
-import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.combat.CombatSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
@@ -15,6 +14,8 @@ import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
+import com.tophattowl.dungeonsofvetir.game.items.systems.EquipSystem;
+import com.tophattowl.dungeonsofvetir.game.items.systems.ItemSystem;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnConfig;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManager;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManagerRegistry;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class GameWorld {
     private final List<Entity> entities = new ArrayList<>();
     private final List<GameSystem> systems = new ArrayList<>();
+    private final List<ItemSystem> itemSystems = new ArrayList<>();
 
     private final Entity[][] entityMap = new Entity[Level.WIDTH][Level.HEIGHT];
 
@@ -41,14 +43,9 @@ public class GameWorld {
     public SpawnManagerRegistry spawnManagerRegistry;
 
     public GameWorld() {
-        timeTurnManager = new TimeTurnManager();
-        actionHandler = new ActionHandler(this);
-        dungeonGenerator = new DungeonGenerator();
 
-        addSystem(new MovementSystem());
-        addSystem(new CombatSystem());
-
-        FactionRelation.init();
+        init();
+        addSystems();
 
         currentLevel = dungeonGenerator.generateLevel(1);
         Point playerSpawnPoint = findSpawn(currentLevel);
@@ -72,7 +69,7 @@ public class GameWorld {
      * @param types component types
      * @return a list of entities
      */
-    public List<Entity> query(Class<?>... types) {
+    public List<Entity> query(Class<? extends Component>... types) {
         return entities.stream()
             .filter(e -> e.hasAllComponents(types))
             .collect(Collectors.toList());
@@ -115,6 +112,10 @@ public class GameWorld {
         systems.add(system);
     }
 
+    public void addItemSystem(ItemSystem itemSystem) {
+        itemSystems.add(itemSystem);
+    }
+
     public void addDijkstraMapManager(DijkstraMapManager dijkstraMapManager) {
         this.dijkstraMapManager = dijkstraMapManager;
     }
@@ -127,6 +128,31 @@ public class GameWorld {
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends ItemSystem> T getItemSystem(Class<T> type) {
+        for (ItemSystem system : itemSystems) {
+            if (system.getClass().equals(type)) {
+                return (T) system;
+            }
+        }
+        return null;
+    }
+
+    private void init() {
+        timeTurnManager = new TimeTurnManager();
+        actionHandler = new ActionHandler(this);
+        dungeonGenerator = new DungeonGenerator();
+
+        FactionRelation.init();
+    }
+
+    private void addSystems() {
+        addSystem(new MovementSystem());
+        addSystem(new CombatSystem());
+
+        addItemSystem(new EquipSystem());
     }
 
     private Point findSpawn(Level level) {

@@ -1,0 +1,4 @@
+package com.tophattowl.dungeonsofvetir.game.factory.items;
+
+public class ItemFactory {
+}

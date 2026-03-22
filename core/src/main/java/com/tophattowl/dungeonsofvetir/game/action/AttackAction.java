@@ -5,7 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.combat.CombatSystem;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class AttackAction extends Action {
-    private Entity target;
+    private final Entity target;
 
     public AttackAction(Entity owner, Entity target) {
         super(ActionType.ATTACK, owner);

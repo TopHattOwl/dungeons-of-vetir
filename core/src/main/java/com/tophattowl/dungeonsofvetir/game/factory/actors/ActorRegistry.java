@@ -23,7 +23,6 @@ public class ActorRegistry {
         return template;
     }
 
-    // singleton, builder and factory
     static {
         register(
             new ActorTemplate.Builder(ActorId.IRON_WORM, "Iron Worm", Faction.MONSTER)

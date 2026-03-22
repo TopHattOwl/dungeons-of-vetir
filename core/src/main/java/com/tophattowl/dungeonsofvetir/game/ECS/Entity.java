@@ -10,7 +10,7 @@ public class Entity {
     private static int nextId = 0;
 
     public final int id;
-    private Map<Class<? extends Component>, Component> components = new HashMap<>();
+    private final Map<Class<? extends Component>, Component> components = new HashMap<>();
 
     public Entity() {
         this.id = nextId++;
@@ -35,9 +35,10 @@ public class Entity {
         return components.containsKey(type);
     }
 
-    public boolean hasAllComponents(Class<?>... type) {
+    @SafeVarargs
+    public final boolean hasAllComponents(Class<? extends Component>... type) {
         return Arrays.stream(type)
-            .allMatch(t -> components.containsKey(t));
+            .allMatch(components::containsKey);
     }
 
     @Override

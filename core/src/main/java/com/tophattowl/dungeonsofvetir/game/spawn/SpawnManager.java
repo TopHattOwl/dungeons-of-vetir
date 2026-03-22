@@ -16,7 +16,6 @@ import com.tophattowl.dungeonsofvetir.game.world.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.random.RandomGenerator;
 
 public class SpawnManager {
