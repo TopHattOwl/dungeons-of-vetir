@@ -33,6 +33,10 @@ public class ActionHandler {
         return executedAction;
     }
 
+    public Action executeActionDebug(Entity entity, Action action) {
+        return action.execute(gameWorld);
+    }
+
     private void addPlayerActionToHistory() {
         // TODO: store player's last 10 action somewhere
     }

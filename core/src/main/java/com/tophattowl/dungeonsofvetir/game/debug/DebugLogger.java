@@ -29,6 +29,7 @@ public class DebugLogger {
         FACTION,
         DIJKSTRA,
         SPAWN,
+        EQUIPMENT,
     }
 
     public enum Level {

@@ -1,6 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.actors.body;
 
-import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlot;
+import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class BodyPart {
     public final BodyPartRole role;
 
     // which equipment slots this body part provides
-    public final List<EquipmentSlot> equippableSlots;
+    public final List<EquipmentSlotType> equippableSlots;
 
     // mutable states
     public int maxHp;
@@ -29,7 +29,7 @@ public class BodyPart {
 
 
     public BodyPart(String name, BodyPartType type, BodyPartRole role,
-                    List<EquipmentSlot> equippableSlots, int maxHp, float hpShare,
+                    List<EquipmentSlotType> equippableSlots, int maxHp, float hpShare,
                     float hitWeight, float damageMultiplier) {
         this.name = name;
         this.type = type;

@@ -1,6 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.items;
 
-public enum EquipmentSlot {
+public enum EquipmentSlotType {
     // arms
     MAIN_HAND,
     OFF_HAND,

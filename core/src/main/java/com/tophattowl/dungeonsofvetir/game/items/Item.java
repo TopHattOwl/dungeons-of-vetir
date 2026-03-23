@@ -1,6 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.items;
 
 import com.tophattowl.dungeonsofvetir.game.items.components.ItemComponent;
+import com.tophattowl.dungeonsofvetir.game.items.components.ItemInfoComponent;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,11 +9,16 @@ import java.util.Map;
 
 public class Item {
     private static int nextId = 0;
-    private final int id;
+
+    public final int id;
+    public final ItemType itemType;
+    public final ItemId itemId;
 
     private final Map<Class<? extends ItemComponent>, ItemComponent> components = new HashMap<>();
 
-    public Item() {
+    public Item(ItemType itemType, ItemId itemId) {
+        this.itemType = itemType;
+        this.itemId = itemId;
         this.id = nextId++;
     }
 
@@ -43,6 +49,14 @@ public class Item {
 
     @Override
     public String toString() {
+        if (hasComponent(ItemInfoComponent.class)) {
+            ItemInfoComponent itemInfo = getComponent(ItemInfoComponent.class);
+            return "Item: #" + id
+                + " | " + "itemType: " + itemType
+                + " | " + "itemId: " + itemId
+                + " | " + "item name: " + itemInfo.itemName
+                ;
+        }
         return "Item: #" + id;
     }
 }

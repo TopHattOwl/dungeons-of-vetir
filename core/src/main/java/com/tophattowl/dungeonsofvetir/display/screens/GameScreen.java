@@ -16,13 +16,22 @@ import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
 import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
 import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
+import com.tophattowl.dungeonsofvetir.game.action.EquipAction;
+import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
+import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartType;
+import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
+import com.tophattowl.dungeonsofvetir.game.factory.items.ItemFactory;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
+import com.tophattowl.dungeonsofvetir.game.items.Item;
+import com.tophattowl.dungeonsofvetir.game.items.systems.EquipSystem;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
@@ -95,6 +104,16 @@ public class GameScreen implements Screen {
 
         Point playerPos = gameWorld.getPlayer().getComponent(PositionComponent.class).getPosition();
         cameraController.centerOn(playerPos.x,  playerPos.y);
+
+
+        Entity player = gameWorld.getPlayer();
+        Item item = ItemFactory.makeTestMeleeWeapon();
+        BodyPart bodyPart = player.getComponent(BodyComponent.class).getPartByName("Right Arm");
+
+        gameWorld.actionHandler.executeActionDebug(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.MAIN_HAND));
+
+        EquipmentComponent ec = player.getComponent(EquipmentComponent.class);
+        System.out.println(ec);
     }
 
     @Override

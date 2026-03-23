@@ -1,6 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.actors.body;
 
-import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlot;
+import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 
 import java.util.List;
 
@@ -12,43 +12,37 @@ public enum BodyTemplate {
     HUMANOID(List.of(
         new BodyPartDefinition("head", BodyPartType.HEAD, BodyPartRole.VITAL,
             0.1f, 0.1f, 1.2f,
-            List.of(EquipmentSlot.HEAD, EquipmentSlot.HEAD_UNDER)),
+            List.of(EquipmentSlotType.HEAD, EquipmentSlotType.HEAD_UNDER)),
         new BodyPartDefinition("torso", BodyPartType.TORSO, BodyPartRole.VITAL,
             0.3f, 0.3f, 1.0f,
-            List.of(EquipmentSlot.CHEST, EquipmentSlot.CHEST_UNDER)),
+            List.of(EquipmentSlotType.CHEST, EquipmentSlotType.CHEST_UNDER)),
         new BodyPartDefinition("Left Arm", BodyPartType.ARM, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlot.ARM, EquipmentSlot.HAND, EquipmentSlot.OFF_HAND)),
+            List.of(EquipmentSlotType.ARM, EquipmentSlotType.HAND, EquipmentSlotType.OFF_HAND)),
         new BodyPartDefinition("Right Arm", BodyPartType.ARM, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlot.ARM, EquipmentSlot.HAND, EquipmentSlot.MAIN_HAND)),
+            List.of(EquipmentSlotType.ARM, EquipmentSlotType.HAND, EquipmentSlotType.MAIN_HAND)),
         new BodyPartDefinition("Left leg", BodyPartType.LEG, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlot.LEG, EquipmentSlot.FOOT)),
+            List.of(EquipmentSlotType.LEG, EquipmentSlotType.FOOT)),
         new BodyPartDefinition("Right leg", BodyPartType.LEG, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlot.LEG, EquipmentSlot.FOOT))
+            List.of(EquipmentSlotType.LEG, EquipmentSlotType.FOOT))
 
     )),
     QUADRUPED(List.of(
         new BodyPartDefinition("head", BodyPartType.HEAD, BodyPartRole.VITAL,
-            0.1f, 0.1f, 1.2f,
-            List.of(EquipmentSlot.HEAD, EquipmentSlot.HEAD_UNDER)),
+            0.1f, 0.1f, 1.2f),
         new BodyPartDefinition("torso", BodyPartType.TORSO, BodyPartRole.VITAL,
-            0.3f, 0.3f, 1.0f,
-            List.of(EquipmentSlot.CHEST, EquipmentSlot.CHEST_UNDER)),
+            0.3f, 0.3f, 1.0f),
         new BodyPartDefinition("Front left leg", BodyPartType.LEG, BodyPartRole.LIMB,
-            0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlot.LEG, EquipmentSlot.FOOT)),
+            0.15f, 0.1f, 0.8f),
         new BodyPartDefinition("Front right leg", BodyPartType.LEG, BodyPartRole.LIMB,
-            0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlot.LEG, EquipmentSlot.FOOT)),
+            0.15f, 0.1f, 0.8f),
         new BodyPartDefinition("Hind left leg", BodyPartType.LEG, BodyPartRole.LIMB,
-            0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlot.LEG, EquipmentSlot.FOOT)),
+            0.15f, 0.1f, 0.8f),
         new BodyPartDefinition("Hind right leg", BodyPartType.LEG, BodyPartRole.LIMB,
-            0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlot.LEG, EquipmentSlot.FOOT))
+            0.15f, 0.1f, 0.8f)
     )),
     ARACHNID(List.of(
         new BodyPartDefinition("head", BodyPartType.HEAD, BodyPartRole.VITAL,
@@ -79,7 +73,7 @@ public enum BodyTemplate {
             0.2f, 0.2f, 1.0f),
         new BodyPartDefinition("segment2", BodyPartType.SEGMENT, BodyPartRole.LIMB,
             0.2f, 0.2f, 1.0f),
-    new BodyPartDefinition("segment3", BodyPartType.SEGMENT, BodyPartRole.LIMB,
+        new BodyPartDefinition("segment3", BodyPartType.SEGMENT, BodyPartRole.LIMB,
         0.2f, 0.2f, 1.0f),
         new BodyPartDefinition("tail", BodyPartType.TAIL, BodyPartRole.APPENDAGE,
             0.15f, 0.15f, 0.8f)

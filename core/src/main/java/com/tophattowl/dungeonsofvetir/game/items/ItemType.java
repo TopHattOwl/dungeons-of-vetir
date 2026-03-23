@@ -1,7 +1,8 @@
 package com.tophattowl.dungeonsofvetir.game.items;
 
 public enum ItemType {
-    WEAPON,
+    MELEE_WEAPON,
+    RANGED_WEAPON,
     SHIELD,
     ARMOR,
     POTION,

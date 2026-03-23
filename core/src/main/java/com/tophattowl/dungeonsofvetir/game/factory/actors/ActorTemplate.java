@@ -115,8 +115,6 @@ public class ActorTemplate {
         public Builder hunterDijkstraWeight(int v) {this.hunterDijkstraWeight = v; return this; }
         public Builder looterDijkstraWeight(int v) {this.looterDijkstraWeight = v; return this; }
 
-
-
         public ActorTemplate build() {
             return new ActorTemplate(this);
         }

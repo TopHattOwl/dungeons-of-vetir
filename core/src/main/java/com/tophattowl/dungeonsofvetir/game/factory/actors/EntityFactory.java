@@ -37,11 +37,14 @@ public class EntityFactory {
                 30, 1.0f,
                 1.0f, 1.0f,
                 1.0f))
+            .addComponent(new EquipmentComponent())
         ;
 
         int maxHp = player.getComponent(HealthComponent.class).getMaxHp();
         BodyComponent bodyComp = BodyComponentBuilder.build(BodyTemplate.HUMANOID, maxHp);
         player.addComponent(bodyComp);
+
+        player.getComponent(EquipmentComponent.class).initSlots(bodyComp);
 
         return player;
     }
@@ -58,6 +61,7 @@ public class EntityFactory {
             .addComponent(new OffensiveStatsComponent(template.baseDamage, template.weaponDamageModifier,
                 template.mainHandEfficiency, template.offHandEfficiencyModifier, template.accuracy))
             .addComponent(new AiComponent())
+            .addComponent(new EquipmentComponent())
         ;
         AiComponent aiComp = entity.getComponent(AiComponent.class);
         aiComp.setWeight(DijkstraMapType.PLAYER, template.playerDijkstraWeight);
@@ -71,6 +75,9 @@ public class EntityFactory {
 
         BodyComponent bodyComp = BodyComponentBuilder.build(template.bodyTemplate, template.maxHp);
         entity.addComponent(bodyComp);
+
+        EquipmentComponent equipmentComp = entity.getComponent(EquipmentComponent.class);
+        equipmentComp.initSlots(bodyComp);
 
         gameWorld.addEntity(entity);
 

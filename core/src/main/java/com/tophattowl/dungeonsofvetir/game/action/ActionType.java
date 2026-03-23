@@ -12,7 +12,9 @@ public enum ActionType {
     DROP(50),
     INTERACT(100),
     USE_ITEM(80),
-    EQUIP(100),
+    EQUIP(50),
+    UNEQUIP(50),
+    SWAP_EQUIPMENT(100),
     ;
 
     private final int baseCost;
