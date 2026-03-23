@@ -31,7 +31,7 @@ import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
-import com.tophattowl.dungeonsofvetir.game.items.systems.EquipSystem;
+import com.tophattowl.dungeonsofvetir.game.items.ItemId;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
@@ -107,10 +107,10 @@ public class GameScreen implements Screen {
 
 
         Entity player = gameWorld.getPlayer();
-        Item item = ItemFactory.makeTestMeleeWeapon();
+        Item item = ItemFactory.makeItem(ItemId.STEEL_LONGSWORD);
         BodyPart bodyPart = player.getComponent(BodyComponent.class).getPartByName("Right Arm");
 
-        gameWorld.actionHandler.executeActionDebug(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.MAIN_HAND));
+        gameWorld.actionHandler.executeActionDebug(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
 
         EquipmentComponent ec = player.getComponent(EquipmentComponent.class);
         System.out.println(ec);

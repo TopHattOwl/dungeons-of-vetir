@@ -2,8 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.items;
 
 public enum EquipmentSlotType {
     // arms
-    MAIN_HAND,
-    OFF_HAND,
+    HAND_SLOT,
     ARM,
     HAND,
 

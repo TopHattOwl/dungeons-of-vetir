@@ -13,18 +13,23 @@ public enum BodyTemplate {
         new BodyPartDefinition("head", BodyPartType.HEAD, BodyPartRole.VITAL,
             0.1f, 0.1f, 1.2f,
             List.of(EquipmentSlotType.HEAD, EquipmentSlotType.HEAD_UNDER)),
+
         new BodyPartDefinition("torso", BodyPartType.TORSO, BodyPartRole.VITAL,
             0.3f, 0.3f, 1.0f,
             List.of(EquipmentSlotType.CHEST, EquipmentSlotType.CHEST_UNDER)),
+
         new BodyPartDefinition("Left Arm", BodyPartType.ARM, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlotType.ARM, EquipmentSlotType.HAND, EquipmentSlotType.OFF_HAND)),
+            List.of(EquipmentSlotType.ARM, EquipmentSlotType.HAND, EquipmentSlotType.HAND_SLOT)),
+
         new BodyPartDefinition("Right Arm", BodyPartType.ARM, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f,
-            List.of(EquipmentSlotType.ARM, EquipmentSlotType.HAND, EquipmentSlotType.MAIN_HAND)),
+            List.of(EquipmentSlotType.ARM, EquipmentSlotType.HAND, EquipmentSlotType.HAND_SLOT)),
+
         new BodyPartDefinition("Left leg", BodyPartType.LEG, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f,
             List.of(EquipmentSlotType.LEG, EquipmentSlotType.FOOT)),
+
         new BodyPartDefinition("Right leg", BodyPartType.LEG, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f,
             List.of(EquipmentSlotType.LEG, EquipmentSlotType.FOOT))
