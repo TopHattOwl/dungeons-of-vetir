@@ -1,9 +1,11 @@
 package com.tophattowl.dungeonsofvetir.game.factory.items;
 
 import com.tophattowl.dungeonsofvetir.game.combat.DamageType;
+import com.tophattowl.dungeonsofvetir.game.combat.ElementType;
 import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.EquipableSpec;
 import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.ItemInfoSpec;
 import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.MeleeWeaponSpec;
+import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.helpers.ElementDamage;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.ItemId;
 import com.tophattowl.dungeonsofvetir.game.items.ItemType;
@@ -29,7 +31,9 @@ public class ItemRegistry {
             new ItemTemplate(
                 ItemType.MELEE_WEAPON, ItemId.STEEL_LONGSWORD
                 ,new ItemInfoSpec("Steel longsword")
-                ,new MeleeWeaponSpec(22, DamageType.SLASHING)
+                ,new MeleeWeaponSpec(DamageType.SLASHING,
+                    new ElementDamage(ElementType.PHYSICAL, 13),
+                    new ElementDamage(ElementType.FIRE, 5))
                 ,new EquipableSpec(EquipmentSlotType.HAND_SLOT)
             )
         );
@@ -38,7 +42,20 @@ public class ItemRegistry {
             new ItemTemplate(
                 ItemType.MELEE_WEAPON, ItemId.IRON_LONGSWORD
                 ,new ItemInfoSpec("Iron longsword")
-                ,new MeleeWeaponSpec(16, DamageType.SLASHING)
+                ,new MeleeWeaponSpec(DamageType.SLASHING,
+                    new ElementDamage(ElementType.PHYSICAL, 9),
+                    new ElementDamage(ElementType.LIGHTNING, 3))
+                ,new EquipableSpec(EquipmentSlotType.HAND_SLOT)
+            )
+        );
+        register(
+            ItemId.STEEL_MACE,
+            new ItemTemplate(
+                ItemType.MELEE_WEAPON, ItemId.STEEL_MACE
+                ,new ItemInfoSpec("Steel Mace")
+                ,new MeleeWeaponSpec(DamageType.CRUSHING,
+                    new ElementDamage(ElementType.PHYSICAL, 13),
+                    new ElementDamage(ElementType.POISON, 5))
                 ,new EquipableSpec(EquipmentSlotType.HAND_SLOT)
             )
         );

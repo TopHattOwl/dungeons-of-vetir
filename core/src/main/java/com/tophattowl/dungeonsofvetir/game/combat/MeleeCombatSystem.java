@@ -11,15 +11,15 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsCompo
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
-public class CombatSystem implements GameSystem {
+public class MeleeCombatSystem implements GameSystem {
 
 
-    public Action prepareMeleeAttack(MeleeAttackAction meleeAttackAction, GameWorld gameWorld) {
+    public static Action prepareMeleeAttack(MeleeAttackAction meleeAttackAction, GameWorld gameWorld) {
         meleeAttackAction.possible();
         return meleeAttackAction;
     }
 
-    public Action executeMeleeAttack(MeleeAttackAction meleeAttackAction, GameWorld gameWorld) {
+    public static Action executeMeleeAttack(MeleeAttackAction meleeAttackAction, GameWorld gameWorld) {
         Entity attacker = meleeAttackAction.getOwner();
         Entity target = meleeAttackAction.getTarget();
         OffensiveStatsComponent attackerOffensiveComp = attacker.getComponent(OffensiveStatsComponent.class);
@@ -52,7 +52,7 @@ public class CombatSystem implements GameSystem {
     }
 
 
-    public void die(Entity entity, GameWorld gameWorld) {
+    public static void die(Entity entity, GameWorld gameWorld) {
         gameWorld.removeEntity(entity);
     }
 }

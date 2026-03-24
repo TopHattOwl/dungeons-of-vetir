@@ -30,14 +30,12 @@ public class MoveAction extends Action {
 
     @Override
     public Action prepare(GameWorld gameWorld) {
-        return gameWorld.getSystem(MovementSystem.class).prepareMove(this, gameWorld);
+        return MovementSystem.prepareMove(this, gameWorld);
     }
 
     @Override
     public Action execute(GameWorld gameWorld) {
-        MovementSystem moveSystem = gameWorld.getSystem(MovementSystem.class);
-
-        return moveSystem.executeMove(this, gameWorld);
+        return MovementSystem.executeMove(this, gameWorld);
     }
 
     @Override

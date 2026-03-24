@@ -21,12 +21,12 @@ public class EquipAction extends Action {
 
     @Override
     public Action prepare(GameWorld gameWorld) {
-        return gameWorld.getItemSystem(EquipSystem.class).prepareEquip(this, gameWorld);
+        return EquipSystem.prepareEquip(this, gameWorld);
     }
 
     @Override
     public Action execute(GameWorld gameWorld) {
-        return gameWorld.getItemSystem(EquipSystem.class).executeEquip(this, gameWorld);
+        return EquipSystem.executeEquip(this, gameWorld);
     }
 
     public Item getItem() {

@@ -4,4 +4,5 @@ public enum AttackType {
     MELEE,
     RANGED,
     SPELL,
+    SKILL,
 }

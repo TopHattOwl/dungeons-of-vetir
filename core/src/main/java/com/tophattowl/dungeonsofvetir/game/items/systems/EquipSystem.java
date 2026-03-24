@@ -14,7 +14,7 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class EquipSystem implements ItemSystem {
 
-    public Action prepareEquip(EquipAction action, GameWorld gameWorld) {
+    public static Action prepareEquip(EquipAction action, GameWorld gameWorld) {
         // TODO: check if possible to equip (based on skill level, stats etc.)
         Entity entity = action.getOwner();
         BodyPart bodyPart = action.getTargetBodyPart();
@@ -31,7 +31,7 @@ public class EquipSystem implements ItemSystem {
         return action;
     }
 
-    public Action executeEquip(EquipAction action, GameWorld gameWorld) {
+    public static Action executeEquip(EquipAction action, GameWorld gameWorld) {
         Item item = action.getItem();
         Entity entity = action.getOwner();
         BodyPart bodyPart = action.getTargetBodyPart();

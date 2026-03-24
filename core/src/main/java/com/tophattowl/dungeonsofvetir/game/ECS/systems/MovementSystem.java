@@ -17,7 +17,7 @@ import com.tophattowl.dungeonsofvetir.util.Direction;
 
 public class MovementSystem implements GameSystem {
 
-    public Action prepareMove(MoveAction moveAction, GameWorld gameWorld) {
+    public static Action prepareMove(MoveAction moveAction, GameWorld gameWorld) {
         Entity owner = moveAction.getOwner();
         if (moveAction.getDirection() == Direction.STAY) {
             return gameWorld.actionHandler.prepareAction(owner, new PassAction(owner));
@@ -52,7 +52,7 @@ public class MovementSystem implements GameSystem {
         return moveAction;
     }
 
-    public Action executeMove(MoveAction moveAction, GameWorld gameWorld) {
+    public static Action executeMove(MoveAction moveAction, GameWorld gameWorld) {
         Entity owner = moveAction.getOwner();
         PositionComponent posComp = owner.getComponent(PositionComponent.class);
 

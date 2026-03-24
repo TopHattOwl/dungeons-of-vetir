@@ -5,7 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
-import com.tophattowl.dungeonsofvetir.game.combat.CombatSystem;
+import com.tophattowl.dungeonsofvetir.game.combat.MeleeCombatSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.dungeon.DungeonGenerator;
@@ -45,7 +45,6 @@ public class GameWorld {
     public GameWorld() {
 
         init();
-        addSystems();
 
         currentLevel = dungeonGenerator.generateLevel(1);
         Point playerSpawnPoint = findSpawn(currentLevel);
@@ -108,26 +107,12 @@ public class GameWorld {
         EventBus.emit(new EntityRemovedEvent(entity));
     }
 
-    public void addSystem(GameSystem system) {
-        systems.add(system);
-    }
-
     public void addItemSystem(ItemSystem itemSystem) {
         itemSystems.add(itemSystem);
     }
 
     public void addDijkstraMapManager(DijkstraMapManager dijkstraMapManager) {
         this.dijkstraMapManager = dijkstraMapManager;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends GameSystem> T getSystem(Class<T> type) {
-        for (GameSystem system : systems) {
-            if (system.getClass().equals(type)) {
-                return (T) system;
-            }
-        }
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -146,13 +131,6 @@ public class GameWorld {
         dungeonGenerator = new DungeonGenerator();
 
         FactionRelation.init();
-    }
-
-    private void addSystems() {
-        addSystem(new MovementSystem());
-        addSystem(new CombatSystem());
-
-        addItemSystem(new EquipSystem());
     }
 
     private Point findSpawn(Level level) {
