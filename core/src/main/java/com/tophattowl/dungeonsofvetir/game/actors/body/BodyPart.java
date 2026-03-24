@@ -21,6 +21,8 @@ public class BodyPart {
     public int maxHp;
     public int hp;
 
+    public int naturalProtection;
+
     public float hitWeight; // weight for hit selection
     public float hpShare;
     public float damageMultiplier; // damage multiplier for hp damage
@@ -29,13 +31,14 @@ public class BodyPart {
 
 
     public BodyPart(String name, BodyPartType type, BodyPartRole role,
-                    List<EquipmentSlotType> equippableSlots, int maxHp, float hpShare,
-                    float hitWeight, float damageMultiplier) {
+                    List<EquipmentSlotType> equippableSlots, int maxHp, int naturalProtection,
+                    float hpShare, float hitWeight, float damageMultiplier) {
         this.name = name;
         this.type = type;
         this.role = role;
         this.equippableSlots = equippableSlots;
         this.maxHp = maxHp;
+        this.naturalProtection = naturalProtection;
         this.hp = maxHp;
         this.hpShare = hpShare;
         this.hitWeight = hitWeight;
@@ -77,6 +80,7 @@ public class BodyPart {
             + "{BodyPart} " + name + "\n"
             + "type: " + type + ", " + "role: " + role + "\n"
             + "HP: " + hp + "/" + maxHp + "\n"
+            + "Natural prots: " + naturalProtection + "\n"
             + "Status: " + status + "\n"
             + "HitChance: " + hitWeight + "\n"
             + "<<<<<<<<< BODY PART >>>>>>>>>\n";

@@ -43,7 +43,7 @@ public enum BodyTemplate {
         new BodyPartDefinition("Front left leg", BodyPartType.LEG, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f),
         new BodyPartDefinition("Front right leg", BodyPartType.LEG, BodyPartRole.LIMB,
-            0.15f, 0.1f, 0.8f),
+             0.15f, 0.1f, 0.8f),
         new BodyPartDefinition("Hind left leg", BodyPartType.LEG, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f),
         new BodyPartDefinition("Hind right leg", BodyPartType.LEG, BodyPartRole.LIMB,

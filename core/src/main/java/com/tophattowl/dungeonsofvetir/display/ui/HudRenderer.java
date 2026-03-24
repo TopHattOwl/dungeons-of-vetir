@@ -11,7 +11,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
-import com.tophattowl.dungeonsofvetir.game.action.AttackAction;
+import com.tophattowl.dungeonsofvetir.game.action.MeleeAttackAction;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.ActionCompletedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
@@ -62,13 +62,13 @@ public class HudRenderer {
 
     private void onActionCompleted(ActionCompletedEvent event) {
         Action action = event.action();
-        if (!(action instanceof AttackAction attackAction)) return;
+        if (!(action instanceof MeleeAttackAction meleeAttackAction)) return;
 
-        Entity target = attackAction.getTarget();
+        Entity target = meleeAttackAction.getTarget();
         if (target.getComponent(HealthComponent.class).hp == 0) return;
 
-        if (attackAction.getOwner() == player) {
-            targetEntity = attackAction.getTarget();
+        if (meleeAttackAction.getOwner() == player) {
+            targetEntity = meleeAttackAction.getTarget();
         }
     }
 

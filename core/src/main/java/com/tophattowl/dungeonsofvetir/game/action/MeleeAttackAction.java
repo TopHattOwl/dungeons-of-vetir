@@ -4,11 +4,11 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.combat.CombatSystem;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
-public class AttackAction extends Action {
+public class MeleeAttackAction extends Action {
     private final Entity target;
 
-    public AttackAction(Entity owner, Entity target) {
-        super(ActionType.ATTACK, owner);
+    public MeleeAttackAction(Entity owner, Entity target) {
+        super(ActionType.MELEE_ATTACK, owner);
         this.target = target;
     }
 
@@ -19,12 +19,12 @@ public class AttackAction extends Action {
 
     @Override
     public Action prepare(GameWorld gameWorld) {
-        return gameWorld.getSystem(CombatSystem.class).prepareAttack(this,  gameWorld);
+        return gameWorld.getSystem(CombatSystem.class).prepareMeleeAttack(this,  gameWorld);
     }
 
     @Override
     public Action execute(GameWorld gameWorld) {
-        return gameWorld.getSystem(CombatSystem.class).executeAttack(this, gameWorld);
+        return gameWorld.getSystem(CombatSystem.class).executeMeleeAttack(this, gameWorld);
     }
 
     @Override

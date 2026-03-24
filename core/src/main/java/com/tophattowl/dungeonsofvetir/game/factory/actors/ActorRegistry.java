@@ -36,13 +36,17 @@ public class ActorRegistry {
                 .hunterDijkstraWeight(10)
                 .looterDijkstraWeight(3)
                 .monsterDijkstraWeight(-2)
+                .naturalProtections("segment1", 10)
+                .naturalProtections("segment2", 10)
+                .naturalProtections("segment3", 10)
+                .naturalProtections("head", 12)
+                .naturalProtections("tail", 8)
                 .build()
         );
         register(
             new ActorTemplate.Builder(ActorId.SCAVENGER, "Scavenger", Faction.LOOTER)
                 .spawnCost(8)
                 .baseDamage(10)
-                .accuracy(1.0f)
                 .maxHp(145)
                 .visionRange(11)
                 .monsterDijkstraWeight(-2)

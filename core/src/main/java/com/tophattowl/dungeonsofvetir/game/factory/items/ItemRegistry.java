@@ -1,5 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.factory.items;
 
+import com.tophattowl.dungeonsofvetir.game.combat.DamageType;
 import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.EquipableSpec;
 import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.ItemInfoSpec;
 import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.MeleeWeaponSpec;
@@ -28,7 +29,7 @@ public class ItemRegistry {
             new ItemTemplate(
                 ItemType.MELEE_WEAPON, ItemId.STEEL_LONGSWORD
                 ,new ItemInfoSpec("Steel longsword")
-                ,new MeleeWeaponSpec(22)
+                ,new MeleeWeaponSpec(22, DamageType.SLASHING)
                 ,new EquipableSpec(EquipmentSlotType.HAND_SLOT)
             )
         );
@@ -37,7 +38,7 @@ public class ItemRegistry {
             new ItemTemplate(
                 ItemType.MELEE_WEAPON, ItemId.IRON_LONGSWORD
                 ,new ItemInfoSpec("Iron longsword")
-                ,new MeleeWeaponSpec(16)
+                ,new MeleeWeaponSpec(16, DamageType.SLASHING)
                 ,new EquipableSpec(EquipmentSlotType.HAND_SLOT)
             )
         );

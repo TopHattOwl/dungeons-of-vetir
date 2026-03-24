@@ -6,23 +6,22 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
-import com.tophattowl.dungeonsofvetir.game.action.AttackAction;
+import com.tophattowl.dungeonsofvetir.game.action.MeleeAttackAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
-import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class CombatSystem implements GameSystem {
 
 
-    public Action prepareAttack(AttackAction attackAction, GameWorld gameWorld) {
-        attackAction.possible();
-        return attackAction;
+    public Action prepareMeleeAttack(MeleeAttackAction meleeAttackAction, GameWorld gameWorld) {
+        meleeAttackAction.possible();
+        return meleeAttackAction;
     }
 
-    public Action executeAttack(AttackAction attackAction,  GameWorld gameWorld) {
-        Entity attacker = attackAction.getOwner();
-        Entity target = attackAction.getTarget();
+    public Action executeMeleeAttack(MeleeAttackAction meleeAttackAction, GameWorld gameWorld) {
+        Entity attacker = meleeAttackAction.getOwner();
+        Entity target = meleeAttackAction.getTarget();
         OffensiveStatsComponent attackerOffensiveComp = attacker.getComponent(OffensiveStatsComponent.class);
 
         HealthComponent targetHealthComp = target.getComponent(HealthComponent.class);
@@ -47,9 +46,9 @@ public class CombatSystem implements GameSystem {
             "Random rolled bodypart: \n" + targetedBodyPart
         );
 
-        attackAction.success();
+        meleeAttackAction.success();
 
-        return attackAction;
+        return meleeAttackAction;
     }
 
 

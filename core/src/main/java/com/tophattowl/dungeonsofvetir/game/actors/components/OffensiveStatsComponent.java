@@ -11,19 +11,18 @@ public class OffensiveStatsComponent implements Component {
     // modifies weapon damage
     public float weaponDamageModifier;
 
-    // efficiency of main hand
+    // efficiency of main hand slot
     public float mainHandEfficiency;
 
-    // efficiency of off hand(s)
+    // efficiency of hand slots that are not main hand
     public float offHandEfficiencyModifier;
 
-    // value above 1.0 reduces target dodge chance
-    public float accuracy;
+    public int accuracy;
 
 
     public OffensiveStatsComponent(int baseDamage, float weaponDamageModifier,
                                    float mainHandEfficiency, float offHandEfficiencyModifier,
-                                   float accuracy) {
+                                   int accuracy) {
         this.baseDamage = baseDamage;
         this.weaponDamageModifier = weaponDamageModifier;
         this.mainHandEfficiency = mainHandEfficiency;

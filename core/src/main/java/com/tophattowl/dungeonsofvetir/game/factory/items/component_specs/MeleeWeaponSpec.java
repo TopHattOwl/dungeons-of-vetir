@@ -1,8 +1,9 @@
 package com.tophattowl.dungeonsofvetir.game.factory.items.component_specs;
 
+import com.tophattowl.dungeonsofvetir.game.combat.DamageType;
 import com.tophattowl.dungeonsofvetir.game.items.components.MeleeWeaponComponent;
 
-public record MeleeWeaponSpec(int damage) implements ComponentSpec<MeleeWeaponComponent>{
+public record MeleeWeaponSpec(int damage, DamageType damageType) implements ComponentSpec<MeleeWeaponComponent>{
     @Override
     public Class<MeleeWeaponComponent> getComponentType() {
         return MeleeWeaponComponent.class;
@@ -10,6 +11,6 @@ public record MeleeWeaponSpec(int damage) implements ComponentSpec<MeleeWeaponCo
 
     @Override
     public MeleeWeaponComponent build() {
-        return new MeleeWeaponComponent(damage);
+        return new MeleeWeaponComponent(damage, damageType);
     }
 }

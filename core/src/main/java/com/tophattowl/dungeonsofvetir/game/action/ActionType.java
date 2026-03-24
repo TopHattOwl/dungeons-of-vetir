@@ -6,7 +6,7 @@ public enum ActionType {
     PASS(100),
     MOVE(100),
 
-    ATTACK(100),
+    MELEE_ATTACK(100),
 
     PICKUP(50),
     DROP(50),

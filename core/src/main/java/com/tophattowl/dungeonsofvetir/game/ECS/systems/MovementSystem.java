@@ -6,7 +6,7 @@ import com.tophattowl.dungeonsofvetir.game.action.PassAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
-import com.tophattowl.dungeonsofvetir.game.action.AttackAction;
+import com.tophattowl.dungeonsofvetir.game.action.MeleeAttackAction;
 import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
@@ -44,7 +44,7 @@ public class MovementSystem implements GameSystem {
                     return gameWorld.actionHandler.prepareAction(owner, new PassAction(owner));
                 }
                 case HOSTILE -> {
-                    return gameWorld.actionHandler.prepareAction(owner, new AttackAction(owner, entityAtPos));
+                    return gameWorld.actionHandler.prepareAction(owner, new MeleeAttackAction(owner, entityAtPos));
                 }
             }
         }

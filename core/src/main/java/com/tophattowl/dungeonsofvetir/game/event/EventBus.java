@@ -15,7 +15,7 @@ public class EventBus {
 
     private final Map<Class<?>, List<ListenerHandle<?>>> listeners = new HashMap<>();
 
-    public EventBus() {}
+    private EventBus() {}
 
     /**
      * Registers a listener for an event type

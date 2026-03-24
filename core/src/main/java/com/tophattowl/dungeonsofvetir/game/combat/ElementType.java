@@ -4,5 +4,5 @@ public enum ElementType {
     PHYSICAL,
     FIRE,
     LIGHTNING,
-    ICE,
+    POISON,
 }

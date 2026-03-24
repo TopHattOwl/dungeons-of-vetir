@@ -7,7 +7,6 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
-import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
@@ -36,13 +35,18 @@ public class EntityFactory {
             .addComponent(new OffensiveStatsComponent(
                 30, 1.0f,
                 1.0f, 1.0f,
-                1.0f))
+                100))
             .addComponent(new EquipmentComponent())
         ;
 
         int maxHp = player.getComponent(HealthComponent.class).getMaxHp();
-        BodyComponent bodyComp = BodyComponentBuilder.build(BodyTemplate.HUMANOID, maxHp);
+        BodyComponent bodyComp = BodyComponentBuilder.build(BodyTemplate.HUMANOID, maxHp, null);
         player.addComponent(bodyComp);
+
+        DefensiveStatsComponent defenseComp = new DefensiveStatsComponent(
+            100, 0.1f, 0.1f, bodyComp);
+
+        player.addComponent(defenseComp);
 
         player.getComponent(EquipmentComponent.class).initSlots(bodyComp);
 
@@ -73,11 +77,18 @@ public class EntityFactory {
         TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
         timeComp.addTime(gameWorld.timeTurnManager.getTurnEventTime());
 
-        BodyComponent bodyComp = BodyComponentBuilder.build(template.bodyTemplate, template.maxHp);
+        BodyComponent bodyComp = BodyComponentBuilder.build(
+            template.bodyTemplate, template.maxHp, template.naturalProtections
+        );
         entity.addComponent(bodyComp);
+        System.out.println(bodyComp);
 
         EquipmentComponent equipmentComp = entity.getComponent(EquipmentComponent.class);
         equipmentComp.initSlots(bodyComp);
+
+        DefensiveStatsComponent defenseComp = new DefensiveStatsComponent(
+            template.evasion, template.counterChance, template.blockChance, bodyComp);
+        entity.addComponent(defenseComp);
 
         gameWorld.addEntity(entity);
 

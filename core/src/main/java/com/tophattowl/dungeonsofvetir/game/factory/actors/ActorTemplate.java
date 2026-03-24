@@ -4,6 +4,9 @@ import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * EntityFactory reads this and builds the actual Entity
  */
@@ -22,6 +25,7 @@ public class ActorTemplate {
 
     // --- BODY ---
     public final BodyTemplate bodyTemplate;
+    public final Map<String, Integer> naturalProtections;
 
     // --- HEALTH ---
     public final int maxHp;
@@ -37,7 +41,12 @@ public class ActorTemplate {
     public final float weaponDamageModifier;
     public final float mainHandEfficiency;
     public final float offHandEfficiencyModifier;
-    public final float accuracy;
+    public final int accuracy;
+
+    // --- DEFENSIVE STATS ---
+    public final int evasion;
+    public final float counterChance;
+    public final float blockChance;
 
     // --- AI ---
     public final int playerDijkstraWeight;
@@ -53,6 +62,7 @@ public class ActorTemplate {
         this.spriteId = b.spriteId;
         this.renderOrder = b.renderOrder;
         this.bodyTemplate = b.bodyTemplate;
+        this.naturalProtections = b.naturalProtections;
         this.maxHp = b.maxHp;
         this.baseSpeed = b.baseSpeed;
         this.visionRange = b.visionRange;
@@ -61,6 +71,9 @@ public class ActorTemplate {
         this.mainHandEfficiency = b.mainHandEfficiency;
         this.offHandEfficiencyModifier = b.offHandEfficiencyModifier;
         this.accuracy = b.accuracy;
+        this.evasion = b.evasion;
+        this.counterChance = b.counterChance;
+        this.blockChance = b.blockChance;
         this.playerDijkstraWeight = b.playerDijkstraWeight;
         this.monsterDijkstraWeight = b.monsterDijkstraWeight;
         this.hunterDijkstraWeight = b.hunterDijkstraWeight;
@@ -78,6 +91,7 @@ public class ActorTemplate {
         public String spriteId = "unknown";
         public int renderOrder = 1;
         public BodyTemplate bodyTemplate = BodyTemplate.HUMANOID;
+        public Map<String, Integer> naturalProtections = new HashMap<>();
         public int maxHp = 100;
         public float baseSpeed = 1.0f;
         public int visionRange = 8;
@@ -85,7 +99,10 @@ public class ActorTemplate {
         public float weaponDamageModifier = 1.0f;
         public float mainHandEfficiency = 1.0f;
         public float offHandEfficiencyModifier = 0.9f;
-        public float accuracy = 1.0f;
+        public int accuracy = 50;
+        public int evasion = 20;
+        public float counterChance = 0.05f;
+        public float blockChance = 0.05f;
         public int playerDijkstraWeight = 0;
         public int monsterDijkstraWeight = 0;
         public int hunterDijkstraWeight = 0;
@@ -102,6 +119,7 @@ public class ActorTemplate {
         public Builder spriteId(String v) { this.spriteId = v; return this; }
         public Builder renderOrder(int v) {this.renderOrder = v; return this; }
         public Builder bodyTemplate(BodyTemplate v) {this.bodyTemplate = v; return this; }
+        public Builder naturalProtections(String bodyPartName, int prots) {this.naturalProtections.put(bodyPartName, prots); return this; }
         public Builder maxHp(int v) {this.maxHp = v; return this; }
         public Builder baseSpeed(float v) {this.baseSpeed = v; return this; }
         public Builder visionRange(int v) {this.visionRange = v; return this; }
@@ -109,7 +127,10 @@ public class ActorTemplate {
         public Builder weaponDamageModifier(float v) {this.weaponDamageModifier = v; return this; }
         public Builder mainHandEfficiency(float v) {this.mainHandEfficiency = v; return this; }
         public Builder offHandEfficiencyModifier(float v) {this.offHandEfficiencyModifier = v; return this; }
-        public Builder accuracy(float v) {this.accuracy = v; return this; }
+        public Builder accuracy(int v) {this.accuracy = v; return this; }
+        public Builder evasion(int v) {this.evasion = v; return this; }
+        public Builder counterChance(int v) {this.counterChance = v; return this; }
+        public Builder blockChance(int v) {this.blockChance = v; return this; }
         public Builder playerDijkstraWeight(int v) {this.playerDijkstraWeight = v; return this; }
         public Builder monsterDijkstraWeight(int v) {this.monsterDijkstraWeight = v; return this; }
         public Builder hunterDijkstraWeight(int v) {this.hunterDijkstraWeight = v; return this; }
