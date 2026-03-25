@@ -16,4 +16,16 @@ public abstract class AttackContext {
         this.target = target;
         this.attackType = attackType;
     }
+
+    public Entity getAttacker() {
+        return attacker;
+    }
+
+    public Entity getTarget() {
+        return target;
+    }
+
+    public AttackType getAttackType() {
+        return attackType;
+    }
 }

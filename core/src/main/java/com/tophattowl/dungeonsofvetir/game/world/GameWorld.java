@@ -5,16 +5,13 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
-import com.tophattowl.dungeonsofvetir.game.combat.MeleeCombatSystem;
 import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
-import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
 import com.tophattowl.dungeonsofvetir.game.dungeon.DungeonGenerator;
 import com.tophattowl.dungeonsofvetir.game.dungeon.LevelPopulator;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
-import com.tophattowl.dungeonsofvetir.game.items.systems.EquipSystem;
 import com.tophattowl.dungeonsofvetir.game.items.systems.ItemSystem;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnConfig;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManager;
@@ -28,7 +25,6 @@ import java.util.stream.Collectors;
 
 public class GameWorld {
     private final List<Entity> entities = new ArrayList<>();
-    private final List<GameSystem> systems = new ArrayList<>();
     private final List<ItemSystem> itemSystems = new ArrayList<>();
 
     private final Entity[][] entityMap = new Entity[Level.WIDTH][Level.HEIGHT];
@@ -57,6 +53,8 @@ public class GameWorld {
         spawnManagerRegistry.registerManager(new SpawnManager(SpawnConfig.defaultLooterConfig()));
 
         LevelPopulator.populate(this, 1);
+
+        ActionHandler.setGameWorld(this);
     }
 
     public Level getCurrentLevel() {
@@ -115,19 +113,8 @@ public class GameWorld {
         this.dijkstraMapManager = dijkstraMapManager;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends ItemSystem> T getItemSystem(Class<T> type) {
-        for (ItemSystem system : itemSystems) {
-            if (system.getClass().equals(type)) {
-                return (T) system;
-            }
-        }
-        return null;
-    }
-
     private void init() {
         timeTurnManager = new TimeTurnManager();
-        actionHandler = new ActionHandler(this);
         dungeonGenerator = new DungeonGenerator();
 
         FactionRelation.init();

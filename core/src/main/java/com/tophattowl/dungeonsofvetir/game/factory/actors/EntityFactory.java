@@ -81,7 +81,6 @@ public class EntityFactory {
             template.bodyTemplate, template.maxHp, template.naturalProtections
         );
         entity.addComponent(bodyComp);
-        System.out.println(bodyComp);
 
         EquipmentComponent equipmentComp = entity.getComponent(EquipmentComponent.class);
         equipmentComp.initSlots(bodyComp);

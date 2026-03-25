@@ -16,6 +16,7 @@ import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
 import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
 import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
+import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
 import com.tophattowl.dungeonsofvetir.game.action.EquipAction;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartType;
@@ -32,6 +33,7 @@ import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.ItemId;
+import com.tophattowl.dungeonsofvetir.game.items.components.MeleeWeaponComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
@@ -106,11 +108,14 @@ public class GameScreen implements Screen {
         cameraController.centerOn(playerPos.x,  playerPos.y);
 
 
+        // testing weapon equip
         Entity player = gameWorld.getPlayer();
         Item item = ItemFactory.makeItem(ItemId.STEEL_LONGSWORD);
-        BodyPart bodyPart = player.getComponent(BodyComponent.class).getPartByName("Right Arm");
+        Item itemOneHanded = ItemFactory.makeItem(ItemId.STEEL_MACE);
+        BodyPart bodyPart = player.getComponent(EquipmentComponent.class).getMainHand().bodyPart;
 
-        gameWorld.actionHandler.executeActionDebug(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
+        Action actionn = ActionHandler.prepareAction(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
+        ActionHandler.executeActionDebug(player, actionn);
 
         EquipmentComponent ec = player.getComponent(EquipmentComponent.class);
         System.out.println(ec);
@@ -135,12 +140,12 @@ public class GameScreen implements Screen {
         if (action == null) return;
 
 
-        Action actionFinal = gameWorld.actionHandler.prepareAction(player, action);
+        Action actionFinal = ActionHandler.prepareAction(player, action);
         if (actionFinal.notPossible()) {
             return;
         }
 
-        Action executedAction = gameWorld.actionHandler.executeAction(player, actionFinal);
+        Action executedAction = ActionHandler.executeAction(player, actionFinal);
 
         if (executedAction.isSuccess()) {
             DebugLogger.log(DebugLogger.Category.ACTION, "GameWorld",

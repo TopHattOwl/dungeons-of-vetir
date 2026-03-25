@@ -12,6 +12,19 @@ import java.util.List;
 public class EquipmentComponent implements Component {
 
     public List<EquipmentSlot> equipment = new ArrayList<>();
+    public BodyPart mainHand = null;
+
+    public void setMainHand(BodyPart newMainHand) {
+        boolean isHandSlot = false;
+        for (EquipmentSlotType slotType : newMainHand.equippableSlots) {
+            if (slotType == EquipmentSlotType.HAND_SLOT) {
+                isHandSlot = true;
+                break;
+            }
+        }
+        if (!isHandSlot) return;
+        this.mainHand = newMainHand;
+    }
 
     public EquipmentSlot getSpecific(BodyPart bodypart, EquipmentSlotType equipmentSlotType) {
         for (EquipmentSlot equipment : this.equipment) {
@@ -31,6 +44,20 @@ public class EquipmentComponent implements Component {
         return null;
     }
 
+    public EquipmentSlot getMainHand() {
+        return getSpecific(mainHand, EquipmentSlotType.HAND_SLOT);
+    }
+
+    public List<EquipmentSlot> getByEquipmentSlotType(EquipmentSlotType slotType) {
+        List<EquipmentSlot> result = new ArrayList<>();
+        for (EquipmentSlot equipment : this.equipment) {
+            if (slotType.equals(equipment.equipmentSlotType)) {
+                result.add(equipment);
+            }
+        }
+        return result;
+    }
+
     public void initSlots(BodyComponent bodyComp) {
         for (BodyPart bodypart : bodyComp.bodyParts) {
             if (bodypart.equippableSlots == null || bodypart.equippableSlots.isEmpty()) {
@@ -47,6 +74,9 @@ public class EquipmentComponent implements Component {
     private void addSlotsFromBodyPart(BodyPart bodyPart) {
         for (EquipmentSlotType slot : bodyPart.equippableSlots) {
             equipment.add(new EquipmentSlot(bodyPart, slot));
+            if (mainHand == null && slot == EquipmentSlotType.HAND_SLOT) {
+                mainHand = bodyPart;
+            }
         }
     }
 
@@ -78,6 +108,9 @@ public class EquipmentComponent implements Component {
         sb.append("EquipmentComponent:\n");
         for (EquipmentSlot equipmentSlot : equipment) {
             sb.append(equipmentSlot.toString()).append("\n");
+        }
+        if (!(mainHand == null)) {
+            sb.append("Main Hand: ").append(mainHand.name).append("\n");
         }
         return sb.toString();
     }

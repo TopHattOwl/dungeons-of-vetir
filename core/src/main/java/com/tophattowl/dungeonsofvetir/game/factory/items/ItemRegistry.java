@@ -31,7 +31,7 @@ public class ItemRegistry {
             new ItemTemplate(
                 ItemType.MELEE_WEAPON, ItemId.STEEL_LONGSWORD
                 ,new ItemInfoSpec("Steel longsword")
-                ,new MeleeWeaponSpec(DamageType.SLASHING,
+                ,new MeleeWeaponSpec(DamageType.SLASHING, true,
                     new ElementDamage(ElementType.PHYSICAL, 13),
                     new ElementDamage(ElementType.FIRE, 5))
                 ,new EquipableSpec(EquipmentSlotType.HAND_SLOT)
@@ -42,7 +42,7 @@ public class ItemRegistry {
             new ItemTemplate(
                 ItemType.MELEE_WEAPON, ItemId.IRON_LONGSWORD
                 ,new ItemInfoSpec("Iron longsword")
-                ,new MeleeWeaponSpec(DamageType.SLASHING,
+                ,new MeleeWeaponSpec(DamageType.SLASHING, true,
                     new ElementDamage(ElementType.PHYSICAL, 9),
                     new ElementDamage(ElementType.LIGHTNING, 3))
                 ,new EquipableSpec(EquipmentSlotType.HAND_SLOT)

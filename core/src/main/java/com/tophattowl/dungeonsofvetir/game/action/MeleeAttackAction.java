@@ -2,7 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.action;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.combat.AttackType;
-import com.tophattowl.dungeonsofvetir.game.combat.MeleeCombatSystem;
+import com.tophattowl.dungeonsofvetir.game.combat.combat_systems.MeleeCombatSystem;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class MeleeAttackAction extends Action {

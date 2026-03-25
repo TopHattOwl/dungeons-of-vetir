@@ -1,4 +1,4 @@
-package com.tophattowl.dungeonsofvetir.game.combat;
+package com.tophattowl.dungeonsofvetir.game.combat.combat_systems;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
@@ -8,6 +8,10 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.MeleeAttackAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
+import com.tophattowl.dungeonsofvetir.game.combat.calculators.CombatCalculators;
+import com.tophattowl.dungeonsofvetir.game.combat.calculators.MeleeAttackCalculator;
+import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackContext;
+import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackResult;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
@@ -23,8 +27,12 @@ public class MeleeCombatSystem implements GameSystem {
         Entity attacker = meleeAttackAction.getOwner();
         Entity target = meleeAttackAction.getTarget();
         OffensiveStatsComponent attackerOffensiveComp = attacker.getComponent(OffensiveStatsComponent.class);
-
         HealthComponent targetHealthComp = target.getComponent(HealthComponent.class);
+
+
+        MeleeAttackContext context = new MeleeAttackContext(attacker, target);
+        MeleeAttackResult attackResult = CombatCalculators.getCalculator(MeleeAttackCalculator.class)
+            .calculate(context, gameWorld);
 
         // body part based damage calc
         BodyComponent targetBodyComp = target.getComponent(BodyComponent.class);

@@ -11,9 +11,11 @@ import java.util.Map;
 public class MeleeWeaponComponent implements ItemComponent {
     public Map<ElementType, DamageInstance> damages = new EnumMap<>(ElementType.class);
     public DamageType damageType;
+    public boolean isTwoHanded;
 
-    public MeleeWeaponComponent(DamageType damageType) {
+    public MeleeWeaponComponent(DamageType damageType, boolean isTwoHanded) {
         this.damageType = damageType;
+        this.isTwoHanded = isTwoHanded;
     }
 
     public void addDamageInstance(ElementType elementType, int damage) {

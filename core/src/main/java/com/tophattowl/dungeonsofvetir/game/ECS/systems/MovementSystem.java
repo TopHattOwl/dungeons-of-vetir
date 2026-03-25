@@ -2,12 +2,9 @@ package com.tophattowl.dungeonsofvetir.game.ECS.systems;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
-import com.tophattowl.dungeonsofvetir.game.action.PassAction;
+import com.tophattowl.dungeonsofvetir.game.action.*;
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
-import com.tophattowl.dungeonsofvetir.game.action.Action;
-import com.tophattowl.dungeonsofvetir.game.action.MeleeAttackAction;
-import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
@@ -20,7 +17,7 @@ public class MovementSystem implements GameSystem {
     public static Action prepareMove(MoveAction moveAction, GameWorld gameWorld) {
         Entity owner = moveAction.getOwner();
         if (moveAction.getDirection() == Direction.STAY) {
-            return gameWorld.actionHandler.prepareAction(owner, new PassAction(owner));
+            return ActionHandler.prepareAction(owner, new PassAction(owner));
         }
 
         PositionComponent posComp = owner.getComponent(PositionComponent.class);
@@ -41,10 +38,10 @@ public class MovementSystem implements GameSystem {
             switch (relation) {
                 // TODO: talk, or push action
                 case FRIENDLY, NEUTRAL -> {
-                    return gameWorld.actionHandler.prepareAction(owner, new PassAction(owner));
+                    return ActionHandler.prepareAction(owner, new PassAction(owner));
                 }
                 case HOSTILE -> {
-                    return gameWorld.actionHandler.prepareAction(owner, new MeleeAttackAction(owner, entityAtPos));
+                    return ActionHandler.prepareAction(owner, new MeleeAttackAction(owner, entityAtPos));
                 }
             }
         }

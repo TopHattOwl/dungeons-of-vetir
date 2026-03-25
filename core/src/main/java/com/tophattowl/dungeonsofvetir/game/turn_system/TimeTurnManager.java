@@ -2,6 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.turn_system;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
+import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
 import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
 import com.tophattowl.dungeonsofvetir.game.action.PassAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
@@ -86,14 +87,14 @@ public class TimeTurnManager {
     private void processActor(Entity entity, GameWorld gameWorld) {
         Action action = chooseActionForAi(entity , gameWorld);
 
-        Action preparedAction = gameWorld.actionHandler.prepareAction(entity, action);
+        Action preparedAction = ActionHandler.prepareAction(entity, action);
         if (preparedAction.notPossible()) {
-            gameWorld.actionHandler.executeAction(entity, new PassAction(entity));
+            ActionHandler.executeAction(entity, new PassAction(entity));
         }
 
-        Action executedAction = gameWorld.actionHandler.executeAction(entity, preparedAction);
+        Action executedAction = ActionHandler.executeAction(entity, preparedAction);
         if (!executedAction.isSuccess()) {
-            gameWorld.actionHandler.executeAction(entity, new PassAction(entity));
+            ActionHandler.executeAction(entity, new PassAction(entity));
         }
     }
 

@@ -1,8 +1,12 @@
 package com.tophattowl.dungeonsofvetir.game.items;
 
 public enum EquipmentSlotType {
-    // arms
+    // WIELDING
     HAND_SLOT,
+
+    // ARMOR
+
+    // arms
     ARM,
     HAND,
 

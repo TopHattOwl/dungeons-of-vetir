@@ -2,6 +2,9 @@ package com.tophattowl.dungeonsofvetir.game.combat.damage;
 
 import com.tophattowl.dungeonsofvetir.game.combat.ElementType;
 
+/**
+ * Used for weapon damages
+ */
 public class DamageInstance {
     private int baseAmount;
     private ElementType elementType;

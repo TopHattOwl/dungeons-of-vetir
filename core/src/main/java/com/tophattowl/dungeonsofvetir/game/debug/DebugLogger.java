@@ -6,11 +6,8 @@ import java.util.Set;
 public class DebugLogger {
 
     private static final Set<Category> active = EnumSet.of(
-        Category.COMBAT,
-        Category.MOVEMENT,
         Category.EVENT,
-        Category.AI,
-        Category.TURN
+        Category.EQUIP_SYSTEM
     );
 
     public enum Category {
@@ -30,6 +27,7 @@ public class DebugLogger {
         DIJKSTRA,
         SPAWN,
         EQUIPMENT,
+        EQUIP_SYSTEM,
     }
 
     public enum Level {
