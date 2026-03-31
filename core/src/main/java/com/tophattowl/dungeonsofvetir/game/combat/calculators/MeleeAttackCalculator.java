@@ -7,23 +7,49 @@ import com.tophattowl.dungeonsofvetir.game.combat.AttackType;
 import com.tophattowl.dungeonsofvetir.game.combat.context.AttackContext;
 import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackResult;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
+import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
-import java.util.List;
+import java.util.*;
 
-public class MeleeAttackCalculator implements AttackCalculator {
+public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult> {
+
+    private List<EquipmentComponent.EquipmentSlot> wielding;
+    private Item mainHandItem;
+    private Item offHandItem;
+
     @Override
-    public MeleeAttackResult calculate(AttackContext context, GameWorld gameWorld) {
+    public List<MeleeAttackResult> calculate(AttackContext context, GameWorld gameWorld) {
         MeleeAttackResult result = new MeleeAttackResult();
 
         Entity attacker = context.getAttacker();
         Entity target = context.getTarget();
         OffensiveStatsComponent attackerOffense = attacker.getComponent(OffensiveStatsComponent.class);
         EquipmentComponent attackerEquipment = attacker.getComponent(EquipmentComponent.class);
-        List<EquipmentComponent.EquipmentSlot> wielding = attackerEquipment.getByEquipmentSlotType(
-            EquipmentSlotType.HAND_SLOT);
 
-        // check two handed /dual wield/ one handed / or no item
+        mainHandItem = attackerEquipment.getMainHandSlot().item;
+        offHandItem = attackerEquipment.getOffHandSlot().item;
+
+        // get main hand item, that always attacks
+        // get offhands and separate them based on ItemType(=MELEE_WEAPON -> offHandWeapons)
+        // get bonuses that need to be applied from non weapon offhands,
+        // then attack with each weapon (applying hand efficiency correctly, mainHandEfficiency for main hand...)
+            // making a separate MeleeAttackResult for each attack
+
+        // special case:
+            // no equipment comp/no equipments -> base damage
+
+        // need to do:
+            // give all items a melee weapon comp
+
+        // roll a new random bodypart for each weapon
+
+        // attacks flow:
+            // accuracy check
+            // block check
+            // attack
+            // counter
+
 
         HealthComponent targetHealthComp = target.getComponent(HealthComponent.class);
         DefensiveStatsComponent targetDefence = target.getComponent(DefensiveStatsComponent.class);
@@ -34,15 +60,7 @@ public class MeleeAttackCalculator implements AttackCalculator {
 
 
 
-        // accuracy check
-
-        // block check
-
-        // counter
-
-
-
-        return result;
+        return List.of(result);
     }
 
     @Override

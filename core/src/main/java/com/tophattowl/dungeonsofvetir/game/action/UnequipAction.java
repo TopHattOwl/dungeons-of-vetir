@@ -1,4 +1,3 @@
 package com.tophattowl.dungeonsofvetir.game.action;
 
-public class UnequipAction {
-}
+public class UnequipAction {}

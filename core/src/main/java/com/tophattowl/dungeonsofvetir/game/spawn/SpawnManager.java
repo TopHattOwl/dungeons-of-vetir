@@ -42,8 +42,8 @@ public class SpawnManager {
     }
 
     public boolean canSpawn(ActorId actorId) {
-        var template = ActorRegistry.get(actorId);
-        return currentBudget.get() >= template.spawnCost;
+        var spec = ActorRegistry.get(actorId);
+        return currentBudget.get() >= spec.spawnCost();
     }
 
     public boolean trySpawn(GameWorld gameWorld, ActorId actorId) {
@@ -51,7 +51,7 @@ public class SpawnManager {
             return false;
         }
 
-        var template = ActorRegistry.get(actorId);
+        var spec = ActorRegistry.get(actorId);
         Point spawnPos = findValidSpawnPosition(gameWorld);
 
         if (spawnPos == null) {
@@ -61,7 +61,7 @@ public class SpawnManager {
             return false;
         }
 
-        currentBudget.addAndGet(-template.spawnCost);
+        currentBudget.addAndGet(-spec.spawnCost());
         EntityFactory.createEntity(actorId, gameWorld, spawnPos);
 
         DebugLogger.log(DebugLogger.Category.SPAWN, "SpawnManager",

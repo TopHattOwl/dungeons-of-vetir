@@ -9,7 +9,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
-import com.tophattowl.dungeonsofvetir.game.items.components.EquipableComponent;
+import com.tophattowl.dungeonsofvetir.game.items.ItemGripType;
 import com.tophattowl.dungeonsofvetir.game.items.components.ItemComponent;
 import com.tophattowl.dungeonsofvetir.game.items.components.MeleeWeaponComponent;
 import com.tophattowl.dungeonsofvetir.game.items.handlers.EquipHandler;
@@ -57,8 +57,8 @@ public class EquipSystem implements ItemSystem {
 
     private static Action prepareEquipHandSlot(EquipAction action, GameWorld gameWorld) {
         Item item = action.getItem();
-        boolean isTwoHanded =
-            item.hasComponent(MeleeWeaponComponent.class) && item.getComponent(MeleeWeaponComponent.class).isTwoHanded;
+        boolean isTwoHanded = item.hasComponent(MeleeWeaponComponent.class)
+                && item.getComponent(MeleeWeaponComponent.class).gripType == ItemGripType.TWO_HANDED;
 
         if (isTwoHanded) {
             return prepareEquipTwoHanded(action, gameWorld);
@@ -145,8 +145,8 @@ public class EquipSystem implements ItemSystem {
 
     private static Action executeEquipHandSlot(EquipAction action, GameWorld gameWorld) {
         Item item = action.getItem();
-        boolean isTwoHanded =
-            item.hasComponent(MeleeWeaponComponent.class) && item.getComponent(MeleeWeaponComponent.class).isTwoHanded;
+        boolean isTwoHanded = item.hasComponent(MeleeWeaponComponent.class)
+            && item.getComponent(MeleeWeaponComponent.class).gripType == ItemGripType.TWO_HANDED;
 
         if (isTwoHanded) {
             return executeEquipTwoHanded(action, gameWorld);

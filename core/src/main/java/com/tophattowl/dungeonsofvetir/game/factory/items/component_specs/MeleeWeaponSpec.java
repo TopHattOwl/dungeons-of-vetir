@@ -2,17 +2,14 @@ package com.tophattowl.dungeonsofvetir.game.factory.items.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.combat.DamageType;
 import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.helpers.ElementDamage;
+import com.tophattowl.dungeonsofvetir.game.items.ItemGripType;
 import com.tophattowl.dungeonsofvetir.game.items.components.MeleeWeaponComponent;
 
 public record MeleeWeaponSpec(
     DamageType damageType,
-    boolean isTwoHanded,
+    ItemGripType gripType,
     ElementDamage... damages
-) implements ComponentSpec<MeleeWeaponComponent>{
-
-    public MeleeWeaponSpec(DamageType damageType, ElementDamage... damages) {
-        this(damageType, false, damages);
-    }
+) implements ItemComponentSpec<MeleeWeaponComponent> {
 
     @Override
     public Class<MeleeWeaponComponent> getComponentType() {
@@ -21,7 +18,7 @@ public record MeleeWeaponSpec(
 
     @Override
     public MeleeWeaponComponent build() {
-        MeleeWeaponComponent comp = new MeleeWeaponComponent(damageType, isTwoHanded);
+        MeleeWeaponComponent comp = new MeleeWeaponComponent(damageType, gripType);
 
         for (ElementDamage damage : damages) {
             comp.addDamageInstance(damage.elementType(), damage.amount());

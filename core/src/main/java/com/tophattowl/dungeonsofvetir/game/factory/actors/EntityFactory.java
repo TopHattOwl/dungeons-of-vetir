@@ -1,5 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.factory.actors;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyComponentBuilder;
@@ -7,6 +8,8 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
+import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.ActorComponentSpec;
+import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.BodyComponentSpec;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
@@ -14,13 +17,9 @@ import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapType;
 
 public class EntityFactory {
 
-    public static Entity createEntity(ActorId actorId, GameWorld gameWorld) {
-        return createEntity(actorId, gameWorld, new Point(0, 0));
-    }
-
     public static Entity createEntity(ActorId actorId, GameWorld gameWorld, Point spawnPos) {
-        ActorTemplate template = ActorRegistry.get(actorId);
-        return buildFromTemplate(template, gameWorld, spawnPos);
+        ActorSpec spec = ActorRegistry.get(actorId);
+        return buildFromSpec(spec, gameWorld, spawnPos);
     }
 
     public static Entity makePlayer(Point spawnPoint) {
@@ -39,7 +38,7 @@ public class EntityFactory {
             .addComponent(new EquipmentComponent())
         ;
 
-        int maxHp = player.getComponent(HealthComponent.class).getMaxHp();
+        int maxHp = player.getComponent(HealthComponent.class).maxHp;
         BodyComponent bodyComp = BodyComponentBuilder.build(BodyTemplate.HUMANOID, maxHp, null);
         player.addComponent(bodyComp);
 
@@ -53,41 +52,30 @@ public class EntityFactory {
         return player;
     }
 
-    private static Entity buildFromTemplate(ActorTemplate template, GameWorld gameWorld, Point spawnPos) {
+    private static Entity buildFromSpec(ActorSpec spec, GameWorld gameWorld, Point spawnPos) {
         Entity entity = new Entity();
 
-        entity.addComponent(new PositionComponent(spawnPos))
-            .addComponent(new RenderableComponent(template.spriteId, template.renderOrder))
-            .addComponent(new TimeValueComponent(template.baseSpeed))
-            .addComponent(new HealthComponent(template.maxHp))
-            .addComponent(new IdentityComponent(template.name, template.actorId, template.faction))
-            .addComponent(new FovComponent(template.visionRange, Level.WIDTH, Level.HEIGHT))
-            .addComponent(new OffensiveStatsComponent(template.baseDamage, template.weaponDamageModifier,
-                template.mainHandEfficiency, template.offHandEfficiencyModifier, template.accuracy))
-            .addComponent(new AiComponent())
-            .addComponent(new EquipmentComponent())
-        ;
-        AiComponent aiComp = entity.getComponent(AiComponent.class);
-        aiComp.setWeight(DijkstraMapType.PLAYER, template.playerDijkstraWeight);
-        aiComp.setWeight(DijkstraMapType.FACTION_MONSTER, template.monsterDijkstraWeight);
-        aiComp.setWeight(DijkstraMapType.FACTION_HUNTER, template.hunterDijkstraWeight);
-        aiComp.setWeight(DijkstraMapType.FACTION_LOOTER, template.looterDijkstraWeight);
+        PositionComponent posComp = new PositionComponent(spawnPos);
+        IdentityComponent identityComp = new IdentityComponent(spec.name(), spec.actorId(), spec.faction());
+        entity.addComponent(posComp)
+            .addComponent(identityComp);
 
-        // normalize time value comp
-        TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
-        timeComp.addTime(gameWorld.timeTurnManager.getTurnEventTime());
+        for (ActorComponentSpec<?> baseSpec : spec.baseSpecs()) {
+            entity.addComponent(baseSpec.build(entity));
+        }
 
-        BodyComponent bodyComp = BodyComponentBuilder.build(
-            template.bodyTemplate, template.maxHp, template.naturalProtections
-        );
+        BodyComponentSpec bodySpec = spec.bodySpec();
+        int maxHp = entity.getComponent(HealthComponent.class).maxHp;
+        BodyComponent bodyComp = BodyComponentBuilder.build(bodySpec.bodyTemplate(), maxHp, bodySpec.naturalProts());
         entity.addComponent(bodyComp);
 
-        EquipmentComponent equipmentComp = entity.getComponent(EquipmentComponent.class);
-        equipmentComp.initSlots(bodyComp);
+        for (ActorComponentSpec<?> postBodySpec : spec.postBodySpecs()) {
+            entity.addComponent(postBodySpec.build(entity));
+        }
 
-        DefensiveStatsComponent defenseComp = new DefensiveStatsComponent(
-            template.evasion, template.counterChance, template.blockChance, bodyComp);
-        entity.addComponent(defenseComp);
+        // normalize time value
+        TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
+        timeComp.addTime(gameWorld.timeTurnManager.getTurnEventTime());
 
         gameWorld.addEntity(entity);
 
@@ -96,9 +84,4 @@ public class EntityFactory {
         );
         return entity;
     }
-
-    private static Entity buildFromTemplate(ActorTemplate template, GameWorld gameWorld) {
-        return buildFromTemplate(template, gameWorld, new Point(0, 0));
-    }
-
 }

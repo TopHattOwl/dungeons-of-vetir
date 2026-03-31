@@ -21,6 +21,10 @@ public abstract class AttackResult {
         damages.add(damage);
     }
 
+    public List<Damage> getDamages() {
+        return damages;
+    }
+
     public void missed() {
         this.missed = true;
     }
@@ -43,9 +47,5 @@ public abstract class AttackResult {
 
     public BodyPart getBodyPart() {
         return bodyPart;
-    }
-
-    public List<Damage> getDamages() {
-        return damages;
     }
 }

@@ -7,7 +7,8 @@ public class DebugLogger {
 
     private static final Set<Category> active = EnumSet.of(
         Category.EVENT,
-        Category.EQUIP_SYSTEM
+        Category.EQUIP_SYSTEM,
+        Category.FACTORY
     );
 
     public enum Category {

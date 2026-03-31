@@ -1,6 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.factory.items;
 
-import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.ComponentSpec;
+import com.tophattowl.dungeonsofvetir.game.factory.items.component_specs.ItemComponentSpec;
 
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.ItemId;
@@ -12,7 +12,7 @@ public class ItemFactory {
 
         Item item = new Item(template.itemType(), itemId);
 
-        for (ComponentSpec<?> spec : template.specs()) {
+        for (ItemComponentSpec<?> spec : template.specs()) {
             item.addComponent(spec.build());
         }
         return item;

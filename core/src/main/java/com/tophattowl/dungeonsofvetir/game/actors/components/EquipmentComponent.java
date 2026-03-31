@@ -13,6 +13,7 @@ public class EquipmentComponent implements Component {
 
     public List<EquipmentSlot> equipment = new ArrayList<>();
     public BodyPart mainHand = null;
+    public BodyPart offHand = null;
 
     public void setMainHand(BodyPart newMainHand) {
         boolean isHandSlot = false;
@@ -23,6 +24,7 @@ public class EquipmentComponent implements Component {
             }
         }
         if (!isHandSlot) return;
+        if (mainHand != null) setOffHand(mainHand);
         this.mainHand = newMainHand;
     }
 
@@ -44,8 +46,12 @@ public class EquipmentComponent implements Component {
         return null;
     }
 
-    public EquipmentSlot getMainHand() {
+    public EquipmentSlot getMainHandSlot() {
         return getSpecific(mainHand, EquipmentSlotType.HAND_SLOT);
+    }
+
+    public EquipmentSlot getOffHandSlot() {
+        return getSpecific(offHand, EquipmentSlotType.HAND_SLOT);
     }
 
     public List<EquipmentSlot> getByEquipmentSlotType(EquipmentSlotType slotType) {
@@ -75,9 +81,16 @@ public class EquipmentComponent implements Component {
         for (EquipmentSlotType slot : bodyPart.equippableSlots) {
             equipment.add(new EquipmentSlot(bodyPart, slot));
             if (mainHand == null && slot == EquipmentSlotType.HAND_SLOT) {
-                mainHand = bodyPart;
+                setMainHand(bodyPart);
+            }
+            if (mainHand != null && slot == EquipmentSlotType.HAND_SLOT) {
+                setOffHand(bodyPart);
             }
         }
+    }
+
+    private void setOffHand(BodyPart newOffHand) {
+        offHand = newOffHand;
     }
 
     public static class EquipmentSlot {
@@ -88,6 +101,7 @@ public class EquipmentComponent implements Component {
         public EquipmentSlot(BodyPart bodyPart, EquipmentSlotType equipmentSlotType) {
             this(bodyPart, equipmentSlotType, null);
         }
+
         public EquipmentSlot(BodyPart bodyPart, EquipmentSlotType equipmentSlotType, Item item) {
             this.bodyPart = bodyPart;
             this.equipmentSlotType = equipmentSlotType;

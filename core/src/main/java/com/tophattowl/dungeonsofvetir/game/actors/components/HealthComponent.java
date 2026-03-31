@@ -4,7 +4,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Component;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartStatus;
 
 public class HealthComponent implements Component {
-    private int maxHp;
+    public int maxHp;
     public int hp;
     public HealthStatus status;
 
@@ -12,10 +12,6 @@ public class HealthComponent implements Component {
         this.maxHp = maxHp;
         hp = maxHp;
         status = HealthStatus.HEALTHY;
-    }
-
-    public int getMaxHp() {
-        return maxHp;
     }
 
     public boolean takeDamage(int damage) {

@@ -2,7 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.factory.items.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.items.components.ItemInfoComponent;
 
-public record ItemInfoSpec(String name) implements ComponentSpec<ItemInfoComponent>{
+public record ItemInfoSpec(String name) implements ItemComponentSpec<ItemInfoComponent> {
     @Override
     public Class<ItemInfoComponent> getComponentType() {
         return ItemInfoComponent.class;

@@ -19,8 +19,6 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
 import com.tophattowl.dungeonsofvetir.game.action.EquipAction;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
-import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartType;
-import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
@@ -33,7 +31,6 @@ import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.ItemId;
-import com.tophattowl.dungeonsofvetir.game.items.components.MeleeWeaponComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
@@ -112,7 +109,7 @@ public class GameScreen implements Screen {
         Entity player = gameWorld.getPlayer();
         Item item = ItemFactory.makeItem(ItemId.STEEL_LONGSWORD);
         Item itemOneHanded = ItemFactory.makeItem(ItemId.STEEL_MACE);
-        BodyPart bodyPart = player.getComponent(EquipmentComponent.class).getMainHand().bodyPart;
+        BodyPart bodyPart = player.getComponent(EquipmentComponent.class).getMainHandSlot().bodyPart;
 
         Action actionn = ActionHandler.prepareAction(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
         ActionHandler.executeActionDebug(player, actionn);

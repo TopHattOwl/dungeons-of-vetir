@@ -5,7 +5,9 @@ import com.tophattowl.dungeonsofvetir.game.combat.context.AttackContext;
 import com.tophattowl.dungeonsofvetir.game.combat.context.AttackResult;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
-public interface AttackCalculator {
-    AttackResult calculate(AttackContext context, GameWorld gameWorld);
+import java.util.List;
+
+public interface AttackCalculator<T extends AttackResult> {
+    List<T> calculate(AttackContext context, GameWorld gameWorld);
     AttackType getType();
 }
