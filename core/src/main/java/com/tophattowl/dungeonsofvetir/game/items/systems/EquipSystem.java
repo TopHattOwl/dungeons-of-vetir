@@ -58,7 +58,7 @@ public class EquipSystem implements ItemSystem {
     private static Action prepareEquipHandSlot(EquipAction action, GameWorld gameWorld) {
         Item item = action.getItem();
         boolean isTwoHanded = item.hasComponent(MeleeWeaponComponent.class)
-                && item.getComponent(MeleeWeaponComponent.class).gripType == ItemGripType.TWO_HANDED;
+                && item.getComponent(MeleeWeaponComponent.class).getGripType() == ItemGripType.TWO_HANDED;
 
         if (isTwoHanded) {
             return prepareEquipTwoHanded(action, gameWorld);
@@ -146,7 +146,7 @@ public class EquipSystem implements ItemSystem {
     private static Action executeEquipHandSlot(EquipAction action, GameWorld gameWorld) {
         Item item = action.getItem();
         boolean isTwoHanded = item.hasComponent(MeleeWeaponComponent.class)
-            && item.getComponent(MeleeWeaponComponent.class).gripType == ItemGripType.TWO_HANDED;
+            && item.getComponent(MeleeWeaponComponent.class).getGripType() == ItemGripType.TWO_HANDED;
 
         if (isTwoHanded) {
             return executeEquipTwoHanded(action, gameWorld);

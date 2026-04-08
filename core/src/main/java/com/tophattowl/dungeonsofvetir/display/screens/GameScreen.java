@@ -111,7 +111,7 @@ public class GameScreen implements Screen {
         Item itemOneHanded = ItemFactory.makeItem(ItemId.STEEL_MACE);
         BodyPart bodyPart = player.getComponent(EquipmentComponent.class).getMainHandSlot().bodyPart;
 
-        Action actionn = ActionHandler.prepareAction(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
+        Action actionn = ActionHandler.prepareAction(player, new EquipAction(player, itemOneHanded, bodyPart, EquipmentSlotType.HAND_SLOT));
         ActionHandler.executeActionDebug(player, actionn);
 
         EquipmentComponent ec = player.getComponent(EquipmentComponent.class);

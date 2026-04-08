@@ -58,7 +58,7 @@ public class BodyPart {
      * @param damage amount of damage to take
      * @return true if body part was just destroyed
      */
-    public boolean applyDamage(int damage) {
+    public boolean takeDamage(int damage) {
         hp = (int) Math.max(0, hp - damage * BODY_PART_DAMAGE_MULTIPLIER);
         updateStatus();
         return hp == 0;

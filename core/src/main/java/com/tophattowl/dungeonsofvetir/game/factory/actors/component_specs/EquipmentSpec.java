@@ -4,7 +4,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 
-public record EquipmentComponentSpec(
+public record EquipmentSpec(
 
 ) implements ActorComponentSpec<EquipmentComponent> {
     @Override

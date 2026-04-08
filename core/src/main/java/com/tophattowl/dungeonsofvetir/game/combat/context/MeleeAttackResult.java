@@ -1,6 +1,5 @@
 package com.tophattowl.dungeonsofvetir.game.combat.context;
 
-import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 
 public class MeleeAttackResult extends AttackResult{
     protected boolean countered = false;

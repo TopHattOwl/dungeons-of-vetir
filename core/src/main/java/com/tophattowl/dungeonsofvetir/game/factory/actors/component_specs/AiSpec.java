@@ -4,7 +4,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.AiComponent;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapType;
 
-public record AiComponentSpec(
+public record AiSpec(
     int playerDijkstraWeight,
     int monsterDijkstraWeight,
     int hunterDijkstraWeight,

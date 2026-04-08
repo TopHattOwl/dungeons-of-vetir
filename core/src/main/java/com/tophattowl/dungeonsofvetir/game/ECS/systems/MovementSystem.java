@@ -28,7 +28,7 @@ public class MovementSystem implements GameSystem {
         if (!gameWorld.getCurrentLevel().isWalkable(newX, newY)) return moveAction;
 
         // if owner is at pos, attack
-        Entity entityAtPos = gameWorld.getEntityAt(newX, newY);
+        Entity entityAtPos = gameWorld.getEntity(newX, newY);
         if (entityAtPos != null) {
             IdentityComponent ownerIdComp = owner.getComponent(IdentityComponent.class);
             IdentityComponent entityIdComp = entityAtPos.getComponent(IdentityComponent.class);

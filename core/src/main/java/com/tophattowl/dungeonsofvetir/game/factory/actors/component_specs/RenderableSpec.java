@@ -3,7 +3,7 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.RenderableComponent;
 
-public record RenderableComponentSpec(
+public record RenderableSpec(
     String spriteId,
     int renderOrder
 ) implements ActorComponentSpec<RenderableComponent>{

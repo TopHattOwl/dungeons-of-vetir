@@ -29,7 +29,8 @@ public class BodyComponentBuilder {
 
             BodyPart part = new BodyPart(
                 def.name(), def.type(), def.role(),
-                def.equippableSlots(), partHp, naturalProt, def.hpShare(), def.hitWeight(), def.damageMultiplier()
+                def.equippableSlots(), partHp, naturalProt,
+                def.hpShare(), def.hitWeight(), def.damageMultiplier()
             );
             parts.add(part);
         }

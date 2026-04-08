@@ -8,12 +8,12 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 
 import java.util.Map;
 
-public record BodyComponentSpec(
+public record BodySpec(
     BodyTemplate bodyTemplate,
     Map<String, Integer> naturalProts
 ) implements ActorComponentSpec<BodyComponent> {
 
-    public BodyComponentSpec(BodyTemplate bodyTemplate) {
+    public BodySpec(BodyTemplate bodyTemplate) {
         this(bodyTemplate, Map.of());
     }
 

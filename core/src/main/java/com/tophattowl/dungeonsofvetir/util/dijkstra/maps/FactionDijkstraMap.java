@@ -3,7 +3,6 @@ package com.tophattowl.dungeonsofvetir.util.dijkstra.maps;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
-import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 
@@ -27,7 +26,7 @@ public class FactionDijkstraMap extends DijkstraMap {
     }
 
     private void initTile(int x, int y, GameWorld gameWorld, Level level) {
-        Entity entity = gameWorld.getEntityAt(x, y);
+        Entity entity = gameWorld.getEntity(x, y);
 
         // if entity is at pos, check faction
         if (entity != null) {

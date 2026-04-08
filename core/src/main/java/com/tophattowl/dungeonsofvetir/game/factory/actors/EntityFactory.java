@@ -1,6 +1,5 @@
 package com.tophattowl.dungeonsofvetir.game.factory.actors;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyComponentBuilder;
@@ -9,11 +8,10 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.ActorComponentSpec;
-import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.BodyComponentSpec;
+import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.BodySpec;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
-import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapType;
 
 public class EntityFactory {
 
@@ -64,7 +62,7 @@ public class EntityFactory {
             entity.addComponent(baseSpec.build(entity));
         }
 
-        BodyComponentSpec bodySpec = spec.bodySpec();
+        BodySpec bodySpec = spec.bodySpec();
         int maxHp = entity.getComponent(HealthComponent.class).maxHp;
         BodyComponent bodyComp = BodyComponentBuilder.build(bodySpec.bodyTemplate(), maxHp, bodySpec.naturalProts());
         entity.addComponent(bodyComp);
@@ -79,9 +77,6 @@ public class EntityFactory {
 
         gameWorld.addEntity(entity);
 
-        DebugLogger.log(DebugLogger.Category.FACTORY, "EntityFactory",
-            "Entity created:\n" + entity + "\nBodyComponent:\n" + bodyComp
-        );
         return entity;
     }
 }

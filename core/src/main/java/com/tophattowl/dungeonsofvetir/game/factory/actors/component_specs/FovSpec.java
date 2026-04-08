@@ -4,7 +4,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 
-public record FovComponentSpec(
+public record FovSpec(
     int visionRange
 ) implements ActorComponentSpec<FovComponent> {
     @Override

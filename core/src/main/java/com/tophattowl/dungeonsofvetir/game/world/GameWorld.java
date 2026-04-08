@@ -5,7 +5,6 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
-import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
 import com.tophattowl.dungeonsofvetir.game.dungeon.DungeonGenerator;
 import com.tophattowl.dungeonsofvetir.game.dungeon.LevelPopulator;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
@@ -72,11 +71,20 @@ public class GameWorld {
             .collect(Collectors.toList());
     }
 
-    public Entity getEntityAt(int x, int y) {
+    public Entity getEntity(int x, int y) {
         return entityMap[x][y];
     }
-    public Entity getEntityAt(Point point) {
+    public Entity getEntity(Point point) {
         return entityMap[point.x][point.y];
+    }
+    public Entity getEntity(int id) {
+        return entities.stream()
+            .filter(e -> e.id == id)
+            .findFirst()
+            .orElse(null);
+    }
+    public List<Entity> getAllEntities() {
+        return entities;
     }
 
     public void moveEntity(Entity entity, Point newPos) {

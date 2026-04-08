@@ -2,9 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.ECS;
 
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Entity {
     private static int nextId = 0;
@@ -47,6 +45,15 @@ public class Entity {
             return getComponent(IdentityComponent.class).name + ", ID: #" + id;
         }
         return "Entity #" + id;
+    }
+
+    public String getAllInfo() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Component component : components.values()) {
+            sb.append(component.toString()).append("\n");
+        }
+        return sb.toString();
     }
 
 }

@@ -36,7 +36,7 @@ public class LevelPopulator {
         for (int x = 1; x < Level.WIDTH - 1; x++) {
             for (int y = 1; y < Level.HEIGHT - 1; y++) {
                 if (!level.isWalkable(x, y)) continue;
-                if (gameWorld.getEntityAt(x, y) != null) continue;
+                if (gameWorld.getEntity(x, y) != null) continue;
                 tiles.add(new Point(x, y));
             }
         }
@@ -98,7 +98,7 @@ public class LevelPopulator {
         if (!gameWorld.getCurrentLevel().isWalkable(pos.x, pos.y)) {
             return false;
         }
-        return gameWorld.getEntityAt(pos) == null;
+        return gameWorld.getEntity(pos) == null;
     }
 
     private static ActorId selectMonsterActor(int floorNumber) {

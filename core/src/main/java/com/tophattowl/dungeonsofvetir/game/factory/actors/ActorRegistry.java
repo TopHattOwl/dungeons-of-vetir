@@ -3,6 +3,10 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
+import com.tophattowl.dungeonsofvetir.game.actors.monsters.NaturalWeapon;
+import com.tophattowl.dungeonsofvetir.game.combat.DamageType;
+import com.tophattowl.dungeonsofvetir.game.combat.ElementType;
+import com.tophattowl.dungeonsofvetir.game.combat.damage.DamageInstance;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.*;
 
 import java.util.HashMap;
@@ -33,7 +37,7 @@ public class ActorRegistry {
                 Faction.MONSTER,
                 10,
 
-                new BodyComponentSpec(
+                new BodySpec(
                     BodyTemplate.WORM,
                     Map.of(
                         "head", 10,
@@ -46,32 +50,41 @@ public class ActorRegistry {
 
                 // base component specs
                 List.of(
-                    new AiComponentSpec(
+                    new AiSpec(
                         5,
                         1,
                         4,
                         2
                     ),
-                    new FovComponentSpec(8),
-                    new HealthComponentSpec(120),
-                    new OffensiveStatsComponentSpec(
+                    new FovSpec(8),
+                    new HealthSpec(120),
+                    new OffensiveStatsSpec(
                         20,
                         1.0f,
                         1.0f,
                         1.0f,
                         50
                     ),
-                    new RenderableComponentSpec("iron_worm", 0),
-                    new TimeValueComponentSpec()
+                    new RenderableSpec("iron_worm", 0),
+                    new TimeValueSpec()
                 ),
 
                 // post body component specs
                 List.of(
-                    new DefensiveStatsComponentSpec(
+                    new DefensiveStatsSpec(
                         50,
                         0.05f,
                         0.05f
-                    )
+                    ),
+                    new NaturalWeaponsSpec(Map.of(
+                        "tail", new NaturalWeapon(DamageType.SLASHING, 0.5f, Map.of(
+                                ElementType.PHYSICAL, 13
+                        )),
+                        "head", new NaturalWeapon(DamageType.PIERCING, 1.0f, Map.of(
+                                ElementType.PHYSICAL, 12,
+                                ElementType.POISON, 5
+                        ))
+                    ))
                 )
             )
         );
@@ -83,37 +96,37 @@ public class ActorRegistry {
                 Faction.LOOTER,
                 15,
 
-                new BodyComponentSpec(BodyTemplate.HUMANOID),
+                new BodySpec(BodyTemplate.HUMANOID),
 
                 // base component specs
                 List.of(
-                    new AiComponentSpec(
+                    new AiSpec(
                         0,
                         -1,
                         0,
                         2
                     ),
-                    new FovComponentSpec(11),
-                    new HealthComponentSpec(150),
-                    new OffensiveStatsComponentSpec(
+                    new FovSpec(11),
+                    new HealthSpec(150),
+                    new OffensiveStatsSpec(
                         15,
                         1.1f,
                         1.1f,
                         1.05f,
                         40
                     ),
-                    new RenderableComponentSpec("scavenger", 0),
-                    new TimeValueComponentSpec()
+                    new RenderableSpec("scavenger", 0),
+                    new TimeValueSpec()
                 ),
 
                 // post body component specs
                 List.of(
-                    new DefensiveStatsComponentSpec(
+                    new DefensiveStatsSpec(
                         75,
                         0.1f,
                         0.05f
                     ),
-                    new EquipmentComponentSpec()
+                    new EquipmentSpec()
                 )
             )
         );

@@ -4,7 +4,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.DefensiveStatsComponent;
 
-public record DefensiveStatsComponentSpec(
+public record DefensiveStatsSpec(
     int evasion,
     float counterChance,
     float blockChance

@@ -1,10 +1,9 @@
 package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.actors.components.InventotyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
 
-public record OffensiveStatsComponentSpec(
+public record OffensiveStatsSpec(
     int baseDamage,
     float weaponDamageModifier,
     float mainHandEfficiency,

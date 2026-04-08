@@ -3,11 +3,11 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
 
-public record TimeValueComponentSpec(
+public record TimeValueSpec(
     float baseSpeed
 ) implements ActorComponentSpec<TimeValueComponent>{
 
-    public TimeValueComponentSpec() {
+    public TimeValueSpec() {
         this(1.0f);
     }
 

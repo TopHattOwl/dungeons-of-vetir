@@ -1,5 +1,6 @@
 package com.tophattowl.dungeonsofvetir.game.debug;
 
+import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
@@ -102,6 +103,8 @@ public class DebugConsole {
             case "log" -> logCommand(args);
             case "factionrel" -> logFactionRelations();
             case "dijkstra" -> dijkstraCommand(args);
+            case "entity_list" -> listEntitiesCommand();
+            case "entity_info" -> entityInfoCommand(args);
             case "exit", "quit" -> {
                 toggle();
                 yield "Console closed.";
@@ -119,6 +122,8 @@ public class DebugConsole {
               log <Category> [on/off] - Toggle debug logging category
               factionRel     - Logs faction relations in debug logger
               dijkstra [TYPE] - Toggle dijkstra map overlay (PLAYER, FACTION_MONSTER, etc.)
+              entity_list - lists all entities
+              entity_info [id] - gives info about entity with given id
               exit, quit     - Close the console
             """;
     }
@@ -215,6 +220,22 @@ public class DebugConsole {
         while (outputLines.size() > MAX_OUTPUT_LINES) {
             outputLines.remove(0);
         }
+    }
+
+    private String listEntitiesCommand() {
+        StringBuilder sb = new StringBuilder();
+        List<Entity> entities = gameWorld.getAllEntities();
+        for (Entity entity : entities) {
+            sb.append(entity).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private String entityInfoCommand(String args) {
+        int id = Integer.parseInt(args);
+
+        return gameWorld.getEntity(id).getAllInfo();
     }
 
     public List<String> getOutputLines() {

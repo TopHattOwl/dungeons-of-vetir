@@ -7,7 +7,7 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 import java.util.List;
 
-public interface AttackCalculator<T extends AttackResult> {
-    List<T> calculate(AttackContext context, GameWorld gameWorld);
+public interface AttackCalculator<T extends AttackResult, V extends AttackContext> {
+    List<T> calculate(V context, GameWorld gameWorld);
     AttackType getType();
 }
