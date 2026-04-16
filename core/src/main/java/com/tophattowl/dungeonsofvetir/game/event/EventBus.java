@@ -1,6 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.event;
 
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
+import com.tophattowl.dungeonsofvetir.game.event.events.Event;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class EventBus {
 
     private static final EventBus INSTANCE = new EventBus();
 
-    private final Map<Class<?>, List<ListenerHandle<?>>> listeners = new HashMap<>();
+    private final Map<Class<? extends Event>, List<ListenerHandle<? extends Event>>> listeners = new HashMap<>();
 
     private EventBus() {}
 
@@ -21,7 +22,7 @@ public class EventBus {
      * Registers a listener for an event type
      * @return a handle to unsubscribe later if needed
      */
-    public static <T> ListenerHandle<T> on(Class<T> eventType, Consumer<T> listener) {
+    public static <T extends Event> ListenerHandle<T> on(Class<T> eventType, Consumer<T> listener) {
         ListenerHandle<T> handle = new ListenerHandle<>(eventType, listener);
         INSTANCE.listeners
             .computeIfAbsent(eventType, k -> new ArrayList<>())
@@ -33,13 +34,13 @@ public class EventBus {
      * Unregisters a listener for an event type
      * @param handle The handle returned by the `on` method
      */
-    public static void off(ListenerHandle<?> handle) {
+    public static void off(ListenerHandle<? extends Event> handle) {
         List<ListenerHandle<?>> list = INSTANCE.listeners.get(handle.eventType);
         if (list != null) list.remove(handle);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void emit(T event) {
+    public static <T extends Event> void emit(T event) {
         List<ListenerHandle<?>> list = INSTANCE.listeners.get(event.getClass());
         if (list == null) return;
         // copy list before iterating, dummy!!!
@@ -57,7 +58,7 @@ public class EventBus {
     }
 
 
-    public static class ListenerHandle<T> {
+    public static class ListenerHandle<T extends Event> {
         final Class<T> eventType;
         final Consumer<T> listener;
 

@@ -6,9 +6,7 @@ import java.util.Set;
 public class DebugLogger {
 
     private static final Set<Category> active = EnumSet.of(
-        Category.EVENT,
-        Category.EQUIP_SYSTEM,
-        Category.FACTORY
+        Category.COMBAT
     );
 
     public enum Category {

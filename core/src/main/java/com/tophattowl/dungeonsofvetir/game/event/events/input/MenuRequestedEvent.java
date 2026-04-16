@@ -1,3 +1,5 @@
 package com.tophattowl.dungeonsofvetir.game.event.events.input;
 
-public record MenuRequestedEvent() {}
+import com.tophattowl.dungeonsofvetir.game.event.events.Event;
+
+public record MenuRequestedEvent() implements Event {}

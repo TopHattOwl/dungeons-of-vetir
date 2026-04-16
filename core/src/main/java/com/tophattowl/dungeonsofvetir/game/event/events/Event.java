@@ -1,3 +1,3 @@
 package com.tophattowl.dungeonsofvetir.game.event.events;
 
-public record TurnPassedEvent() implements Event {}
+public interface Event { }

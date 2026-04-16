@@ -32,7 +32,7 @@ public class EntityFactory {
             .addComponent(new OffensiveStatsComponent(
                 30, 1.0f,
                 1.0f, 1.0f,
-                100))
+                60))
             .addComponent(new EquipmentComponent())
         ;
 
@@ -41,7 +41,7 @@ public class EntityFactory {
         player.addComponent(bodyComp);
 
         DefensiveStatsComponent defenseComp = new DefensiveStatsComponent(
-            100, 0.1f, 0.1f, bodyComp);
+            25, 0.1f, 0.1f, bodyComp);
 
         player.addComponent(defenseComp);
 

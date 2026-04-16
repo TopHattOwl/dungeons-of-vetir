@@ -31,10 +31,13 @@ import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.ItemId;
+import com.tophattowl.dungeonsofvetir.game.rng.SeedConfig;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
+
+import java.util.Random;
 
 public class GameScreen implements Screen {
     // Layout constants
@@ -84,7 +87,7 @@ public class GameScreen implements Screen {
 
 
         // game
-        gameWorld = new GameWorld();
+        gameWorld = new GameWorld(SeedConfig.custom(178439));
         inputHandler = new InputHandler(gameWorld.getPlayer());
         fovSystem = new FovSystem();
         debugConsole = new DebugConsole();
@@ -111,7 +114,7 @@ public class GameScreen implements Screen {
         Item itemOneHanded = ItemFactory.makeItem(ItemId.STEEL_MACE);
         BodyPart bodyPart = player.getComponent(EquipmentComponent.class).getMainHandSlot().bodyPart;
 
-        Action actionn = ActionHandler.prepareAction(player, new EquipAction(player, itemOneHanded, bodyPart, EquipmentSlotType.HAND_SLOT));
+        Action actionn = ActionHandler.prepareAction(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
         ActionHandler.executeActionDebug(player, actionn);
 
         EquipmentComponent ec = player.getComponent(EquipmentComponent.class);

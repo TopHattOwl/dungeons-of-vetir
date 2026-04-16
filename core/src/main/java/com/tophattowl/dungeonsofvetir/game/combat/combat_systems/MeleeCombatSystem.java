@@ -6,12 +6,14 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.MeleeAttackAction;
-import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
 import com.tophattowl.dungeonsofvetir.game.combat.calculators.CombatCalculators;
 import com.tophattowl.dungeonsofvetir.game.combat.calculators.MeleeAttackCalculator;
 import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackContext;
 import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackResult;
 import com.tophattowl.dungeonsofvetir.game.combat.damage.Damage;
+import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
+import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.events.combat.EntityKilledEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 import java.util.List;
@@ -33,17 +35,15 @@ public class MeleeCombatSystem implements GameSystem {
             .calculate(context, gameWorld);
 
         for (MeleeAttackResult attack : attackResults) {
-            List<Damage> damages = attack.getDamages();
-            BodyPart targetPart = attack.getBodyPart();
-            HealthComponent targetHp = target.getComponent(HealthComponent.class);
-
-            for (Damage damage : damages) {
-                if (targetHp.takeDamage(damage.amount())) {
-                    die(target, gameWorld);
-                }
-                int partDamage = (int) (damage.amount() * targetPart.damageMultiplier);
-                targetPart.takeDamage(partDamage);
+            if (attack.isMissed()) {
+                applyMissed(attack, attacker, target, gameWorld);
+                continue;
             }
+            if (attack.isBlocked()) {
+                applyBlocked(attack, attacker, target, gameWorld);
+                continue;
+            }
+            applyAttack(attack, attacker, target, gameWorld);
         }
 
         meleeAttackAction.success();
@@ -51,7 +51,52 @@ public class MeleeCombatSystem implements GameSystem {
         return meleeAttackAction;
     }
 
-    public static void die(Entity entity, GameWorld gameWorld) {
+    private static void applyAttack(MeleeAttackResult attackResult,
+                                    Entity attacker, Entity target,
+                                    GameWorld gameWorld) {
+        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeCombatSystem",
+            "applying attack");
+
+        List<Damage> damages = attackResult.getDamages();
+        BodyPart targetPart = attackResult.getBodyPart();
+        HealthComponent targetHp = target.getComponent(HealthComponent.class);
+
+        for(Damage damage : damages) {
+            if (targetHp.takeDamage(damage.amount())) {
+                die(target, gameWorld, attacker);
+            }
+            int partDamage = (int) (damage.amount() * targetPart.damageMultiplier);
+            targetPart.takeDamage(partDamage);
+
+            if (attackResult.isCountered()) {
+                applyCountered(attackResult, attacker, target, gameWorld);
+            }
+        }
+    }
+
+    private static void applyMissed(MeleeAttackResult attackResult,
+                                    Entity attacker, Entity target,
+                                    GameWorld gameWorld) {
+        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeCombatSystem",
+            "applying missed attack");
+    }
+
+    private static void applyBlocked(MeleeAttackResult attackResult,
+                                    Entity attacker, Entity target,
+                                    GameWorld gameWorld) {
+        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeCombatSystem",
+            "applying blocked attack");
+    }
+
+    private static void applyCountered(MeleeAttackResult attackResult,
+                                       Entity attacker, Entity target,
+                                       GameWorld gameWorld) {
+        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeCombatSystem",
+            "applying counter after attack");
+    }
+
+    public static void die(Entity entity, GameWorld gameWorld, Entity killer) {
         gameWorld.removeEntity(entity);
+        EventBus.emit(new EntityKilledEvent(entity, killer));
     }
 }

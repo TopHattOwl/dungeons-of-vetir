@@ -1,3 +1,3 @@
 package com.tophattowl.dungeonsofvetir.game.event.events;
 
-public record TestEvent(String message) {}
+public record TestEvent(String message) implements Event {}

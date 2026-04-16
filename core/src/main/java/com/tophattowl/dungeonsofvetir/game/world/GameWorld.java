@@ -12,6 +12,7 @@ import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
 import com.tophattowl.dungeonsofvetir.game.items.systems.ItemSystem;
+import com.tophattowl.dungeonsofvetir.game.rng.SeedConfig;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnConfig;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManager;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManagerRegistry;
@@ -23,9 +24,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GameWorld {
-    private final List<Entity> entities = new ArrayList<>();
-    private final List<ItemSystem> itemSystems = new ArrayList<>();
+    private final long worldSeed;
 
+    private final List<Entity> entities = new ArrayList<>();
     private final Entity[][] entityMap = new Entity[Level.WIDTH][Level.HEIGHT];
 
     private Level currentLevel;
@@ -33,15 +34,15 @@ public class GameWorld {
 
     private DungeonGenerator dungeonGenerator;
     public DijkstraMapManager dijkstraMapManager;
-    public ActionHandler actionHandler;
     public TimeTurnManager timeTurnManager;
     public SpawnManagerRegistry spawnManagerRegistry;
 
-    public GameWorld() {
+    public GameWorld(SeedConfig config) {
+        this.worldSeed = config.getSeed();
 
-        init();
+        initialize();
 
-        currentLevel = dungeonGenerator.generateLevel(1);
+        currentLevel = dungeonGenerator.generateLevel(1, worldSeed);
         Point playerSpawnPoint = findSpawn(currentLevel);
         player = EntityFactory.makePlayer(playerSpawnPoint);
         addEntity(player);
@@ -52,8 +53,6 @@ public class GameWorld {
         spawnManagerRegistry.registerManager(new SpawnManager(SpawnConfig.defaultLooterConfig()));
 
         LevelPopulator.populate(this, 1);
-
-        ActionHandler.setGameWorld(this);
     }
 
     public Level getCurrentLevel() {
@@ -113,17 +112,15 @@ public class GameWorld {
         EventBus.emit(new EntityRemovedEvent(entity));
     }
 
-    public void addItemSystem(ItemSystem itemSystem) {
-        itemSystems.add(itemSystem);
-    }
-
     public void addDijkstraMapManager(DijkstraMapManager dijkstraMapManager) {
         this.dijkstraMapManager = dijkstraMapManager;
     }
 
-    private void init() {
+    private void initialize() {
         timeTurnManager = new TimeTurnManager();
         dungeonGenerator = new DungeonGenerator();
+
+        ActionHandler.setGameWorld(this);
 
         FactionRelation.init();
     }

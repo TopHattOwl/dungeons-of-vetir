@@ -1,3 +1,5 @@
 package com.tophattowl.dungeonsofvetir.game.event.events.input;
 
-public record InventoryRequestedEvent() {}
+import com.tophattowl.dungeonsofvetir.game.event.events.Event;
+
+public record InventoryRequestedEvent() implements Event {}

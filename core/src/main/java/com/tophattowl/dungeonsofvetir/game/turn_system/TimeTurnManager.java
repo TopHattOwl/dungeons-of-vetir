@@ -171,21 +171,13 @@ public class TimeTurnManager {
     }
 
     private void passTurn() {
-        System.out.println("PASS TURN METHOD START");
         turnEvent.passTurn();
 
-        System.out.println("TURN EVENT PASS TURN CALLED");
-
         // TODO: process projectiles here
-
         // add turn event back after calling its pass turn method
         addActor(turnEvent);
 
-        System.out.println("TURN EVENT added back to queue");
-
         EventBus.emit(new TurnPassedEvent());
-
-        System.out.println("TURN PASSED EVENT EMITTED");
     }
 
     @Override

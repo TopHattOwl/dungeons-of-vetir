@@ -1,3 +1,5 @@
 package com.tophattowl.dungeonsofvetir.game.event.events.input;
 
-public record UiKeyTypedEvent(char keyChar) {}
+import com.tophattowl.dungeonsofvetir.game.event.events.Event;
+
+public record UiKeyTypedEvent(char keyChar) implements Event {}

@@ -33,8 +33,8 @@ public class ItemRegistry {
                 ItemType.MELEE_WEAPON, ItemId.STEEL_LONGSWORD
                 ,new ItemInfoSpec("Steel longsword")
                 ,new MeleeWeaponSpec(DamageType.SLASHING, ItemGripType.TWO_HANDED,
-                    new ElementDamage(ElementType.PHYSICAL, 13),
-                    new ElementDamage(ElementType.FIRE, 5))
+                    new ElementDamage(ElementType.PHYSICAL, 19),
+                    new ElementDamage(ElementType.FIRE, 7))
                 ,new EquipableSpec(EquipmentSlotType.HAND_SLOT)
             )
         );

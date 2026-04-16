@@ -63,7 +63,7 @@ public class ActorRegistry {
                         1.0f,
                         1.0f,
                         1.0f,
-                        50
+                        20
                     ),
                     new RenderableSpec("iron_worm", 0),
                     new TimeValueSpec()
@@ -72,7 +72,7 @@ public class ActorRegistry {
                 // post body component specs
                 List.of(
                     new DefensiveStatsSpec(
-                        50,
+                        10,
                         0.05f,
                         0.05f
                     ),
@@ -81,7 +81,7 @@ public class ActorRegistry {
                                 ElementType.PHYSICAL, 13
                         )),
                         "head", new NaturalWeapon(DamageType.PIERCING, 1.0f, Map.of(
-                                ElementType.PHYSICAL, 12,
+                                ElementType.PHYSICAL, 10,
                                 ElementType.POISON, 5
                         ))
                     ))

@@ -17,9 +17,9 @@ import java.util.*;
 public class CellularAutomataGenerator {
 
     // Tweak these to get different cave feels
-    private static final double FILL_CHANCE   = 0.48; // probability a cell starts as wall
-    private static final int    SMOOTH_PASSES = 5;    // how many CA iterations
-    private static final int    WALL_THRESHOLD = 5;   // neighbours needed to become/stay wall
+    private static final double FILL_CHANCE     = 0.48; // probability a cell starts as wall
+    private static final int    SMOOTH_PASSES   = 5;    // how many CA iterations
+    private static final int    WALL_THRESHOLD  = 5;   // neighbours needed to become/stay wall
 
     // Floor variants — how many visual variants floor tiles have (0-based index)
     private static final int    FLOOR_VARIANTS = 4;
@@ -87,7 +87,7 @@ public class CellularAutomataGenerator {
                     continue;
                 }
                 int walls = countWallNeighbours(grid, x, y);
-                // Classic CA rule: become wall if enough wall neighbours
+                // rule: become wall if enough wall neighbours
                 next[x][y] = walls >= WALL_THRESHOLD;
             }
         }
@@ -112,8 +112,8 @@ public class CellularAutomataGenerator {
     }
 
     /**
-     * Flood fill from every open cell to find connected regions.
-     * Returns a boolean grid marking only the largest region.
+     * Flood fill from every open cell to find connected regions
+     * Returns a boolean grid marking only the largest region
      */
     private boolean[][] largestRegion(boolean[][] grid) {
         boolean[][] visited = new boolean[Level.WIDTH][Level.HEIGHT];
@@ -157,7 +157,7 @@ public class CellularAutomataGenerator {
     }
 
     private void placeStairs(Level level) {
-        // Find open floor tiles for stairs placement
+        // find open floor tiles for stairs placement
         List<int[]> floorTiles = new ArrayList<>();
         for (int x = 1; x < Level.WIDTH - 1; x++)
             for (int y = 1; y < Level.HEIGHT - 1; y++)
@@ -166,8 +166,9 @@ public class CellularAutomataGenerator {
 
         if (floorTiles.size() < 2) return; // shouldn't happen with a well-generated cave
 
-        // Place stairs up near one end, stairs down near another
-        // Simple approach: pick two tiles that are far from each other
+        // place stairs up near one end, stairs down near another
+        // Simple, pick two tiles that are far from each other
+        // TODO: something more random
         int[] upPos   = floorTiles.get(0);
         int[] downPos = floorTiles.get(floorTiles.size() - 1);
 

@@ -48,4 +48,11 @@ public abstract class AttackResult {
     public BodyPart getBodyPart() {
         return bodyPart;
     }
+
+    @Override
+    public String toString() {
+        return "missed=" + missed
+            + ", blocked=" + blocked
+            + ", damages=" + damages;
+    }
 }
