@@ -1,10 +1,15 @@
 package com.tophattowl.dungeonsofvetir.game.actors.body;
 
+import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
+import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.events.combat.BodyPartDestroyedEvent;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 
 import java.util.List;
 
 public class BodyPart {
+    private Entity owner;
+
     private static final float CRIPPLED_THRESHOLD = 0.3f;
     private static final float INJURED_THRESHOLD = 0.6f;
 
@@ -67,10 +72,21 @@ public class BodyPart {
     private void updateStatus() {
         float ratio = (float) hp/maxHp;
 
-        if (ratio <= 0f)                        status = BodyPartStatus.DESTROYED;
-        else if (ratio <= CRIPPLED_THRESHOLD)   status = BodyPartStatus.CRIPPLED;
-        else if (ratio <= INJURED_THRESHOLD)    status = BodyPartStatus.INJURED;
-        else                                    status = BodyPartStatus.HEALTHY;
+        if (ratio <= 0f)                        setStatus(BodyPartStatus.DESTROYED);
+        else if (ratio <= CRIPPLED_THRESHOLD)   setStatus(BodyPartStatus.CRIPPLED);
+        else if (ratio <= INJURED_THRESHOLD)    setStatus(BodyPartStatus.INJURED);
+        else                                    setStatus(BodyPartStatus.HEALTHY);
+    }
+
+    private void setStatus(BodyPartStatus status) {
+        this.status = status;
+        if (status == BodyPartStatus.DESTROYED) {
+            EventBus.emit(new BodyPartDestroyedEvent(owner, this));
+        }
+    }
+
+    public void setOwner(Entity owner) {
+        this.owner = owner;
     }
 
     @Override

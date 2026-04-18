@@ -16,6 +16,9 @@ public class Entity {
 
     public <T extends Component> Entity addComponent(T component) {
         components.put(component.getClass(), component);
+        if (component instanceof OwnedComponent owned) {
+            owned.setOwner(this);
+        }
         return this;
     }
 

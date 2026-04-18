@@ -53,20 +53,24 @@ public class EntityFactory {
     private static Entity buildFromSpec(ActorSpec spec, GameWorld gameWorld, Point spawnPos) {
         Entity entity = new Entity();
 
+        // base comps (all actors have)
         PositionComponent posComp = new PositionComponent(spawnPos);
         IdentityComponent identityComp = new IdentityComponent(spec.name(), spec.actorId(), spec.faction());
         entity.addComponent(posComp)
             .addComponent(identityComp);
 
+        // before body specs
         for (ActorComponentSpec<?> baseSpec : spec.baseSpecs()) {
             entity.addComponent(baseSpec.build(entity));
         }
 
+        // body
         BodySpec bodySpec = spec.bodySpec();
         int maxHp = entity.getComponent(HealthComponent.class).maxHp;
         BodyComponent bodyComp = BodyComponentBuilder.build(bodySpec.bodyTemplate(), maxHp, bodySpec.naturalProts());
         entity.addComponent(bodyComp);
 
+        // post body
         for (ActorComponentSpec<?> postBodySpec : spec.postBodySpecs()) {
             entity.addComponent(postBodySpec.build(entity));
         }

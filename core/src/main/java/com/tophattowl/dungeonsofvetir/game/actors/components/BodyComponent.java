@@ -1,13 +1,15 @@
 package com.tophattowl.dungeonsofvetir.game.actors.components;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Component;
+import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
+import com.tophattowl.dungeonsofvetir.game.ECS.OwnedComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartType;
 
 import java.util.List;
 import java.util.Random;
 
-public class BodyComponent implements Component {
+public class BodyComponent implements OwnedComponent {
     public List<BodyPart> bodyParts;
     private static final Random rng = new Random();
 
@@ -57,5 +59,12 @@ public class BodyComponent implements Component {
             sb.append(bodyPart.toString());
         }
         return sb.toString();
+    }
+
+    @Override
+    public void setOwner(Entity owner) {
+        for (BodyPart bodyPart : bodyParts) {
+            bodyPart.setOwner(owner);
+        }
     }
 }

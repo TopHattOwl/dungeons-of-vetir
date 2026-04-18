@@ -40,7 +40,7 @@ public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult
         mainHandItem = attackerEquipment.getMainHandSlot().item;
         offHandItem = attackerEquipment.getOffHandSlot().item;
 
-        if (mainHandItem == null && offHandItem == null) {
+        if (mainHandItem == null) {
             DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
                 "Calculating unarmed"
             );
