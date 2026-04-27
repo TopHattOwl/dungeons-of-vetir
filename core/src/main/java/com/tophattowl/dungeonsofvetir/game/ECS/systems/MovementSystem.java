@@ -8,6 +8,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
+import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.util.Direction;
@@ -17,7 +18,7 @@ public class MovementSystem implements GameSystem {
     public static Action prepareMove(MoveAction moveAction, GameWorld gameWorld) {
         Entity owner = moveAction.getOwner();
         if (moveAction.getDirection() == Direction.STAY) {
-            return ActionHandler.prepareAction(owner, new PassAction(owner));
+            return ActionHandler.prepareAction(owner, ActionFactory.createPassAction(owner));
         }
 
         PositionComponent posComp = owner.getComponent(PositionComponent.class);
@@ -33,15 +34,18 @@ public class MovementSystem implements GameSystem {
             IdentityComponent ownerIdComp = owner.getComponent(IdentityComponent.class);
             IdentityComponent entityIdComp = entityAtPos.getComponent(IdentityComponent.class);
 
-            FactionRelation.Relation relation = FactionRelation.getRelation(ownerIdComp.faction, entityIdComp.faction);
+            FactionRelation.Relation relation = FactionRelation
+                .getRelation(ownerIdComp.faction, entityIdComp.faction);
 
             switch (relation) {
                 // TODO: talk, or push action
                 case FRIENDLY, NEUTRAL -> {
-                    return ActionHandler.prepareAction(owner, new PassAction(owner));
+                    return ActionHandler.prepareAction(owner,
+                        ActionFactory.createPassAction(owner));
                 }
                 case HOSTILE -> {
-                    return ActionHandler.prepareAction(owner, new MeleeAttackAction(owner, entityAtPos));
+                    return ActionHandler.prepareAction(owner,
+                        ActionFactory.createMeleeAttackAction(owner, entityAtPos));
                 }
             }
         }

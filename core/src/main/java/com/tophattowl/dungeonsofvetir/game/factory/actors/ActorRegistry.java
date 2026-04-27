@@ -84,7 +84,12 @@ public class ActorRegistry {
                                 ElementType.PHYSICAL, 10,
                                 ElementType.POISON, 5
                         ))
-                    ))
+                    )),
+                    new RegenSpec(
+                        5,
+                        4,
+                        0.1f
+                    )
                 )
             )
         );
@@ -126,7 +131,12 @@ public class ActorRegistry {
                         0.1f,
                         0.05f
                     ),
-                    new EquipmentSpec()
+                    new EquipmentSpec(),
+                    new RegenSpec(
+                        7,
+                        5,
+                        0.2f
+                    )
                 )
             )
         );

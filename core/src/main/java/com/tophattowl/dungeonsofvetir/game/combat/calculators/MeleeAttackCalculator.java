@@ -21,9 +21,6 @@ import java.util.*;
 public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult, MeleeAttackContext> {
     private final Random rng = new Random(System.currentTimeMillis());
 
-    private Item mainHandItem;
-    private Item offHandItem;
-
     @Override
     public List<MeleeAttackResult> calculate(MeleeAttackContext context, GameWorld gameWorld) {
         Entity attacker = context.getAttacker();
@@ -37,8 +34,8 @@ public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult
 
         EquipmentComponent attackerEquipment = attacker.getComponent(EquipmentComponent.class);
 
-        mainHandItem = attackerEquipment.getMainHandSlot().item;
-        offHandItem = attackerEquipment.getOffHandSlot().item;
+        Item mainHandItem = attackerEquipment.getMainHandSlot().item;
+        Item offHandItem = attackerEquipment.getOffHandSlot().item;
 
         if (mainHandItem == null) {
             DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",

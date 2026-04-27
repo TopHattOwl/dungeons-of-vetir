@@ -69,6 +69,11 @@ public class BodyPart {
         return hp == 0;
     }
 
+    public void heal(int amount) {
+        hp = Math.min(hp + amount, maxHp);
+        updateStatus();
+    }
+
     private void updateStatus() {
         float ratio = (float) hp/maxHp;
 

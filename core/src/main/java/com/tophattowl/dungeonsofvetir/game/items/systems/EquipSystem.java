@@ -7,6 +7,7 @@ import com.tophattowl.dungeonsofvetir.game.action.SwapEquipmentAction;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
+import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.ItemGripType;
@@ -86,7 +87,7 @@ public class EquipSystem implements ItemSystem {
             .toList();
 
         if (!itemsToUnequip.isEmpty()) {
-            SwapEquipmentAction swapAction = new SwapEquipmentAction(owner, item, bodyPart);
+            SwapEquipmentAction swapAction = ActionFactory.createSwapEquipmentAction(owner, item, bodyPart);
             itemsToUnequip.forEach(swapAction::addItemToUnequip);
             return swapAction;
         }
@@ -111,7 +112,7 @@ public class EquipSystem implements ItemSystem {
         Item itemToUnequip = slot.item;
 
         if (itemToUnequip != null) {
-            SwapEquipmentAction swapAction = new SwapEquipmentAction(owner, item, bodyPart);
+            SwapEquipmentAction swapAction = ActionFactory.createSwapEquipmentAction(owner, item, bodyPart);
             swapAction.addItemToUnequip(itemToUnequip);
             return swapAction;
         }

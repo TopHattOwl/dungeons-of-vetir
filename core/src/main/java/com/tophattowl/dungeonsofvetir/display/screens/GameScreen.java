@@ -23,6 +23,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
+import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.game.factory.items.ItemFactory;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
@@ -114,7 +115,8 @@ public class GameScreen implements Screen {
         Item itemOneHanded = ItemFactory.makeItem(ItemId.STEEL_MACE);
         BodyPart bodyPart = player.getComponent(EquipmentComponent.class).getMainHandSlot().bodyPart;
 
-        Action actionn = ActionHandler.prepareAction(player, new EquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
+        Action actionn = ActionHandler.prepareAction(player,
+            ActionFactory.createEquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
         ActionHandler.executeActionDebug(player, actionn);
 
         EquipmentComponent ec = player.getComponent(EquipmentComponent.class);

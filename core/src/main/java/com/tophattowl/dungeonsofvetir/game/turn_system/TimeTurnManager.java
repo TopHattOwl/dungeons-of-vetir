@@ -12,6 +12,7 @@ import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
+import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.util.Direction;
 
@@ -89,12 +90,12 @@ public class TimeTurnManager {
 
         Action preparedAction = ActionHandler.prepareAction(entity, action);
         if (preparedAction.notPossible()) {
-            ActionHandler.executeAction(entity, new PassAction(entity));
+            ActionHandler.executeAction(entity, ActionFactory.createPassAction(entity));
         }
 
         Action executedAction = ActionHandler.executeAction(entity, preparedAction);
         if (!executedAction.isSuccess()) {
-            ActionHandler.executeAction(entity, new PassAction(entity));
+            ActionHandler.executeAction(entity, ActionFactory.createPassAction(entity));
         }
     }
 
@@ -108,7 +109,7 @@ public class TimeTurnManager {
             aiComp.weightMap,  faction
         );
 
-        return new MoveAction(dir, entity);
+        return ActionFactory.createMoveAction(entity, dir);
     }
 
     private void addActor(Entity entity) {

@@ -34,6 +34,7 @@ public class EntityFactory {
                 1.0f, 1.0f,
                 60))
             .addComponent(new EquipmentComponent())
+            .addComponent(new RegenComponent(10, 4, 0.2f))
         ;
 
         int maxHp = player.getComponent(HealthComponent.class).maxHp;
@@ -66,6 +67,9 @@ public class EntityFactory {
 
         // body
         BodySpec bodySpec = spec.bodySpec();
+        if (!entity.hasComponent(HealthComponent.class)) {
+            throw new IllegalStateException("Entity should have Health component, ActorId: " + spec.actorId());
+        }
         int maxHp = entity.getComponent(HealthComponent.class).maxHp;
         BodyComponent bodyComp = BodyComponentBuilder.build(bodySpec.bodyTemplate(), maxHp, bodySpec.naturalProts());
         entity.addComponent(bodyComp);

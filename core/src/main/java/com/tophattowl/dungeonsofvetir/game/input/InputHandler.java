@@ -2,6 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.input;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.util.Direction;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
@@ -66,9 +67,9 @@ public class InputHandler implements InputProcessor {
 
         if (dir != null) {
             if (dir == Direction.STAY) {
-                pendingAction = new PassAction(player);
+                pendingAction = ActionFactory.createPassAction(player);
             } else {
-                pendingAction = new MoveAction(dir, player);
+                pendingAction = ActionFactory.createMoveAction(player, dir);
             }
             return true;
         }

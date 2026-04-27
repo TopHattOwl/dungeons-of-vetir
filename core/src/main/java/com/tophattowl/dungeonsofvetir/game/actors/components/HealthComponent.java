@@ -20,14 +20,24 @@ public class HealthComponent implements Component {
         return hp == 0;
     }
 
+    public void heal(int amount) {
+        hp = Math.min(hp + amount, maxHp);
+        updateStatus();
+    }
+
     private void updateStatus() {
         float ratio = (float) hp/maxHp;
 
-        if (ratio <= HealthStatus.CRITICAL.threshold)       status = HealthStatus.CRITICAL;
-        else if (ratio <= HealthStatus.INJURED.threshold)   status = HealthStatus.INJURED;
-        else if (ratio <= HealthStatus.HURT.threshold)      status = HealthStatus.HURT;
-        else if (ratio <= HealthStatus.FINE.threshold)      status = HealthStatus.FINE;
-        else                                                status = HealthStatus.HEALTHY;
+        if (ratio <= HealthStatus.CRITICAL.threshold)       setStatus(HealthStatus.CRITICAL);
+        else if (ratio <= HealthStatus.INJURED.threshold)   setStatus(HealthStatus.INJURED);
+        else if (ratio <= HealthStatus.HURT.threshold)      setStatus(HealthStatus.HURT);
+        else if (ratio <= HealthStatus.FINE.threshold)      setStatus(HealthStatus.FINE);
+        else                                                setStatus(HealthStatus.HEALTHY);
+    }
+
+    private void setStatus(HealthStatus status) {
+        this.status = status;
+        // TODO: maybe emit events when critical, ai -> start fleeing, player -> visual effect or something
     }
 
     public enum HealthStatus {
