@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-public class InventotyComponent implements Component {
+public class InventoryComponent implements Component {
     public float maxWeight;
     public float currentWeight;
 
     public EnumMap<ItemType, List<Item>> inventory = new EnumMap<>(ItemType.class);
 
-    public InventotyComponent(float maxWeight) {
+    public InventoryComponent(float maxWeight) {
         this.maxWeight = maxWeight;
 
          for (ItemType itemType : ItemType.values()) {

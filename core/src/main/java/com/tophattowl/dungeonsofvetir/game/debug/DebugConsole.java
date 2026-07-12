@@ -4,7 +4,7 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
-import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleRequestedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleToggleRequestedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.UiKeyTypedEvent;
 import com.tophattowl.dungeonsofvetir.display.renderer.DijkstraOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
@@ -28,7 +28,7 @@ public class DebugConsole {
     private final List<EventBus.ListenerHandle<?>> listenerHandles = new ArrayList<>();
 
     public DebugConsole() {
-        listenerHandles.add(EventBus.on(ConsoleRequestedEvent.class, e -> {
+        listenerHandles.add(EventBus.on(ConsoleToggleRequestedEvent.class, e -> {
             toggle();
         }));
         listenerHandles.add(EventBus.on(UiKeyTypedEvent.class, e -> {

@@ -6,13 +6,11 @@ import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.util.Direction;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
-import com.tophattowl.dungeonsofvetir.game.action.MoveAction;
-import com.tophattowl.dungeonsofvetir.game.action.PassAction;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
-import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleRequestedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleToggleRequestedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.InputModeChangedEvent;
-import com.tophattowl.dungeonsofvetir.game.event.events.input.InventoryRequestedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.InventoryToggleRequestedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.UiKeyTypedEvent;
 
 import java.util.Stack;
@@ -78,13 +76,13 @@ public class InputHandler implements InputProcessor {
             // backtick
             case Input.Keys.GRAVE -> {
                 pushMode(InputMode.CONSOLE);
-                EventBus.emit(new ConsoleRequestedEvent());
+                EventBus.emit(new ConsoleToggleRequestedEvent());
                 return true;
             }
 
             case Input.Keys.I -> {
                 pushMode(InputMode.INVENTORY);
-                EventBus.emit(new InventoryRequestedEvent());
+                EventBus.emit(new InventoryToggleRequestedEvent());
                 return true;
             }
 
@@ -103,7 +101,7 @@ public class InputHandler implements InputProcessor {
         switch (keyCode) {
             case Input.Keys.ESCAPE -> {
                 popMode();
-                EventBus.emit(new ConsoleRequestedEvent());
+                EventBus.emit(new ConsoleToggleRequestedEvent());
             }
 
         }

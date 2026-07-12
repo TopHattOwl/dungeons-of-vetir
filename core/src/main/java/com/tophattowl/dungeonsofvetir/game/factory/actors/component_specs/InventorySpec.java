@@ -1,18 +1,18 @@
 package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.actors.components.InventotyComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.InventoryComponent;
 
 public record InventorySpec(
     int maxWeight
-) implements ActorComponentSpec<InventotyComponent>{
+) implements ActorComponentSpec<InventoryComponent>{
     @Override
-    public Class<InventotyComponent> getComponentType() {
-        return InventotyComponent.class;
+    public Class<InventoryComponent> getComponentType() {
+        return InventoryComponent.class;
     }
 
     @Override
-    public InventotyComponent build(Entity entity) {
-        return new InventotyComponent(maxWeight);
+    public InventoryComponent build(Entity entity) {
+        return new InventoryComponent(maxWeight);
     }
 }

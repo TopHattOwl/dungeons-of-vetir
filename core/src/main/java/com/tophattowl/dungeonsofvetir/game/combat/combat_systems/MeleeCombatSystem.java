@@ -6,7 +6,6 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.MeleeAttackAction;
-import com.tophattowl.dungeonsofvetir.game.combat.AttackType;
 import com.tophattowl.dungeonsofvetir.game.combat.calculators.CombatCalculators;
 import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackContext;
 import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackResult;

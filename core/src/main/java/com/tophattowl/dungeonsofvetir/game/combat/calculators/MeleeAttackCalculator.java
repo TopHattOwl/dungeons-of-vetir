@@ -11,8 +11,10 @@ import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackContext;
 import com.tophattowl.dungeonsofvetir.game.combat.context.MeleeAttackResult;
 import com.tophattowl.dungeonsofvetir.game.combat.damage.Damage;
 import com.tophattowl.dungeonsofvetir.game.combat.damage.DamageInstance;
+import com.tophattowl.dungeonsofvetir.game.combat.damage.DamageProfile;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
+import com.tophattowl.dungeonsofvetir.game.items.ItemGripType;
 import com.tophattowl.dungeonsofvetir.game.items.components.MeleeWeaponComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
@@ -29,218 +31,149 @@ public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult
             DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
                 "Calculating with no equipment component"
             );
-            return calculateNoEquipment(context, gameWorld);
+            return calculateNoEquipment(context);
         }
 
         EquipmentComponent attackerEquipment = attacker.getComponent(EquipmentComponent.class);
-
         Item mainHandItem = attackerEquipment.getMainHandSlot().item;
         Item offHandItem = attackerEquipment.getOffHandSlot().item;
 
-        if (mainHandItem == null) {
+        if (mainHandItem == null || !mainHandItem.hasComponent(MeleeWeaponComponent.class)) {
             DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
                 "Calculating unarmed"
             );
-            return calculateUnarmed(context, gameWorld);
+            return calculateUnarmed(context);
         }
 
-        if (mainHandItem.equals(offHandItem)) {
+        MeleeWeaponComponent mainWeaponComp = mainHandItem.getComponent(MeleeWeaponComponent.class);
+
+        if (mainWeaponComp.getGripType() == ItemGripType.TWO_HANDED) {
             DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
                 "Calculating two handed"
             );
-            return calculateTwoHanded(context, gameWorld, mainHandItem);
-        } else {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "Calculating one handed"
-            );
-            return calculateOneHanded(context, gameWorld, mainHandItem, offHandItem);
+            return List.of(buildWeaponResult(context, mainWeaponComp, mainHandItem));
+
         }
+
+        if (offHandItem != null && offHandItem.hasComponent(MeleeWeaponComponent.class)){
+            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
+                "Calculating dual wield"
+            );
+            return calculateDualWield(context, mainHandItem, offHandItem);
+
+        }
+
+        return List.of(buildWeaponResult(context, mainWeaponComp, mainHandItem));
     }
 
-    private List<MeleeAttackResult> calculateTwoHanded(MeleeAttackContext context,GameWorld gameWorld,
-                                                       Item twoHandedItem) {
-        MeleeAttackResult result = new MeleeAttackResult();
-
-        Entity attacker = context.getAttacker();
-        Entity target = context.getTarget();
-
-        OffensiveStatsComponent attackerOffense = attacker.getComponent(OffensiveStatsComponent.class);
-
-        DefensiveStatsComponent targetDefense = target.getComponent(DefensiveStatsComponent.class);
-        BodyComponent targetBody = target.getComponent(BodyComponent.class);
-
-        MeleeWeaponComponent weaponComp = twoHandedItem.getComponent(MeleeWeaponComponent.class);
-
-        BodyPart targetedBodyPart = targetBody.getRandomBodyPart();
-        result.setBodyPart(targetedBodyPart);
-
-        // acc check
-        if (isMissed(attackerOffense.accuracy, targetDefense.evasion)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "Attack missed"
-            );
-            result.missed();
-            return List.of(result);
-        }
-
-        // block check
-        if (isBlocked(targetDefense.blockChance)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "Attack blocked"
-            );
-            result.blocked();
-            return List.of(result);
-        }
-
-        // attack calc
-        for (Map.Entry<ElementType, DamageInstance> entry : weaponComp.getDamages().entrySet()) {
-            DamageInstance damage = entry.getValue();
-            DamageType damageType = weaponComp.getDamageType();
-            ElementType element = entry.getKey();
-
-            result.addDamage(new Damage(damage.getBaseAmount(), element, damageType));
-        }
-
-        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-            "damages added to result"
-        );
-
-        // counter check
-        if (isCountered(targetDefense.counterChance)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "attack countered"
-            );
-            result.countered();
-        }
-        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-            "final attack result: " + result.toString()
-        );
-        return List.of(result);
-    }
-
-    private List<MeleeAttackResult> calculateOneHanded(MeleeAttackContext context, GameWorld gameWorld,
+    private List<MeleeAttackResult> calculateDualWield(MeleeAttackContext context,
                                                        Item mainHandItem, Item offHandItem) {
-        // only main hand for now for attack
-        // TODO: handle offhand, dual wield with two attacks if both are weapons
-        MeleeAttackResult result = new MeleeAttackResult();
+        MeleeWeaponComponent mainWeaponComp = mainHandItem.getComponent(MeleeWeaponComponent.class);
+        MeleeWeaponComponent offWeaponComp = offHandItem.getComponent(MeleeWeaponComponent.class);
 
+        MeleeAttackResult mainResult = buildWeaponResult(context, mainWeaponComp, mainHandItem);
+        MeleeAttackResult offHandResult = buildWeaponResult(context, offWeaponComp, offHandItem);
+
+        return List.of(mainResult, offHandResult);
+    }
+
+    private List<MeleeAttackResult> calculateUnarmed(MeleeAttackContext context) {
         Entity attacker = context.getAttacker();
-        Entity target = context.getTarget();
+        OffensiveStatsComponent offensiveComp = attacker.getComponent(OffensiveStatsComponent.class);
 
-        OffensiveStatsComponent attackerOffense = attacker.getComponent(OffensiveStatsComponent.class);
+        int baseDamage = offensiveComp.baseDamage;
+        // placeholder anon class for fists
+        DamageProfile fist = new DamageProfile() {
 
-        DefensiveStatsComponent targetDefense = target.getComponent(DefensiveStatsComponent.class);
-        BodyComponent targetBody = target.getComponent(BodyComponent.class);
+            @Override
+            public Map<ElementType, DamageInstance> getDamages() {
+                return Map.of(ElementType.PHYSICAL, new DamageInstance(baseDamage, ElementType.PHYSICAL));
+            }
 
-        MeleeWeaponComponent weaponComp = mainHandItem.getComponent(MeleeWeaponComponent.class);
+            @Override
+            public DamageType getDamageType() {
+                return DamageType.CRUSHING;
+            }
+        };
 
-        BodyPart targetedBodyPart = targetBody.getRandomBodyPart();
-        result.setBodyPart(targetedBodyPart);
+        return List.of(buildWeaponResult(context, fist, null));
 
-        // acc check
-        if (isMissed(attackerOffense.accuracy, targetDefense.evasion)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "Attack missed"
-            );
-            result.missed();
-            return List.of(result);
-        }
 
-        // block check
-        if (isBlocked(targetDefense.blockChance)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "Attack blocked"
-            );
-            result.blocked();
-            return List.of(result);
-        }
-
-        // attack calc
-        for (Map.Entry<ElementType, DamageInstance> entry : weaponComp.getDamages().entrySet()) {
-            DamageInstance damage = entry.getValue();
-            DamageType damageType = weaponComp.getDamageType();
-            ElementType element = entry.getKey();
-
-            result.addDamage(new Damage(damage.getBaseAmount(), element, damageType));
-        }
-
-        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-            "damages added to result"
-        );
-
-        // counter check
-        if (isCountered(targetDefense.counterChance)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "attack countered"
-            );
-            result.countered();
-        }
-        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-            "final attack result: " + result.toString()
-        );
-        return List.of(result);
     }
 
-    private List<MeleeAttackResult> calculateUnarmed(MeleeAttackContext context, GameWorld gameWorld) {
-
-        return List.of();
-    }
-
-    private List<MeleeAttackResult> calculateNoEquipment(MeleeAttackContext context, GameWorld gameWorld) {
-
+    private List<MeleeAttackResult> calculateNoEquipment(MeleeAttackContext context) {
         List<MeleeAttackResult> results = new ArrayList<>();
 
         Entity attacker = context.getAttacker();
-        Entity target = context.getTarget();
+
+        if (!attacker.hasComponent(NaturalWeaponsComponent.class)) {
+            throw new IllegalStateException("Attacker has no Equipment or Natural weapons component:\n" + attacker);
+        }
 
         NaturalWeaponsComponent naturalWeaponsComp = attacker.getComponent(NaturalWeaponsComponent.class);
-        OffensiveStatsComponent attackerOffense = attacker.getComponent(OffensiveStatsComponent.class);
 
-        DefensiveStatsComponent targetDefense = target.getComponent(DefensiveStatsComponent.class);
-        BodyComponent targetBody = target.getComponent(BodyComponent.class);
-
-        for (NaturalWeapon natWeapon : naturalWeaponsComp.getNaturalWeaponsSorted()) {
-            float attackChance = natWeapon.getAttackChance();
-
+        for (NaturalWeapon weapon : naturalWeaponsComp.getNaturalWeaponsSorted()) {
+            float attackChance = weapon.getAttackChance();
             if (attackChance < rng.nextFloat()) continue;
 
-            MeleeAttackResult result = new MeleeAttackResult();
-            BodyPart targetedBodyPart = targetBody.getRandomBodyPart();
-            result.setBodyPart(targetedBodyPart);
-
-            // acc check
-            if (isMissed(attackerOffense.accuracy, targetDefense.evasion)) {
-                result.missed();
-                results.add(result);
-                continue;
-            }
-
-            // block check
-            if (isBlocked(targetDefense.blockChance)) {
-                result.blocked();
-                results.add(result);
-                continue;
-            }
-
-            // attack calc
-            for (Map.Entry<ElementType, DamageInstance> entry : natWeapon.getDamages().entrySet()) {
-                DamageInstance damage = entry.getValue();
-                DamageType damageType = natWeapon.getDamageType();
-                ElementType element = entry.getKey();
-
-                result.addDamage(new Damage(damage.getBaseAmount(), element, damageType));
-            }
-
-            // counter
-            if (isCountered(targetDefense.counterChance)) {
-                result.countered();
-            }
-
-            results.add(result);
+            results.add(buildWeaponResult(context, weapon, null));
         }
 
         return results;
     }
+
+
+    private MeleeAttackResult buildWeaponResult(MeleeAttackContext context, DamageProfile weapon, Item usedItem) {
+        Entity attacker = context.getAttacker();
+        Entity target = context.getTarget();
+
+        MeleeAttackResult result = new MeleeAttackResult();
+        result.setUsedWeapon(usedItem);
+
+        BodyComponent targetBody = target.getComponent(BodyComponent.class);
+        result.setBodyPart(targetBody.getRandomBodyPart());
+
+        OffensiveStatsComponent attackerOffense = attacker.getComponent(OffensiveStatsComponent.class);
+        DefensiveStatsComponent targetDefense = target.getComponent(DefensiveStatsComponent.class);
+
+        // acc check
+        if (isMissed(attackerOffense.accuracy, targetDefense.evasion)) {
+            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
+                "Attack missed"
+            );
+            result.missed();
+            return result;
+        }
+
+        // block check
+        if (isBlocked(targetDefense.blockChance)) {
+            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
+                "Attack blocked"
+            );
+            result.blocked();
+            return result;
+        }
+
+        // attack calc
+        for (Map.Entry<ElementType, DamageInstance> entry : weapon.getDamages().entrySet()) {
+            DamageInstance damage = entry.getValue();
+            DamageType damageType = weapon.getDamageType();
+            ElementType element = entry.getKey();
+
+            result.addDamage(new Damage(damage.getBaseAmount(), element, damageType));
+        }
+
+        // counter check
+        if (isCountered(targetDefense.counterChance)) {
+            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
+                "attack countered"
+            );
+            result.countered();
+        }
+
+        return result;
+    }
+
 
 
     private boolean isMissed(int attackerAcc, int targetEvasion) {

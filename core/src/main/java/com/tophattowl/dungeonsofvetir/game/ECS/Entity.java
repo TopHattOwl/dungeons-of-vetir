@@ -45,7 +45,7 @@ public class Entity {
     @Override
     public String toString() {
         if (hasComponent(IdentityComponent.class)) {
-            return getComponent(IdentityComponent.class).name + ", ID: #" + id;
+            return "Entity ID: #" + id + "\n" + getComponent(IdentityComponent.class);
         }
         return "Entity #" + id;
     }

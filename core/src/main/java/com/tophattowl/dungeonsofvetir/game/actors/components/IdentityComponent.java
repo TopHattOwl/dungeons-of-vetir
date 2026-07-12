@@ -14,4 +14,11 @@ public class IdentityComponent implements Component {
         this.actorId = actorId;
         this.faction = faction;
     }
+
+    @Override
+    public String toString() {
+        return "name: " + name + "\n"
+            + "Actor ID: " + actorId + "\n"
+            + "Faction: " + faction + "\n";
+    }
 }
