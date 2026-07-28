@@ -5,6 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.EventSubscriptions;
 import com.tophattowl.dungeonsofvetir.game.event.events.DijkstraMapUpdatedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
@@ -19,7 +20,7 @@ import java.util.*;
 
 public class DijkstraMapManager {
     private final GameWorld gameWorld;
-    private final List<EventBus.ListenerHandle<?>> listeners = new ArrayList<>();
+    private final EventSubscriptions eventSubs = new EventSubscriptions();
 
     private final EnumMap<DijkstraMapType, DijkstraMap> dijkstraMaps = new EnumMap<>(DijkstraMapType.class);
 
@@ -191,11 +192,11 @@ public class DijkstraMapManager {
     }
 
     private void addListeners() {
-        listeners.add(EventBus.on(EntityMovedEvent.class, this::onEntityMoved));
-        listeners.add(EventBus.on(EntityRemovedEvent.class, this::onEntityRemoved));
+        eventSubs.on(EntityMovedEvent.class, this::onEntityMoved);
+        eventSubs.on(EntityRemovedEvent.class, this::onEntityRemoved);
     }
 
     public void dispose() {
-        listeners.forEach(EventBus::off);
+        eventSubs.unsubscribeAll();
     }
 }

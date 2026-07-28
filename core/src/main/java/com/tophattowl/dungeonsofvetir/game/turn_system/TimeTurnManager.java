@@ -9,6 +9,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.EventSubscriptions;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class TimeTurnManager {
-    private final List<EventBus.ListenerHandle<?>> listenerHandles = new ArrayList<>();
+    private final EventSubscriptions eventSubs = new EventSubscriptions();
 
     private PriorityQueue<Entity> actorQueue;
     private TurnEvent turnEvent;
@@ -163,12 +164,12 @@ public class TimeTurnManager {
     }
 
     private void addListeners() {
-        listenerHandles.add(EventBus.on(EntityAddedEvent.class, e -> {
+        eventSubs.on(EntityAddedEvent.class, e -> {
             addActor(e.entity());
-        }));
-        listenerHandles.add(EventBus.on(EntityRemovedEvent.class, e -> {
+        });
+        eventSubs.on(EntityRemovedEvent.class, e -> {
             removeActor(e.entity());
-        }));
+        });
     }
 
     private void passTurn() {
@@ -196,7 +197,7 @@ public class TimeTurnManager {
     }
 
     public void dispose() {
-        listenerHandles.forEach(EventBus::off);
+        eventSubs.unsubscribeAll();
         actorQueue.clear();
     }
 
