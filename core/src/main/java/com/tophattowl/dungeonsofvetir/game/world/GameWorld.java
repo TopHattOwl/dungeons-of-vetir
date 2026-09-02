@@ -110,6 +110,7 @@ public class GameWorld {
         PositionComponent posComp = entity.getComponent(PositionComponent.class);
         entityMap[posComp.getX()][posComp.getY()] = null;
         EventBus.emit(new EntityRemovedEvent(entity));
+        entity.dispose();
     }
 
     public void addDijkstraMapManager(DijkstraMapManager dijkstraMapManager) {
