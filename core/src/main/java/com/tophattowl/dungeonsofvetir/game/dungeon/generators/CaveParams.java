@@ -10,5 +10,5 @@ public record CaveParams(
     int wallThreshold,
     int floorVariants
 ) {
-    public static final CaveParams DEFAULT = new CaveParams(0.48, 5, 5, 4);
+    public static final CaveParams DEFAULT = new CaveParams(0.48, 5, 5, 5);
 }

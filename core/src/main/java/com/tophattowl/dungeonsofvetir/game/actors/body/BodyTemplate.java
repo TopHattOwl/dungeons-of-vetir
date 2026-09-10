@@ -71,6 +71,26 @@ public enum BodyTemplate {
         new BodyPartDefinition("Leg 8", BodyPartType.LEG, BodyPartRole.LIMB,
             0.15f, 0.1f, 0.8f)
     )),
+    INSECT(List.of(
+        new BodyPartDefinition("head", BodyPartType.HEAD, BodyPartRole.VITAL,
+            0.2f, 0.1f, 1.2f),
+        new BodyPartDefinition("thorax", BodyPartType.THORAX, BodyPartRole.VITAL,
+            0.2f, 0.1f, 1.0f),
+        new BodyPartDefinition("abdomen", BodyPartType.TORSO, BodyPartRole.VITAL,
+            0.2f, 0.1f, 1.0f),
+        new BodyPartDefinition("Leg 1", BodyPartType.LEG, BodyPartRole.LIMB,
+            0.15f, 0.1f, 0.8f),
+        new BodyPartDefinition("Leg 2", BodyPartType.LEG, BodyPartRole.LIMB,
+            0.15f, 0.1f, 0.8f),
+        new BodyPartDefinition("Leg 3", BodyPartType.LEG, BodyPartRole.LIMB,
+            0.15f, 0.1f, 0.8f),
+        new BodyPartDefinition("Leg 4", BodyPartType.LEG, BodyPartRole.LIMB,
+            0.15f, 0.1f, 0.8f),
+        new BodyPartDefinition("Leg 5", BodyPartType.LEG, BodyPartRole.LIMB,
+            0.15f, 0.1f, 0.8f),
+        new BodyPartDefinition("Leg 6", BodyPartType.LEG, BodyPartRole.LIMB,
+            0.15f, 0.1f, 0.8f)
+    )),
     WORM(List.of(
         new BodyPartDefinition("head", BodyPartType.HEAD, BodyPartRole.VITAL,
             0.15f, 0.15f, 1.2f),

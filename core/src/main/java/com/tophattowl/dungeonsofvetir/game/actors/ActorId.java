@@ -9,7 +9,10 @@ public enum ActorId {
 
     // monsters
     IRON_WORM,
+    FIRE_ANT,
     CAVE_BAT,
+    STONE_CYCLOPS,
+    TOOTH_FAIRY,
 
     // humanoids
     SCAVENGER,

@@ -1,9 +1,11 @@
 package com.tophattowl.dungeonsofvetir.display.ui;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.tophattowl.dungeonsofvetir.display.theme.Theme;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
@@ -37,6 +39,7 @@ public class HudRenderer {
     private final int screenW;
     private final int screenH;
     private final int sidebarX;
+    private Matrix4 projection;
 
     private Entity player;
     private Entity targetEntity;
@@ -49,12 +52,18 @@ public class HudRenderer {
         this.sidebarX = screenW - SIDE_W;
         this.font = font;
         this.shapeRenderer = new ShapeRenderer();
+        this.projection = new Matrix4().setToOrtho2D(0, 0, screenW, screenH);
 
         this.titleFont = new BitmapFont();
         this.titleFont.getData().setScale(1.2f);
+        this.titleFont.getRegion().getTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 
         eventSubs.on(ActionCompletedEvent.class, this::onActionCompleted);
         eventSubs.on(EntityRemovedEvent.class, this::onEntityRemoved);
+    }
+
+    public void setProjectionMatrix(Matrix4 projection) {
+        this.projection = projection;
     }
 
     public void setPlayer(Entity player) {
@@ -85,12 +94,14 @@ public class HudRenderer {
         batch.end();
 
         com.badlogic.gdx.Gdx.gl.glEnable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
+        shapeRenderer.setProjectionMatrix(projection);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Theme.HUD_BG);
         shapeRenderer.rect(sidebarX, 0, SIDE_W, screenH);
         shapeRenderer.end();
         com.badlogic.gdx.Gdx.gl.glDisable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
 
+        shapeRenderer.setProjectionMatrix(projection);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Theme.HUD_BORDER);
         shapeRenderer.line(sidebarX, 0, sidebarX, screenH);
@@ -172,6 +183,7 @@ public class HudRenderer {
     private void renderHpBar(SpriteBatch batch, int x, int y, int w, int h, float ratio, Color color) {
         batch.end();
 
+        shapeRenderer.setProjectionMatrix(projection);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Theme.HUD_BORDER);
         shapeRenderer.rect(x, y, w, h);

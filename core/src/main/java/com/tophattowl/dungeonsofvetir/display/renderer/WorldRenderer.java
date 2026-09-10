@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.tophattowl.dungeonsofvetir.display.sprites.SpriteLibrary;
 import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
@@ -20,12 +21,18 @@ public class WorldRenderer {
     private static final float EXPLORED_SHADE = 0.35f;
 
     private final SpriteBatch batch;
-    private final Tileset tileset;
+    private final SpriteLibrary sprites;
+    private Tileset terrain;
     private FovOverlayRenderer fovOverlayRenderer;
 
-    public WorldRenderer(SpriteBatch batch, Tileset tileset) {
+    public WorldRenderer(SpriteBatch batch, Tileset terrain, SpriteLibrary sprites) {
         this.batch = batch;
-        this.tileset = tileset;
+        this.terrain = terrain;
+        this.sprites = sprites;
+    }
+
+    public void setTerrain(Tileset terrain) {
+        this.terrain = terrain;
     }
 
     public void setFovOverlayRenderer(FovOverlayRenderer fovOverlayRenderer) {
@@ -72,7 +79,7 @@ public class WorldRenderer {
         for (int x = minTileX; x <= maxTileX; x++) {
             for (int y = minTileY; y <= maxTileY; y++) {
                 Tile tile = level.getTile(x, y);
-                TextureRegion region = tileset.getTile(tile.type, tile.variant);
+                TextureRegion region = terrain.getTile(tile.type, tile.variant);
                 float screenX = x * tw;
                 float screenY = (Level.HEIGHT - 1 - y) * th;
                 batch.setColor(Color.WHITE);
@@ -102,7 +109,7 @@ public class WorldRenderer {
 
             PositionComponent pos = entity.getComponent(PositionComponent.class);
             RenderableComponent renderable = entity.getComponent(RenderableComponent.class);
-            TextureRegion region = tileset.getSprite(renderable.spriteId);
+            TextureRegion region = sprites.get(renderable.spriteId);
             float screenX = pos.getX() * tw;
             float screenY = (Level.HEIGHT - 1 - pos.getY()) * th;
             batch.draw(region, screenX, screenY, tw, th);
