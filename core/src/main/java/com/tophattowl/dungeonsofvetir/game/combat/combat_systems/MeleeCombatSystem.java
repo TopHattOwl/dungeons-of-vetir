@@ -49,6 +49,10 @@ public class MeleeCombatSystem implements GameSystem {
         return meleeAttackAction;
     }
 
+    // TODO(death-ordering): damage is applied in a loop and die() may remove the target
+    //  mid-loop, after which we keep damaging its body parts and still apply counters
+    //  Intended: resolve the full hit first, then check death, and short-circuit
+    //  body-part damage + counter if the target died from this hit.
     private static void applyAttack(MeleeAttackResult attackResult,
                                     Entity attacker, Entity target,
                                     GameWorld gameWorld) {

@@ -41,6 +41,7 @@ public class DijkstraMapManager {
         else return new int[0][0];
     }
 
+    // TODO: cleanup duplicate code
     public Direction getBestMove(int x, int y, EnumMap<DijkstraMapType, Integer> weightMap) {
         Direction bestMove = null;
 
@@ -189,6 +190,13 @@ public class DijkstraMapManager {
             dMap.initialize(gameWorld);
             dMap.calculate();
         }
+    }
+
+    /**
+     * Re-initializes and recalculates every map. Call after the level changes.
+     */
+    public void rebuild() {
+        initMaps();
     }
 
     private void addListeners() {

@@ -100,6 +100,7 @@ public class DebugConsole {
             case "help" -> helpCommand();
             case "clear" -> clearCommand();
             case "spawn" -> spawnCommand(args);
+            case "warp" -> warpCommand(args);
             case "log" -> logCommand(args);
             case "factionrel" -> logFactionRelations();
             case "dijkstra" -> dijkstraCommand(args);
@@ -119,6 +120,7 @@ public class DebugConsole {
               help           - Show this help message
               clear          - Clear the console output
               spawn <actor_id> - Spawn an actor near the player
+              warp <floor>   - Jump to a generated floor
               log <Category> [on/off] - Toggle debug logging category
               factionRel     - Logs faction relations in debug logger
               dijkstra [TYPE] - Toggle dijkstra map overlay (PLAYER, FACTION_MONSTER, etc.)
@@ -162,6 +164,34 @@ public class DebugConsole {
 
         var entity = EntityFactory.createEntity(actorId, gameWorld, pos);
         return "Spawned " + actorName + " at (" + spawnX + ", " + spawnY + ")";
+    }
+
+    private String warpCommand(String args) {
+        if (gameWorld == null) {
+            return "Error: GameWorld not initialized.";
+        }
+
+        if (args.isEmpty()) {
+            return "Usage: warp <floor>";
+        }
+
+        int floor;
+        try {
+            floor = Integer.parseInt(args.trim());
+        } catch (NumberFormatException e) {
+            return "Usage: warp <floor>";
+        }
+
+        if (floor < 1) {
+            return "Floor must be >= 1.";
+        }
+
+        gameWorld.enterLevel(floor);
+        var resolved = gameWorld.getCurrentResolved();
+        return "Warped to floor " + floor
+            + " | " + resolved.section().name()
+            + " - " + resolved.variation().displayName()
+            + " (" + resolved.role() + ")";
     }
 
     private String logCommand(String args) {

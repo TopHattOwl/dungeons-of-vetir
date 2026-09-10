@@ -85,6 +85,23 @@ public class TimeTurnManager {
         addActor(gameWorld.getPlayer());
     }
 
+    /**
+     * Rebuilds the actor queue for a fresh floor: drops everyone, restarts the world
+     * clock, and re-queues all current entities at the new base time.
+     */
+    public void reset(GameWorld gameWorld) {
+        actorQueue.clear();
+        turnEvent = new TurnEvent(TurnEvent.TURN_TIME_VALUE);
+        int base = turnEvent.getComponent(TimeValueComponent.class).timeValueSum;
+
+        for (Entity entity : gameWorld.getAllEntities()) {
+            TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
+            if (timeComp != null) timeComp.timeValueSum = base;
+            addActor(entity);
+        }
+        addActor(turnEvent);
+    }
+
 
     private void processActor(Entity entity, GameWorld gameWorld) {
         Action action = chooseActionForAi(entity , gameWorld);
@@ -114,6 +131,8 @@ public class TimeTurnManager {
     }
 
     private void addActor(Entity entity) {
+        // remove first so an entity is never queued twice
+        actorQueue.remove(entity);
         actorQueue.add(entity);
     }
 

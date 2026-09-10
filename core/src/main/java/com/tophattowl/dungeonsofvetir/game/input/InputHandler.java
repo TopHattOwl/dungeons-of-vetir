@@ -80,6 +80,16 @@ public class InputHandler implements InputProcessor {
                 return true;
             }
 
+            case Input.Keys.PERIOD -> {
+                pendingAction = ActionFactory.createDescendAction(player);
+                return true;
+            }
+
+            case Input.Keys.COMMA -> {
+                pendingAction = ActionFactory.createAscendAction(player);
+                return true;
+            }
+
             case Input.Keys.I -> {
                 pushMode(InputMode.INVENTORY);
                 EventBus.emit(new InventoryToggleRequestedEvent());
@@ -136,6 +146,19 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean keyTyped(char c) {
         InputMode mode = player.getComponent(PlayerComponent.class).getInputMode();
+
+        if (mode == InputMode.PLAYING) {
+            // '>' descends, '<' ascends (shift-free fallbacks are PERIOD/COMMA in keyDown)
+            if (c == '>') {
+                pendingAction = ActionFactory.createDescendAction(player);
+                return true;
+            }
+            if (c == '<') {
+                pendingAction = ActionFactory.createAscendAction(player);
+                return true;
+            }
+            return false;
+        }
 
         if (mode != InputMode.CONSOLE) {
             return false;

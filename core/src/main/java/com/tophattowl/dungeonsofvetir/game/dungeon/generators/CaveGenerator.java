@@ -1,57 +1,56 @@
-package com.tophattowl.dungeonsofvetir.game.dungeon;
+package com.tophattowl.dungeonsofvetir.game.dungeon.generators;
 
+import com.tophattowl.dungeonsofvetir.game.dungeon.GenerationContext;
+import com.tophattowl.dungeonsofvetir.game.dungeon.LevelGenerator;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Random;
 
 /**
  * Generates cave-like levels using cellular automata.
  * Algorithm:
  * 1. Fill grid randomly (wall/floor based on fillChance)
- * 2. Run several "smoothing" passes — a cell becomes wall if it has >= wallThreshold neighbours
+ * 2. Run several "smoothing" passes - a cell becomes wall if it has >= wallThreshold neighbours
  * 3. Flood-fill to find the largest connected open region
  * 4. Discard all open cells not in that region (so the cave is one connected space)
  * 5. Place stairs
  */
-public class CellularAutomataGenerator {
+public class CaveGenerator implements LevelGenerator {
 
-    // Tweak these to get different cave feels
-    private static final double FILL_CHANCE     = 0.48; // probability a cell starts as wall
-    private static final int    SMOOTH_PASSES   = 5;    // how many CA iterations
-    private static final int    WALL_THRESHOLD  = 5;   // neighbours needed to become/stay wall
+    private final CaveParams params;
 
-    // Floor variants — how many visual variants floor tiles have (0-based index)
-    private static final int    FLOOR_VARIANTS = 4;
-
-    private final Random rng;
-
-    public CellularAutomataGenerator(long seed) {
-        this.rng = new Random(seed);
+    public CaveGenerator() {
+        this(CaveParams.DEFAULT);
     }
 
-    public CellularAutomataGenerator() {
-        this.rng = new Random();
+    public CaveGenerator(CaveParams params) {
+        this.params = params;
     }
 
-    public Level generate(int floorNumber) {
-        Level level = new Level(floorNumber);
+    @Override
+    public Level generate(GenerationContext ctx) {
+        Level level = new Level(ctx.floorNumber());
+        Random rng = new Random(ctx.seed());
         boolean[][] grid = new boolean[Level.WIDTH][Level.HEIGHT]; // true = wall
 
         // --- Step 1: Random fill ---
         for (int x = 0; x < Level.WIDTH; x++) {
             for (int y = 0; y < Level.HEIGHT; y++) {
-                // Always wall on borders
                 if (x == 0 || y == 0 || x == Level.WIDTH - 1 || y == Level.HEIGHT - 1) {
                     grid[x][y] = true;
                 } else {
-                    grid[x][y] = rng.nextDouble() < FILL_CHANCE;
+                    grid[x][y] = rng.nextDouble() < params.fillChance();
                 }
             }
         }
 
         // --- Step 2: Smooth passes ---
-        for (int pass = 0; pass < SMOOTH_PASSES; pass++) {
+        for (int pass = 0; pass < params.smoothPasses(); pass++) {
             grid = smooth(grid);
         }
 
@@ -62,7 +61,7 @@ public class CellularAutomataGenerator {
         for (int x = 0; x < Level.WIDTH; x++) {
             for (int y = 0; y < Level.HEIGHT; y++) {
                 if (!grid[x][y] && inMainRegion[x][y]) {
-                    int variant = rng.nextInt(FLOOR_VARIANTS);
+                    int variant = rng.nextInt(params.floorVariants());
                     level.setTile(x, y, TileType.FLOOR, variant);
                 } else {
                     level.setTile(x, y, TileType.WALL, 0);
@@ -76,8 +75,6 @@ public class CellularAutomataGenerator {
         return level;
     }
 
-    // -------------------------------------------------------------------------
-
     private boolean[][] smooth(boolean[][] grid) {
         boolean[][] next = new boolean[Level.WIDTH][Level.HEIGHT];
         for (int x = 0; x < Level.WIDTH; x++) {
@@ -87,8 +84,7 @@ public class CellularAutomataGenerator {
                     continue;
                 }
                 int walls = countWallNeighbours(grid, x, y);
-                // rule: become wall if enough wall neighbours
-                next[x][y] = walls >= WALL_THRESHOLD;
+                next[x][y] = walls >= params.wallThreshold();
             }
         }
         return next;
@@ -112,8 +108,8 @@ public class CellularAutomataGenerator {
     }
 
     /**
-     * Flood fill from every open cell to find connected regions
-     * Returns a boolean grid marking only the largest region
+     * Flood fill from every open cell to find connected regions.
+     * Returns a boolean grid marking only the largest region.
      */
     private boolean[][] largestRegion(boolean[][] grid) {
         boolean[][] visited = new boolean[Level.WIDTH][Level.HEIGHT];
@@ -124,7 +120,6 @@ public class CellularAutomataGenerator {
             for (int startY = 0; startY < Level.HEIGHT; startY++) {
                 if (grid[startX][startY] || visited[startX][startY]) continue;
 
-                // BFS
                 boolean[][] region = new boolean[Level.WIDTH][Level.HEIGHT];
                 Queue<int[]> queue = new LinkedList<>();
                 queue.add(new int[]{startX, startY});
@@ -157,7 +152,6 @@ public class CellularAutomataGenerator {
     }
 
     private void placeStairs(Level level) {
-        // find open floor tiles for stairs placement
         List<int[]> floorTiles = new ArrayList<>();
         for (int x = 1; x < Level.WIDTH - 1; x++)
             for (int y = 1; y < Level.HEIGHT - 1; y++)
@@ -166,15 +160,14 @@ public class CellularAutomataGenerator {
 
         if (floorTiles.size() < 2) return; // shouldn't happen with a well-generated cave
 
-        // place stairs up near one end, stairs down near another
-        // Simple, pick two tiles that are far from each other
+        // Simple: pick two tiles far apart in scan order.
         // TODO: something more random
-        int[] upPos   = floorTiles.get(0);
+        int[] upPos = floorTiles.get(0);
         int[] downPos = floorTiles.get(floorTiles.size() - 1);
 
-        level.setTile(upPos[0],   upPos[1],   TileType.STAIRS_UP);
+        level.setTile(upPos[0], upPos[1], TileType.STAIRS_UP);
         level.setTile(downPos[0], downPos[1], TileType.STAIRS_DOWN);
     }
 
-    private static final int[][] DIRS = {{0,1},{0,-1},{1,0},{-1,0}};
+    private static final int[][] DIRS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 }

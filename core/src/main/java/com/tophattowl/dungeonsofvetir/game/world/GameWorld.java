@@ -7,9 +7,14 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.dungeon.DungeonGenerator;
 import com.tophattowl.dungeonsofvetir.game.dungeon.LevelPopulator;
+import com.tophattowl.dungeonsofvetir.game.dungeon.section.ResolvedFloor;
+import com.tophattowl.dungeonsofvetir.game.dungeon.section.SectionCatalog;
+import com.tophattowl.dungeonsofvetir.game.dungeon.section.WorldLayout;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.LevelChangedEvent;
+import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
 import com.tophattowl.dungeonsofvetir.game.items.systems.ItemSystem;
 import com.tophattowl.dungeonsofvetir.game.rng.SeedConfig;
@@ -30,7 +35,10 @@ public class GameWorld {
     private final Entity[][] entityMap = new Entity[Level.WIDTH][Level.HEIGHT];
 
     private Level currentLevel;
+    private int currentFloor;
+    private ResolvedFloor currentResolved;
     private final Entity player;
+    private final FovSystem fovSystem = new FovSystem();
 
     private DungeonGenerator dungeonGenerator;
     public DijkstraMapManager dijkstraMapManager;
@@ -42,7 +50,9 @@ public class GameWorld {
 
         initialize();
 
-        currentLevel = dungeonGenerator.generateLevel(1, worldSeed);
+        currentFloor = 1;
+        currentResolved = dungeonGenerator.resolve(1);
+        currentLevel = dungeonGenerator.generateLevel(1);
         Point playerSpawnPoint = findSpawn(currentLevel);
         player = EntityFactory.makePlayer(playerSpawnPoint);
         addEntity(player);
@@ -57,6 +67,57 @@ public class GameWorld {
 
     public Level getCurrentLevel() {
         return currentLevel;
+    }
+
+    public int getCurrentFloor() {
+        return currentFloor;
+    }
+
+    public ResolvedFloor getCurrentResolved() {
+        return currentResolved;
+    }
+
+    /**
+     * Recomputes field of view for every entity that has one.
+     */
+    public void updateFov() {
+        fovSystem.process(this);
+    }
+
+    /**
+     * Transitions the world to the given floor: regenerates the level, removes every
+     * entity except the player, repositions the player, resets the turn clock, and
+     * recomputes FOV + Dijkstra maps. Single entry point for stairs and debug warp.
+     */
+    public void enterLevel(int floorNumber) {
+        if (floorNumber < 1) return;
+
+        currentLevel = dungeonGenerator.generateLevel(floorNumber);
+        currentFloor = floorNumber;
+        currentResolved = dungeonGenerator.resolve(floorNumber);
+
+        for (Entity entity : new ArrayList<>(entities)) {
+            if (entity != player) removeEntity(entity);
+        }
+
+        for (int x = 0; x < Level.WIDTH; x++) {
+            for (int y = 0; y < Level.HEIGHT; y++) {
+                entityMap[x][y] = null;
+            }
+        }
+
+        Point spawn = findSpawn(currentLevel);
+        player.getComponent(PositionComponent.class).set(spawn);
+        entityMap[spawn.x][spawn.y] = player;
+
+        FovComponent playerFov = player.getComponent(FovComponent.class);
+        if (playerFov != null) playerFov.clearExplored();
+
+        timeTurnManager.reset(this);
+        updateFov();
+        if (dijkstraMapManager != null) dijkstraMapManager.rebuild();
+
+        EventBus.emit(new LevelChangedEvent(floorNumber, currentResolved));
     }
 
     /**
@@ -119,7 +180,9 @@ public class GameWorld {
 
     private void initialize() {
         timeTurnManager = new TimeTurnManager();
-        dungeonGenerator = new DungeonGenerator();
+        dungeonGenerator = new DungeonGenerator(
+            new WorldLayout(worldSeed, SectionCatalog.defaultCatalog())
+        );
 
         ActionHandler.setGameWorld(this);
 

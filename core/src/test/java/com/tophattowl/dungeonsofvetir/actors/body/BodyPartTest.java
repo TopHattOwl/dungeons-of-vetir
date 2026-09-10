@@ -148,21 +148,21 @@ class BodyPartTest {
     }
 
     @Test
-    void takeDamage_StatusBoundary_At60Percent() {
+    void takeDamage_StatusBoundary_At60Percent_IsHealthy() {
         BodyPart part = new BodyPart("torso", BodyPartType.TORSO, BodyPartRole.VITAL,
             null, 100, 0, 0.3f, 0.3f, 1.0f);
         int damageTo60Percent = (int) (100 * (1 - 0.6) / 0.4);
         part.takeDamage(damageTo60Percent);
-        assertEquals(BodyPartStatus.INJURED, part.status);
+        assertEquals(BodyPartStatus.HEALTHY, part.status);
     }
 
     @Test
-    void takeDamage_StatusBoundary_At30Percent() {
+    void takeDamage_StatusBoundary_At30Percent_IsInjured() {
         BodyPart part = new BodyPart("torso", BodyPartType.TORSO, BodyPartRole.VITAL,
             null, 100, 0, 0.3f, 0.3f, 1.0f);
         int damageTo30Percent = (int) ((1 - 0.3) / 0.4 * 100);
         part.takeDamage(damageTo30Percent);
-        assertEquals(BodyPartStatus.CRIPPLED, part.status);
+        assertEquals(BodyPartStatus.INJURED, part.status);
     }
 
     @Test

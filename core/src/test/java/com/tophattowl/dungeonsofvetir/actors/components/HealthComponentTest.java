@@ -65,36 +65,36 @@ class HealthComponentTest {
     @Test
     void takeDamage_UpdatesStatus_Fine() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(40);
+        health.takeDamage(20);
         assertEquals(HealthStatus.FINE, health.status);
     }
 
     @Test
     void takeDamage_UpdatesStatus_Hurt() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(60);
+        health.takeDamage(40);
         assertEquals(HealthStatus.HURT, health.status);
     }
 
     @Test
     void takeDamage_UpdatesStatus_Injured() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(75);
+        health.takeDamage(60);
         assertEquals(HealthStatus.INJURED, health.status);
     }
 
     @Test
     void takeDamage_UpdatesStatus_Critical() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(90);
+        health.takeDamage(70);
         assertEquals(HealthStatus.CRITICAL, health.status);
     }
 
     @Test
-    void status_Healthy_Above70Percent() {
+    void status_Healthy_At90Percent() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(29);
-        assertEquals(71, health.hp);
+        health.takeDamage(10);
+        assertEquals(90, health.hp);
         assertEquals(HealthStatus.HEALTHY, health.status);
     }
 
@@ -107,10 +107,10 @@ class HealthComponentTest {
     }
 
     @Test
-    void status_Fine_Below70Above50() {
+    void status_Fine_Below90Above70() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(40);
-        assertEquals(60, health.hp);
+        health.takeDamage(20);
+        assertEquals(80, health.hp);
         assertEquals(HealthStatus.FINE, health.status);
     }
 
@@ -123,10 +123,10 @@ class HealthComponentTest {
     }
 
     @Test
-    void status_Hurt_Below50Above35() {
+    void status_Hurt_Below70Above50() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(60);
-        assertEquals(40, health.hp);
+        health.takeDamage(40);
+        assertEquals(60, health.hp);
         assertEquals(HealthStatus.HURT, health.status);
     }
 
@@ -139,10 +139,10 @@ class HealthComponentTest {
     }
 
     @Test
-    void status_Injured_Below35Above20() {
+    void status_Injured_Below50Above35() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(75);
-        assertEquals(25, health.hp);
+        health.takeDamage(60);
+        assertEquals(40, health.hp);
         assertEquals(HealthStatus.INJURED, health.status);
     }
 
@@ -155,10 +155,10 @@ class HealthComponentTest {
     }
 
     @Test
-    void status_Critical_Below20() {
+    void status_Critical_Below35() {
         HealthComponent health = new HealthComponent(100);
-        health.takeDamage(85);
-        assertEquals(15, health.hp);
+        health.takeDamage(70);
+        assertEquals(30, health.hp);
         assertEquals(HealthStatus.CRITICAL, health.status);
     }
 
@@ -186,6 +186,6 @@ class HealthComponentTest {
         assertEquals(0.7f, HealthStatus.FINE.threshold);
         assertEquals(0.5f, HealthStatus.HURT.threshold);
         assertEquals(0.35f, HealthStatus.INJURED.threshold);
-        assertEquals(0.2f, HealthStatus.CRITICAL.threshold);
+        assertEquals(0.0f, HealthStatus.CRITICAL.threshold);
     }
 }

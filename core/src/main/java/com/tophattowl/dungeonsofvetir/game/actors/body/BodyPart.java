@@ -10,9 +10,6 @@ import java.util.List;
 public class BodyPart {
     private Entity owner;
 
-    private static final float CRIPPLED_THRESHOLD = 0.3f;
-    private static final float INJURED_THRESHOLD = 0.6f;
-
     private static final float BODY_PART_DAMAGE_MULTIPLIER = 0.4f;
 
     public final String name;
@@ -75,12 +72,16 @@ public class BodyPart {
     }
 
     private void updateStatus() {
+        if (hp <= 0) {
+            setStatus(BodyPartStatus.DESTROYED);
+            return;
+        }
+
         float ratio = (float) hp/maxHp;
 
-        if (ratio <= 0f)                        setStatus(BodyPartStatus.DESTROYED);
-        else if (ratio <= CRIPPLED_THRESHOLD)   setStatus(BodyPartStatus.CRIPPLED);
-        else if (ratio <= INJURED_THRESHOLD)    setStatus(BodyPartStatus.INJURED);
-        else                                    setStatus(BodyPartStatus.HEALTHY);
+        if (ratio >= BodyPartStatus.HEALTHY.threshold)      setStatus(BodyPartStatus.HEALTHY);
+        else if (ratio >= BodyPartStatus.INJURED.threshold) setStatus(BodyPartStatus.INJURED);
+        else                                                setStatus(BodyPartStatus.CRIPPLED);
     }
 
     private void setStatus(BodyPartStatus status) {
