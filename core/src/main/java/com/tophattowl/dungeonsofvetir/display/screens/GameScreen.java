@@ -5,13 +5,18 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.tophattowl.dungeonsofvetir.display.assets.TextureRegistry;
 import com.tophattowl.dungeonsofvetir.display.camera.CameraController;
 import com.tophattowl.dungeonsofvetir.display.renderer.DijkstraOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.FovOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
-import com.tophattowl.dungeonsofvetir.display.tilesets.PaletteTileset;
+import com.tophattowl.dungeonsofvetir.display.sprites.SpriteLibrary;
+import com.tophattowl.dungeonsofvetir.display.tilesets.TerrainTilesetRegistry;
 import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
 import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
@@ -40,29 +45,32 @@ import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
 import java.util.Random;
 
 public class GameScreen implements Screen {
-    // Layout constants
-    private static final int WIN_W       = 1280;
-    private static final int WIN_H       = 800;
-    private static final int TOP_BAR_H   = 32;
-    private static final int SIDE_W      = HudRenderer.SIDE_W;
-    private static final int BOTTOM_H    = 96;
-    public  static final int VIEWPORT_W  = WIN_W - SIDE_W;   // 1024
-    public  static final int VIEWPORT_H  = WIN_H - TOP_BAR_H - BOTTOM_H; // 672
-    public  static final int VIEWPORT_X  = 0;
-    public  static final int VIEWPORT_Y  = BOTTOM_H;         // 96
+    // Layout constants (virtual design resolution; scaled to the window at runtime)
+    private static final int VIRTUAL_W  = 1280;
+    private static final int VIRTUAL_H  = 800;
+    private static final int TOP_BAR_H  = 32;
+    private static final int SIDE_W     = HudRenderer.SIDE_W;
+    private static final int BOTTOM_H   = 96;
+    public  static final int VIEWPORT_W = VIRTUAL_W - SIDE_W;             // 1024
+    public  static final int VIEWPORT_H = VIRTUAL_H - TOP_BAR_H - BOTTOM_H; // 672
+    public  static final int VIEWPORT_X = 0;
+    public  static final int VIEWPORT_Y = BOTTOM_H;                       // 96
 
     public  static final int ACTOR_PROCESS_COUNT = 10;
 
     // display
     private SpriteBatch batch;
     private BitmapFont font;
-    private PaletteTileset tileset;
+    private TextureRegistry textures;
+    private SpriteLibrary sprites;
+    private TerrainTilesetRegistry terrains;
     private WorldRenderer worldRenderer;
     private FovOverlayRenderer fovOverlayRenderer;
     private DijkstraOverlayRenderer dijkstraOverlayRenderer;
     private CameraController cameraController;
     private DebugConsoleRenderer  debugConsoleRenderer;
     private HudRenderer hudRenderer;
+    private Viewport viewport;
 
     // game
     private GameWorld gameWorld;
@@ -79,15 +87,24 @@ public class GameScreen implements Screen {
         // display
         batch = new SpriteBatch();
         font = new BitmapFont();
-        tileset = new PaletteTileset(gameWorld.getCurrentResolved().theme());
+        font.getRegion().getTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+
+        textures = new TextureRegistry();
+        sprites = new SpriteLibrary(textures);
+        terrains = new TerrainTilesetRegistry(textures);
+
+        viewport = new FitViewport(VIRTUAL_W, VIRTUAL_H);
+        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
         cameraController = new CameraController(VIEWPORT_W, VIEWPORT_H);
-        worldRenderer = new WorldRenderer(batch, tileset);
+        worldRenderer = new WorldRenderer(
+            batch, terrains.get(gameWorld.getCurrentResolved().theme()), sprites
+        );
         fovOverlayRenderer = new FovOverlayRenderer();
         worldRenderer.setFovOverlayRenderer(fovOverlayRenderer);
         dijkstraOverlayRenderer = new DijkstraOverlayRenderer(batch, font);
-        debugConsoleRenderer = new DebugConsoleRenderer(WIN_W, WIN_H, font);
-        hudRenderer = new HudRenderer(WIN_W, WIN_H, font);
+        debugConsoleRenderer = new DebugConsoleRenderer(VIRTUAL_W, VIRTUAL_H, font);
+        hudRenderer = new HudRenderer(VIRTUAL_W, VIRTUAL_H, font);
 
         debugConsole.setGameWorld(gameWorld);
         dijkstraOverlayRenderer.setGameWorld(gameWorld);
@@ -122,7 +139,7 @@ public class GameScreen implements Screen {
     }
 
     private void onLevelChanged(LevelChangedEvent event) {
-        tileset.setTheme(event.resolved().theme());
+        worldRenderer.setTerrain(terrains.get(event.resolved().theme()));
         PositionComponent pos = gameWorld.getPlayer().getComponent(PositionComponent.class);
         cameraController.centerOn(pos.getX(), pos.getY());
     }
@@ -182,9 +199,16 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Set the GL viewport to the game area only
-        // this makes the camera render into the correct screen region and not clip it
-        HdpiUtils.glViewport(VIEWPORT_X, VIEWPORT_Y, VIEWPORT_W, VIEWPORT_H);
+        // World renders into the game sub-rectangle of the scaled virtual screen.
+        // The virtual layout is scaled uniformly by the FitViewport, so the sub-rect
+        // is the virtual region transformed by the viewport's scale + letterbox offset.
+        float scale = viewport.getScreenWidth() / (float) VIRTUAL_W;
+        int worldX = viewport.getScreenX() + Math.round(VIEWPORT_X * scale);
+        int worldY = viewport.getScreenY() + Math.round(VIEWPORT_Y * scale);
+        int worldW = Math.round(VIEWPORT_W * scale);
+        int worldH = Math.round(VIEWPORT_H * scale);
+
+        HdpiUtils.glViewport(worldX, worldY, worldW, worldH);
 
         batch.setProjectionMatrix(cameraController.getCamera().combined);
         batch.begin();
@@ -194,9 +218,12 @@ public class GameScreen implements Screen {
         fovOverlayRenderer.render(gameWorld, cameraController.getCamera());
         dijkstraOverlayRenderer.render(cameraController.getCamera());
 
-        // restore full viewport for HUD rendering
-        HdpiUtils.glViewport(0, 0, WIN_W, WIN_H);
-        batch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0 , WIN_W, WIN_H));
+        // Full virtual screen for the HUD, in virtual pixel coordinates.
+        viewport.apply();
+        Matrix4 hudProjection = viewport.getCamera().combined;
+        batch.setProjectionMatrix(hudProjection);
+        hudRenderer.setProjectionMatrix(hudProjection);
+        debugConsoleRenderer.setProjectionMatrix(hudProjection);
 
         batch.begin();
         debugConsoleRenderer.render(batch);
@@ -206,7 +233,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        cameraController.resize(width, height);
+        viewport.update(width, height, true);
     }
 
     @Override
@@ -228,7 +255,8 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();
         font.dispose();
-        tileset.dispose();
+        terrains.dispose();
+        textures.dispose();
         fovOverlayRenderer.dispose();
         dijkstraOverlayRenderer.dispose();
         debugConsoleRenderer.dispose();

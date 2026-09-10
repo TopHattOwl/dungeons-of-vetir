@@ -47,8 +47,4 @@ public class CameraController {
     public OrthographicCamera getCamera() {
         return camera;
     }
-
-    public void resize(int width, int height) {
-        camera.update();
-    }
 }

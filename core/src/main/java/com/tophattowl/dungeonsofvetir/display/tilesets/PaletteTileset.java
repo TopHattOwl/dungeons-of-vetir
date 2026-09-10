@@ -3,6 +3,7 @@ package com.tophattowl.dungeonsofvetir.display.tilesets;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.tophattowl.dungeonsofvetir.game.dungeon.section.TileTheme;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
@@ -11,9 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Procedural placeholder tileset whose palette is driven by a {@link TileTheme}.
- * Textures are rebuilt in place when the theme changes, so renderers can keep a
- * stable reference across floor transitions.
+ * Procedural fallback terrain tileset, palette-driven by a {@link TileTheme}.
+ * Used for themes that don't have art yet. Entity sprites do not belong here.
  */
 public class PaletteTileset implements Tileset {
 
@@ -23,21 +23,10 @@ public class PaletteTileset implements Tileset {
     private final Map<String, Texture> textures = new HashMap<>();
     private final Map<String, TextureRegion> regions = new HashMap<>();
 
-    private TileTheme theme;
+    private final TileTheme theme;
 
     public PaletteTileset(TileTheme theme) {
         this.theme = theme;
-        rebuild();
-    }
-
-    public TileTheme getTheme() {
-        return theme;
-    }
-
-    public void setTheme(TileTheme theme) {
-        if (this.theme == theme) return;
-        this.theme = theme;
-        disposeTextures();
         rebuild();
     }
 
@@ -58,8 +47,6 @@ public class PaletteTileset implements Tileset {
         add("door_open", palette.doorOpen());
         add("door_closed", palette.doorClosed());
 
-        // entities (theme-independent placeholders)
-        add("player", new Color(1f, 1f, 1f, 1f));
         add("unknown", new Color(1f, 0f, 1f, 1f));
     }
 
@@ -131,6 +118,7 @@ public class PaletteTileset implements Tileset {
         px.drawRectangle(0, 0, TILE_W, TILE_H);
 
         Texture tex = new Texture(px);
+        tex.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
         px.dispose();
 
         textures.put(key, tex);
@@ -149,11 +137,6 @@ public class PaletteTileset implements Tileset {
             case DOOR_CLOSED -> "door_closed";
         };
         return regions.getOrDefault(key, regions.get("unknown"));
-    }
-
-    @Override
-    public TextureRegion getSprite(String spriteId) {
-        return regions.getOrDefault(spriteId, regions.get("unknown"));
     }
 
     private void disposeTextures() {

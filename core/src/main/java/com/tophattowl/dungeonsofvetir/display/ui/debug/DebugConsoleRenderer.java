@@ -3,6 +3,7 @@ package com.tophattowl.dungeonsofvetir.display.ui.debug;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.tophattowl.dungeonsofvetir.display.theme.Theme;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
 
@@ -18,12 +19,18 @@ public class DebugConsoleRenderer {
     private final BitmapFont font;
     private final int screenW;
     private final int screenH;
+    private Matrix4 projection;
 
     public DebugConsoleRenderer(int screenW, int screenH, BitmapFont font) {
         this.screenW = screenW;
         this.screenH = screenH;
         this.font = font;
         this.shapeRenderer = new ShapeRenderer();
+        this.projection = new Matrix4().setToOrtho2D(0, 0, screenW, screenH);
+    }
+
+    public void setProjectionMatrix(Matrix4 projection) {
+        this.projection = projection;
     }
 
     public void setDebugConsole(DebugConsole console) {
@@ -40,6 +47,7 @@ public class DebugConsoleRenderer {
         batch.end();
         com.badlogic.gdx.Gdx.gl.glEnable(com.badlogic.gdx.graphics.GL20.GL_BLEND);
 
+        shapeRenderer.setProjectionMatrix(projection);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Theme.CONSOLE_BG);
         shapeRenderer.rect(consoleX, consoleY, CONSOLE_W, CONSOLE_H);
@@ -49,6 +57,7 @@ public class DebugConsoleRenderer {
         int inputAreaHeight = LINE_H + PADDING * 3;
         int separatorY = consoleY + inputAreaHeight;
 
+        shapeRenderer.setProjectionMatrix(projection);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Theme.CONSOLE_BORDER);
         shapeRenderer.rect(consoleX, consoleY, CONSOLE_W, CONSOLE_H);
