@@ -21,6 +21,14 @@ public class ActionFactory {
         return new MeleeAttackAction(owner, target);
     }
 
+    public static DescendAction createDescendAction(Entity owner) {
+        return new DescendAction(owner);
+    }
+
+    public static AscendAction createAscendAction(Entity owner) {
+        return new AscendAction(owner);
+    }
+
     public static EquipAction createEquipAction(Entity owner, Item item,
                                                 BodyPart bodyPart, EquipmentSlotType slotType) {
         return new EquipAction(owner, item, bodyPart, slotType);

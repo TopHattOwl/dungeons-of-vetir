@@ -1,10 +1,11 @@
 package com.tophattowl.dungeonsofvetir.game.ECS;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 
 import java.util.*;
 
-public class Entity {
+public class Entity implements Disposable {
     private static int nextId = 0;
 
     public final int id;
@@ -59,4 +60,23 @@ public class Entity {
         return sb.toString();
     }
 
+    public void dispose() {
+        for (Component comp : components.values()) {
+            if (comp instanceof Disposable disposeComp) {
+                disposeComp.dispose();
+            }
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Entity entity = (Entity) o;
+        return id == entity.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

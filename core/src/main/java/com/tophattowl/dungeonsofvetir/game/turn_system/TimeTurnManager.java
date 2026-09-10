@@ -9,6 +9,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.EventSubscriptions;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class TimeTurnManager {
-    private final List<EventBus.ListenerHandle<?>> listenerHandles = new ArrayList<>();
+    private final EventSubscriptions eventSubs = new EventSubscriptions();
 
     private PriorityQueue<Entity> actorQueue;
     private TurnEvent turnEvent;
@@ -84,6 +85,23 @@ public class TimeTurnManager {
         addActor(gameWorld.getPlayer());
     }
 
+    /**
+     * Rebuilds the actor queue for a fresh floor: drops everyone, restarts the world
+     * clock, and re-queues all current entities at the new base time.
+     */
+    public void reset(GameWorld gameWorld) {
+        actorQueue.clear();
+        turnEvent = new TurnEvent(TurnEvent.TURN_TIME_VALUE);
+        int base = turnEvent.getComponent(TimeValueComponent.class).timeValueSum;
+
+        for (Entity entity : gameWorld.getAllEntities()) {
+            TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
+            if (timeComp != null) timeComp.timeValueSum = base;
+            addActor(entity);
+        }
+        addActor(turnEvent);
+    }
+
 
     private void processActor(Entity entity, GameWorld gameWorld) {
         Action action = chooseActionForAi(entity , gameWorld);
@@ -113,6 +131,8 @@ public class TimeTurnManager {
     }
 
     private void addActor(Entity entity) {
+        // remove first so an entity is never queued twice
+        actorQueue.remove(entity);
         actorQueue.add(entity);
     }
 
@@ -163,12 +183,12 @@ public class TimeTurnManager {
     }
 
     private void addListeners() {
-        listenerHandles.add(EventBus.on(EntityAddedEvent.class, e -> {
+        eventSubs.on(EntityAddedEvent.class, e -> {
             addActor(e.entity());
-        }));
-        listenerHandles.add(EventBus.on(EntityRemovedEvent.class, e -> {
+        });
+        eventSubs.on(EntityRemovedEvent.class, e -> {
             removeActor(e.entity());
-        }));
+        });
     }
 
     private void passTurn() {
@@ -196,7 +216,7 @@ public class TimeTurnManager {
     }
 
     public void dispose() {
-        listenerHandles.forEach(EventBus::off);
+        eventSubs.unsubscribeAll();
         actorQueue.clear();
     }
 

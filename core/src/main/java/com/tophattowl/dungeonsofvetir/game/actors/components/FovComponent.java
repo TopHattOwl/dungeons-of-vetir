@@ -35,4 +35,10 @@ public class FovComponent implements Component {
             Arrays.fill(col, false);
         }
     }
+
+    public void clearExplored() {
+        for (boolean[] col : exploredTiles) {
+            Arrays.fill(col, false);
+        }
+    }
 }

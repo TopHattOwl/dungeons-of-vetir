@@ -13,6 +13,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.IdentityComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.action.MeleeAttackAction;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.EventSubscriptions;
 import com.tophattowl.dungeonsofvetir.game.event.events.ActionCompletedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 
@@ -40,7 +41,7 @@ public class HudRenderer {
     private Entity player;
     private Entity targetEntity;
 
-    private final List<EventBus.ListenerHandle<?>> listeners = new ArrayList<>();
+    private final EventSubscriptions eventSubs = new EventSubscriptions();
 
     public HudRenderer(int screenW, int screenH, BitmapFont font) {
         this.screenW = screenW;
@@ -52,8 +53,8 @@ public class HudRenderer {
         this.titleFont = new BitmapFont();
         this.titleFont.getData().setScale(1.2f);
 
-        listeners.add(EventBus.on(ActionCompletedEvent.class, this::onActionCompleted));
-        listeners.add(EventBus.on(EntityRemovedEvent.class, this::onEntityRemoved));
+        eventSubs.on(ActionCompletedEvent.class, this::onActionCompleted);
+        eventSubs.on(EntityRemovedEvent.class, this::onEntityRemoved);
     }
 
     public void setPlayer(Entity player) {
@@ -73,7 +74,7 @@ public class HudRenderer {
     }
 
     private void onEntityRemoved(EntityRemovedEvent event) {
-        if (event.entity() == targetEntity) {
+        if (event.entity().equals(targetEntity)) {
             targetEntity = null;
         }
     }
@@ -198,7 +199,6 @@ public class HudRenderer {
     public void dispose() {
         titleFont.dispose();
         shapeRenderer.dispose();
-        listeners.forEach(EventBus::off);
-        listeners.clear();
+        eventSubs.unsubscribeAll();
     }
 }

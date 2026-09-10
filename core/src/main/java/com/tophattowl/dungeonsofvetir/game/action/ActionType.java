@@ -15,6 +15,9 @@ public enum ActionType {
     EQUIP(50),
     UNEQUIP(50),
     SWAP_EQUIPMENT(100),
+
+    DESCEND_STAIRS(100),
+    ASCEND_STAIRS(100),
     ;
 
     private final int baseCost;

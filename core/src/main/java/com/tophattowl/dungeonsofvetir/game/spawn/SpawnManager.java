@@ -5,6 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.EventSubscriptions;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.ActorRegistry;
@@ -21,7 +22,7 @@ import java.util.random.RandomGenerator;
 public class SpawnManager {
     private final SpawnConfig config;
     private final AtomicInteger currentBudget;
-    private final List<EventBus.ListenerHandle<?>> listeners = new ArrayList<>();
+    private final EventSubscriptions eventSubs = new EventSubscriptions();
 
     public SpawnManager(SpawnConfig config) {
         this.config = config;
@@ -133,6 +134,7 @@ public class SpawnManager {
         currentBudget.set(newBudget);
     }
 
+    // TODO: what is this bro??
     private void onEntityRemoved(EntityRemovedEvent event) {
         if (event.entity().hasComponent(PositionComponent.class)) {
             PositionComponent pos = event.entity().getComponent(PositionComponent.class);
@@ -146,11 +148,10 @@ public class SpawnManager {
     }
 
     private void addListeners() {
-        listeners.add(EventBus.on(TurnPassedEvent.class, e -> tick()));
+        eventSubs.on(TurnPassedEvent.class, e -> tick());
     }
 
     public void dispose() {
-        listeners.forEach(EventBus::off);
-        listeners.clear();
+        eventSubs.unsubscribeAll();
     }
 }

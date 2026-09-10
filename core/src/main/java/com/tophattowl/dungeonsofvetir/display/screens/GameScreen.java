@@ -11,8 +11,7 @@ import com.tophattowl.dungeonsofvetir.display.camera.CameraController;
 import com.tophattowl.dungeonsofvetir.display.renderer.DijkstraOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.FovOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
-import com.tophattowl.dungeonsofvetir.display.tilesets.PlaceholderTileset;
-import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
+import com.tophattowl.dungeonsofvetir.display.tilesets.PaletteTileset;
 import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
 import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
@@ -22,7 +21,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
-import com.tophattowl.dungeonsofvetir.game.ECS.systems.FovSystem;
+import com.tophattowl.dungeonsofvetir.game.event.events.LevelChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.game.factory.items.ItemFactory;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
@@ -57,7 +56,7 @@ public class GameScreen implements Screen {
     // display
     private SpriteBatch batch;
     private BitmapFont font;
-    private Tileset tileset;
+    private PaletteTileset tileset;
     private WorldRenderer worldRenderer;
     private FovOverlayRenderer fovOverlayRenderer;
     private DijkstraOverlayRenderer dijkstraOverlayRenderer;
@@ -68,15 +67,19 @@ public class GameScreen implements Screen {
     // game
     private GameWorld gameWorld;
     private InputHandler inputHandler;
-    private FovSystem fovSystem;
     private DebugConsole debugConsole;
 
     @Override
     public void show() {
+        // game first: the tileset palette depends on the starting floor
+        gameWorld = new GameWorld(SeedConfig.custom(178439));
+        inputHandler = new InputHandler(gameWorld.getPlayer());
+        debugConsole = new DebugConsole();
+
         // display
         batch = new SpriteBatch();
         font = new BitmapFont();
-        tileset = new PlaceholderTileset();
+        tileset = new PaletteTileset(gameWorld.getCurrentResolved().theme());
 
         cameraController = new CameraController(VIEWPORT_W, VIEWPORT_H);
         worldRenderer = new WorldRenderer(batch, tileset);
@@ -86,13 +89,6 @@ public class GameScreen implements Screen {
         debugConsoleRenderer = new DebugConsoleRenderer(WIN_W, WIN_H, font);
         hudRenderer = new HudRenderer(WIN_W, WIN_H, font);
 
-
-        // game
-        gameWorld = new GameWorld(SeedConfig.custom(178439));
-        inputHandler = new InputHandler(gameWorld.getPlayer());
-        fovSystem = new FovSystem();
-        debugConsole = new DebugConsole();
-
         debugConsole.setGameWorld(gameWorld);
         dijkstraOverlayRenderer.setGameWorld(gameWorld);
         debugConsole.setDijkstraOverlayRenderer(dijkstraOverlayRenderer);
@@ -100,10 +96,12 @@ public class GameScreen implements Screen {
 
         hudRenderer.setPlayer(gameWorld.getPlayer());
 
-        fovSystem.process(gameWorld);
+        gameWorld.updateFov();
         gameWorld.addDijkstraMapManager(new DijkstraMapManager(gameWorld));
 
         Gdx.input.setInputProcessor(inputHandler);
+
+        EventBus.on(LevelChangedEvent.class, this::onLevelChanged);
 
         Point playerPos = gameWorld.getPlayer().getComponent(PositionComponent.class).getPosition();
         cameraController.centerOn(playerPos.x,  playerPos.y);
@@ -121,6 +119,12 @@ public class GameScreen implements Screen {
 
         EquipmentComponent ec = player.getComponent(EquipmentComponent.class);
         System.out.println(ec);
+    }
+
+    private void onLevelChanged(LevelChangedEvent event) {
+        tileset.setTheme(event.resolved().theme());
+        PositionComponent pos = gameWorld.getPlayer().getComponent(PositionComponent.class);
+        cameraController.centerOn(pos.getX(), pos.getY());
     }
 
     @Override
@@ -154,7 +158,7 @@ public class GameScreen implements Screen {
                 "Action successful by player\n" + actionFinal
             );
             playerComp.isPlayersTurn = false;
-            fovSystem.process(gameWorld);
+            gameWorld.updateFov();
             PositionComponent posComp = player.getComponent(PositionComponent.class);
             cameraController.centerOn(posComp.getX(), posComp.getY());
             gameWorld.timeTurnManager.onPlayerActionCompleted(gameWorld);
