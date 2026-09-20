@@ -1,6 +1,7 @@
 package com.tophattowl.dungeonsofvetir.display.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -8,6 +9,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.tophattowl.dungeonsofvetir.display.assets.TextureRegistry;
@@ -17,7 +21,8 @@ import com.tophattowl.dungeonsofvetir.display.renderer.FovOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
 import com.tophattowl.dungeonsofvetir.display.sprites.SpriteLibrary;
 import com.tophattowl.dungeonsofvetir.display.tilesets.TerrainTilesetRegistry;
-import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
+import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleSkinFactory;
+import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleView;
 import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
@@ -27,6 +32,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.event.events.LevelChangedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleActiveChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.game.factory.items.ItemFactory;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
@@ -68,9 +74,11 @@ public class GameScreen implements Screen {
     private FovOverlayRenderer fovOverlayRenderer;
     private DijkstraOverlayRenderer dijkstraOverlayRenderer;
     private CameraController cameraController;
-    private DebugConsoleRenderer  debugConsoleRenderer;
     private HudRenderer hudRenderer;
     private Viewport viewport;
+    private Stage stage;
+    private Skin uiSkin;
+    private DebugConsoleView debugConsoleView;
 
     // game
     private GameWorld gameWorld;
@@ -103,22 +111,32 @@ public class GameScreen implements Screen {
         fovOverlayRenderer = new FovOverlayRenderer();
         worldRenderer.setFovOverlayRenderer(fovOverlayRenderer);
         dijkstraOverlayRenderer = new DijkstraOverlayRenderer(batch, font);
-        debugConsoleRenderer = new DebugConsoleRenderer(VIRTUAL_W, VIRTUAL_H, font);
         hudRenderer = new HudRenderer(VIRTUAL_W, VIRTUAL_H, font);
+
+        // Scene2D debug console
+        uiSkin = DebugConsoleSkinFactory.create(font);
+        debugConsoleView = new DebugConsoleView(debugConsole, uiSkin);
+        debugConsoleView.setPosition(
+            (VIRTUAL_W - debugConsoleView.getWidth()) / 2f,
+            (VIRTUAL_H - debugConsoleView.getHeight()) / 2f
+        );
+        stage = new Stage(viewport);
+        stage.addActor(debugConsoleView);
+        setConsoleVisible(false);
 
         debugConsole.setGameWorld(gameWorld);
         dijkstraOverlayRenderer.setGameWorld(gameWorld);
-        debugConsole.setDijkstraOverlayRenderer(dijkstraOverlayRenderer);
-        debugConsoleRenderer.setDebugConsole(debugConsole);
+        debugConsole.setDijkstraOverlayControl(dijkstraOverlayRenderer);
 
         hudRenderer.setPlayer(gameWorld.getPlayer());
 
         gameWorld.updateFov();
         gameWorld.addDijkstraMapManager(new DijkstraMapManager(gameWorld));
 
-        Gdx.input.setInputProcessor(inputHandler);
+        Gdx.input.setInputProcessor(new InputMultiplexer(inputHandler, stage));
 
         EventBus.on(LevelChangedEvent.class, this::onLevelChanged);
+        EventBus.on(ConsoleActiveChangedEvent.class, this::onConsoleActiveChanged);
 
         Point playerPos = gameWorld.getPlayer().getComponent(PositionComponent.class).getPosition();
         cameraController.centerOn(playerPos.x,  playerPos.y);
@@ -144,10 +162,28 @@ public class GameScreen implements Screen {
         cameraController.centerOn(pos.getX(), pos.getY());
     }
 
+    private void onConsoleActiveChanged(ConsoleActiveChangedEvent event) {
+        setConsoleVisible(event.active());
+    }
+
+    private void setConsoleVisible(boolean visible) {
+        debugConsoleView.setVisible(visible);
+        debugConsoleView.setTouchable(visible ? Touchable.enabled : Touchable.disabled);
+
+        if (visible) {
+            debugConsoleView.refresh();
+            stage.setKeyboardFocus(debugConsoleView.getInputField());
+            debugConsoleView.focusInput();
+        } else {
+            stage.setKeyboardFocus(null);
+        }
+    }
+
     @Override
     public void render(float v) {
         input();
         logic();
+        stage.act(v);
         draw();
     }
 
@@ -223,12 +259,13 @@ public class GameScreen implements Screen {
         Matrix4 hudProjection = viewport.getCamera().combined;
         batch.setProjectionMatrix(hudProjection);
         hudRenderer.setProjectionMatrix(hudProjection);
-        debugConsoleRenderer.setProjectionMatrix(hudProjection);
 
         batch.begin();
-        debugConsoleRenderer.render(batch);
         hudRenderer.render(batch);
         batch.end();
+
+        // console overlay on top, in virtual pixel coordinates
+        stage.draw();
     }
 
     @Override
@@ -259,8 +296,11 @@ public class GameScreen implements Screen {
         textures.dispose();
         fovOverlayRenderer.dispose();
         dijkstraOverlayRenderer.dispose();
-        debugConsoleRenderer.dispose();
         hudRenderer.dispose();
+        debugConsoleView.dispose();
+        inputHandler.dispose();
+        stage.dispose();
+        uiSkin.dispose();
         debugConsole.dispose();
         gameWorld.dispose();
         EventBus.clear();

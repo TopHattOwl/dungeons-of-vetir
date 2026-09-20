@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.tophattowl.dungeonsofvetir.display.tilesets.Tileset;
+import com.tophattowl.dungeonsofvetir.game.debug.DijkstraOverlayControl;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapType;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.maps.DijkstraMap;
 
-public class DijkstraOverlayRenderer {
+public class DijkstraOverlayRenderer implements DijkstraOverlayControl {
     private static final float MAX_DISPLAY_VALUE = 100f;
     private static final float TEXT_SCALE = 0.8f;
 
