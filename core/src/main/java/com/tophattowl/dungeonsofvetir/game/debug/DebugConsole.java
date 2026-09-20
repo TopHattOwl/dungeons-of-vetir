@@ -4,9 +4,8 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleActiveChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleToggleRequestedEvent;
-import com.tophattowl.dungeonsofvetir.game.event.events.input.UiKeyTypedEvent;
-import com.tophattowl.dungeonsofvetir.display.renderer.DijkstraOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
@@ -15,26 +14,28 @@ import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Command model for the debug console
+ * <p>
+ * Display-free: the Scene2D view and the input handler observe it via events
+ */
 public class DebugConsole {
-    private boolean active = false;
-    private final StringBuilder inputBuffer = new StringBuilder();
-    private final List<String> outputLines = new ArrayList<>();
 
-    private static final int MAX_OUTPUT_LINES = 50;
+    private static final int MAX_OUTPUT_LINES = 300;
+
+    private boolean active = false;
+    private final List<String> outputLines = new ArrayList<>();
+    private final List<String> history = new ArrayList<>();
+    private int historyIndex = 0;
+    private String historyDraft = "";
 
     private GameWorld gameWorld;
-    private DijkstraOverlayRenderer dijkstraOverlayRenderer;
+    private DijkstraOverlayControl dijkstraControl;
 
     private final List<EventBus.ListenerHandle<?>> listenerHandles = new ArrayList<>();
 
     public DebugConsole() {
-        listenerHandles.add(EventBus.on(ConsoleToggleRequestedEvent.class, e -> {
-            toggle();
-        }));
-        listenerHandles.add(EventBus.on(UiKeyTypedEvent.class, e -> {
-            handleChar(e.keyChar());
-        }));
-
+        listenerHandles.add(EventBus.on(ConsoleToggleRequestedEvent.class, e -> toggle()));
         addOutput("Debug Console ready. Type 'help' for commands.");
     }
 
@@ -42,55 +43,79 @@ public class DebugConsole {
         this.gameWorld = gameWorld;
     }
 
-    public void setDijkstraOverlayRenderer(DijkstraOverlayRenderer dijkstraOverlayRenderer) {
-        this.dijkstraOverlayRenderer = dijkstraOverlayRenderer;
+    public void setDijkstraOverlayControl(DijkstraOverlayControl dijkstraControl) {
+        this.dijkstraControl = dijkstraControl;
     }
 
     // --------------------------------------------------
     // visibility
-    public void toggle() { active = !active; }
     public boolean isActive() { return active; }
 
-    // --------------------------------------------------
-    // input -- called from InputHandler
-    public void handleChar(char c) {
-        if (!active) return;
+    public void toggle() { setActive(!active); }
 
-        // backspace
-        if (c == '\b') {
-            if (!inputBuffer.isEmpty()) {
-                inputBuffer.deleteCharAt(inputBuffer.length() - 1);
-            }
-            return;
-        }
-
-        if (c == '\r' || c == '\n') {
-            submit();
-        } else  {
-            inputBuffer.append(c);
-        }
+    public void setActive(boolean active) {
+        if (this.active == active) return;
+        this.active = active;
+        EventBus.emit(new ConsoleActiveChangedEvent(active));
     }
 
-
-
     // --------------------------------------------------
-    // command execution
-    private void submit() {
-        String command = inputBuffer.toString().trim();
-        inputBuffer.setLength(0);
+    // input / history
+    public void submit(String rawCommand) {
+        String command = rawCommand == null ? "" : rawCommand.trim();
+        if (command.isEmpty()) return;
 
-        if (command.isEmpty()) {
-            return;
-        }
-
+        addHistory(command);
         addOutput("> " + command);
 
-        String result = executeCommand(command);
+        String result;
+        try {
+            result = executeCommand(command);
+        } catch (Exception e) {
+            String message = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            result = "Error: " + message;
+        }
+
         if (result != null && !result.isEmpty()) {
             addOutput(result);
         }
     }
 
+    private void addHistory(String command) {
+        if (history.isEmpty() || !history.get(history.size() - 1).equals(command)) {
+            history.add(command);
+        }
+        historyIndex = history.size();
+        historyDraft = "";
+    }
+
+    /**
+     * Cycles command history. {@code currentText} is preserved as a draft while the
+     * user browses, and restored when navigating past the newest entry.
+     *
+     * @return the command line to display, or null when there is no history
+     */
+    public String navigateHistory(int direction, String currentText) {
+        if (history.isEmpty()) return null;
+
+        if (direction < 0) {
+            if (historyIndex == history.size()) {
+                historyDraft = currentText;
+            }
+            if (historyIndex > 0) historyIndex--;
+            return history.get(historyIndex);
+        }
+
+        if (historyIndex < history.size() - 1) {
+            historyIndex++;
+            return history.get(historyIndex);
+        }
+        historyIndex = history.size();
+        return historyDraft;
+    }
+
+    // --------------------------------------------------
+    // command execution
     private String executeCommand(String command) {
         String[] parts = command.split("\\s+", 2);
         String cmd = parts[0].toLowerCase();
@@ -107,7 +132,7 @@ public class DebugConsole {
             case "entity_list" -> listEntitiesCommand();
             case "entity_info" -> entityInfoCommand(args);
             case "exit", "quit" -> {
-                toggle();
+                setActive(false);
                 yield "Console closed.";
             }
             default -> "Unknown command: " + cmd + ". Type 'help' for available commands.";
@@ -150,7 +175,7 @@ public class DebugConsole {
         try {
             actorId = ActorId.valueOf(actorName);
         } catch (IllegalArgumentException e) {
-            return "Unknown actor: " + actorName + ". Available: IRON_WORM, CAVE_BAT, SCAVENGER";
+            return "Unknown actor: " + actorName + ". Available: IRON_WORM, SCAVENGER";
         }
 
         if (actorId == ActorId.PLAYER) {
@@ -162,7 +187,7 @@ public class DebugConsole {
         int spawnY = playerPos.getY();
         var pos = new Point(spawnX, spawnY);
 
-        var entity = EntityFactory.createEntity(actorId, gameWorld, pos);
+        EntityFactory.createEntity(actorId, gameWorld, pos);
         return "Spawned " + actorName + " at (" + spawnX + ", " + spawnY + ")";
     }
 
@@ -225,7 +250,7 @@ public class DebugConsole {
     }
 
     private String dijkstraCommand(String args) {
-        if (dijkstraOverlayRenderer == null) {
+        if (dijkstraControl == null) {
             return "Error: Dijkstra overlay not initialized.";
         }
 
@@ -233,20 +258,26 @@ public class DebugConsole {
             String typeName = args.toUpperCase().trim();
             try {
                 DijkstraMapType mapType = DijkstraMapType.valueOf(typeName);
-                dijkstraOverlayRenderer.setMapType(mapType);
+                dijkstraControl.setMapType(mapType);
             } catch (IllegalArgumentException e) {
                 return "Unknown dijkstra map type: " + typeName + ". Available: PLAYER, FACTION_MONSTER, FACTION_HUNTER, FACTION_LOOTER";
             }
         }
 
-        dijkstraOverlayRenderer.toggle();
-        String state = dijkstraOverlayRenderer.isEnabled() ? "enabled" : "disabled";
-        String type = dijkstraOverlayRenderer.getMapType().name();
+        dijkstraControl.toggle();
+        String state = dijkstraControl.isEnabled() ? "enabled" : "disabled";
+        String type = dijkstraControl.getMapType().name();
         return "Dijkstra overlay " + state + " (type: " + type + ")";
     }
 
-    private void addOutput(String line) {
-        outputLines.add(line);
+    private void addOutput(String text) {
+        if (text == null) return;
+
+        // each buffer entry is a single visual line, so line caps and history are accurate
+        for (String line : text.split("\r?\n", -1)) {
+            outputLines.add(line);
+        }
+
         while (outputLines.size() > MAX_OUTPUT_LINES) {
             outputLines.remove(0);
         }
@@ -263,17 +294,13 @@ public class DebugConsole {
     }
 
     private String entityInfoCommand(String args) {
-        int id = Integer.parseInt(args);
+        int id = Integer.parseInt(args.trim());
 
         return gameWorld.getEntity(id).getAllInfo();
     }
 
     public List<String> getOutputLines() {
         return outputLines;
-    }
-
-    public String getInputString() {
-        return inputBuffer.toString();
     }
 
     public void dispose() {

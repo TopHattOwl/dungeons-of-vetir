@@ -148,21 +148,40 @@ class BodyPartTest {
     }
 
     @Test
-    void takeDamage_StatusBoundary_At60Percent_IsHealthy() {
-        BodyPart part = new BodyPart("torso", BodyPartType.TORSO, BodyPartRole.VITAL,
-            null, 100, 0, 0.3f, 0.3f, 1.0f);
-        int damageTo60Percent = (int) (100 * (1 - 0.6) / 0.4);
-        part.takeDamage(damageTo60Percent);
+    void takeDamage_StatusBoundary_AtHealthyThreshold_IsHealthy() {
+        BodyPart part = torsoPart();
+        part.hp = (int) (BodyPartStatus.HEALTHY.threshold * part.maxHp);
+        part.takeDamage(0); // trigger status recalculation without altering hp
         assertEquals(BodyPartStatus.HEALTHY, part.status);
     }
 
     @Test
-    void takeDamage_StatusBoundary_At30Percent_IsInjured() {
-        BodyPart part = new BodyPart("torso", BodyPartType.TORSO, BodyPartRole.VITAL,
-            null, 100, 0, 0.3f, 0.3f, 1.0f);
-        int damageTo30Percent = (int) ((1 - 0.3) / 0.4 * 100);
-        part.takeDamage(damageTo30Percent);
+    void takeDamage_StatusBoundary_BelowHealthyThreshold_IsInjured() {
+        BodyPart part = torsoPart();
+        part.hp = (int) (BodyPartStatus.HEALTHY.threshold * part.maxHp) - 1;
+        part.takeDamage(0);
         assertEquals(BodyPartStatus.INJURED, part.status);
+    }
+
+    @Test
+    void takeDamage_StatusBoundary_AtInjuredThreshold_IsInjured() {
+        BodyPart part = torsoPart();
+        part.hp = (int) (BodyPartStatus.INJURED.threshold * part.maxHp);
+        part.takeDamage(0);
+        assertEquals(BodyPartStatus.INJURED, part.status);
+    }
+
+    @Test
+    void takeDamage_StatusBoundary_BelowInjuredThreshold_IsCrippled() {
+        BodyPart part = torsoPart();
+        part.hp = (int) (BodyPartStatus.INJURED.threshold * part.maxHp) - 1;
+        part.takeDamage(0);
+        assertEquals(BodyPartStatus.CRIPPLED, part.status);
+    }
+
+    private static BodyPart torsoPart() {
+        return new BodyPart("torso", BodyPartType.TORSO, BodyPartRole.VITAL,
+            null, 100, 0, 0.3f, 0.3f, 1.0f);
     }
 
     @Test

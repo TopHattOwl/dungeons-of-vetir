@@ -23,7 +23,7 @@ public class EntityFactory {
     public static Entity makePlayer(Point spawnPoint) {
         Entity player = new Entity();
         player.addComponent(new PositionComponent(spawnPoint))
-            .addComponent(new RenderableComponent("player", 10))
+            .addComponent(new RenderableComponent("player_knight", 10))
             .addComponent(new TimeValueComponent())
             .addComponent(new FovComponent(10, Level.WIDTH, Level.HEIGHT))
             .addComponent(new PlayerComponent())

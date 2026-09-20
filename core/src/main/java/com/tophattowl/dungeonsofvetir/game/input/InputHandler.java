@@ -8,10 +8,13 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
+import com.tophattowl.dungeonsofvetir.game.event.EventSubscriptions;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleActiveChangedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleHistoryRequestedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleSubmitRequestedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleToggleRequestedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.InputModeChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.InventoryToggleRequestedEvent;
-import com.tophattowl.dungeonsofvetir.game.event.events.input.UiKeyTypedEvent;
 
 import java.util.Stack;
 
@@ -20,9 +23,13 @@ import java.util.Stack;
  * Processes the input made by player
  * 1. Makes pending action if player makes a move that is an Action
  * 2. handles other inputs (that don't make actions) with events
+ * <p>
+ * The CONSOLE input mode is derived from the debug console's active state, so the
+ * console can also be closed by commands (e.g. {@code exit}).
  */
 public class InputHandler implements InputProcessor {
     private final Stack<InputMode> modeStack = new Stack<>();
+    private final EventSubscriptions eventSubs = new EventSubscriptions();
     private final Entity player;
 
     private Action pendingAction = null;
@@ -31,6 +38,7 @@ public class InputHandler implements InputProcessor {
         this.player = player;
         modeStack.push(InputMode.PLAYING);
         player.getComponent(PlayerComponent.class).setInputMode(InputMode.PLAYING);
+        eventSubs.on(ConsoleActiveChangedEvent.class, this::onConsoleActiveChanged);
     }
 
     public Action getPendingAction() {
@@ -38,6 +46,15 @@ public class InputHandler implements InputProcessor {
         pendingAction = null;
 
         return action;
+    }
+
+    private void onConsoleActiveChanged(ConsoleActiveChangedEvent event) {
+        InputMode current = player.getComponent(PlayerComponent.class).getInputMode();
+        if (event.active() && current != InputMode.CONSOLE) {
+            pushMode(InputMode.CONSOLE);
+        } else if (!event.active() && current == InputMode.CONSOLE) {
+            popMode();
+        }
     }
 
     @Override
@@ -73,9 +90,8 @@ public class InputHandler implements InputProcessor {
         }
 
         switch (keyCode) {
-            // backtick
+            // backtick toggles the debug console (see ConsoleActiveChangedEvent)
             case Input.Keys.GRAVE -> {
-                pushMode(InputMode.CONSOLE);
                 EventBus.emit(new ConsoleToggleRequestedEvent());
                 return true;
             }
@@ -106,16 +122,32 @@ public class InputHandler implements InputProcessor {
         return false;
     }
 
+    /**
+     * Console-specific keys are handled here (the game's input processor runs before
+     * the Scene2D stage), everything else falls through to the text field.
+     */
     private boolean handleConsoleInput(int keyCode) {
-
         switch (keyCode) {
-            case Input.Keys.ESCAPE -> {
-                popMode();
+            case Input.Keys.ESCAPE, Input.Keys.GRAVE -> {
                 EventBus.emit(new ConsoleToggleRequestedEvent());
+                return true;
             }
-
+            case Input.Keys.UP -> {
+                EventBus.emit(new ConsoleHistoryRequestedEvent(-1));
+                return true;
+            }
+            case Input.Keys.DOWN -> {
+                EventBus.emit(new ConsoleHistoryRequestedEvent(1));
+                return true;
+            }
+            case Input.Keys.ENTER, Input.Keys.NUMPAD_ENTER -> {
+                EventBus.emit(new ConsoleSubmitRequestedEvent());
+                return true;
+            }
+            default -> {
+                return false;
+            }
         }
-        return false;
     }
 
     private void pushMode(InputMode newMode) {
@@ -157,15 +189,10 @@ public class InputHandler implements InputProcessor {
                 pendingAction = ActionFactory.createAscendAction(player);
                 return true;
             }
-            return false;
         }
 
-        if (mode != InputMode.CONSOLE) {
-            return false;
-        }
-
-        EventBus.emit(new UiKeyTypedEvent(c));
-        return true;
+        // Everything else (including console text input) is handled by the Scene2D stage.
+        return false;
     }
 
     @Override
@@ -196,5 +223,9 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean scrolled(float v, float v1) {
         return false;
+    }
+
+    public void dispose() {
+        eventSubs.unsubscribeAll();
     }
 }

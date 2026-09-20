@@ -1,18 +1,28 @@
 package com.tophattowl.dungeonsofvetir.display.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.tophattowl.dungeonsofvetir.display.assets.TextureRegistry;
 import com.tophattowl.dungeonsofvetir.display.camera.CameraController;
 import com.tophattowl.dungeonsofvetir.display.renderer.DijkstraOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.FovOverlayRenderer;
 import com.tophattowl.dungeonsofvetir.display.renderer.WorldRenderer;
-import com.tophattowl.dungeonsofvetir.display.tilesets.PaletteTileset;
-import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleRenderer;
+import com.tophattowl.dungeonsofvetir.display.sprites.SpriteLibrary;
+import com.tophattowl.dungeonsofvetir.display.tilesets.TerrainTilesetRegistry;
+import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleSkinFactory;
+import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleView;
 import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
@@ -22,6 +32,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.event.events.LevelChangedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleActiveChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
 import com.tophattowl.dungeonsofvetir.game.factory.items.ItemFactory;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
@@ -40,29 +51,34 @@ import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
 import java.util.Random;
 
 public class GameScreen implements Screen {
-    // Layout constants
-    private static final int WIN_W       = 1280;
-    private static final int WIN_H       = 800;
-    private static final int TOP_BAR_H   = 32;
-    private static final int SIDE_W      = HudRenderer.SIDE_W;
-    private static final int BOTTOM_H    = 96;
-    public  static final int VIEWPORT_W  = WIN_W - SIDE_W;   // 1024
-    public  static final int VIEWPORT_H  = WIN_H - TOP_BAR_H - BOTTOM_H; // 672
-    public  static final int VIEWPORT_X  = 0;
-    public  static final int VIEWPORT_Y  = BOTTOM_H;         // 96
+    // Layout constants (virtual design resolution; scaled to the window at runtime)
+    private static final int VIRTUAL_W  = 1280;
+    private static final int VIRTUAL_H  = 800;
+    private static final int TOP_BAR_H  = 32;
+    private static final int SIDE_W     = HudRenderer.SIDE_W;
+    private static final int BOTTOM_H   = 96;
+    public  static final int VIEWPORT_W = VIRTUAL_W - SIDE_W;             // 1024
+    public  static final int VIEWPORT_H = VIRTUAL_H - TOP_BAR_H - BOTTOM_H; // 672
+    public  static final int VIEWPORT_X = 0;
+    public  static final int VIEWPORT_Y = BOTTOM_H;                       // 96
 
     public  static final int ACTOR_PROCESS_COUNT = 10;
 
     // display
     private SpriteBatch batch;
     private BitmapFont font;
-    private PaletteTileset tileset;
+    private TextureRegistry textures;
+    private SpriteLibrary sprites;
+    private TerrainTilesetRegistry terrains;
     private WorldRenderer worldRenderer;
     private FovOverlayRenderer fovOverlayRenderer;
     private DijkstraOverlayRenderer dijkstraOverlayRenderer;
     private CameraController cameraController;
-    private DebugConsoleRenderer  debugConsoleRenderer;
     private HudRenderer hudRenderer;
+    private Viewport viewport;
+    private Stage stage;
+    private Skin uiSkin;
+    private DebugConsoleView debugConsoleView;
 
     // game
     private GameWorld gameWorld;
@@ -79,29 +95,48 @@ public class GameScreen implements Screen {
         // display
         batch = new SpriteBatch();
         font = new BitmapFont();
-        tileset = new PaletteTileset(gameWorld.getCurrentResolved().theme());
+        font.getRegion().getTexture().setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+
+        textures = new TextureRegistry();
+        sprites = new SpriteLibrary(textures);
+        terrains = new TerrainTilesetRegistry(textures);
+
+        viewport = new FitViewport(VIRTUAL_W, VIRTUAL_H);
+        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
         cameraController = new CameraController(VIEWPORT_W, VIEWPORT_H);
-        worldRenderer = new WorldRenderer(batch, tileset);
+        worldRenderer = new WorldRenderer(
+            batch, terrains.get(gameWorld.getCurrentResolved().theme()), sprites
+        );
         fovOverlayRenderer = new FovOverlayRenderer();
         worldRenderer.setFovOverlayRenderer(fovOverlayRenderer);
         dijkstraOverlayRenderer = new DijkstraOverlayRenderer(batch, font);
-        debugConsoleRenderer = new DebugConsoleRenderer(WIN_W, WIN_H, font);
-        hudRenderer = new HudRenderer(WIN_W, WIN_H, font);
+        hudRenderer = new HudRenderer(VIRTUAL_W, VIRTUAL_H, font);
+
+        // Scene2D debug console
+        uiSkin = DebugConsoleSkinFactory.create(font);
+        debugConsoleView = new DebugConsoleView(debugConsole, uiSkin);
+        debugConsoleView.setPosition(
+            (VIRTUAL_W - debugConsoleView.getWidth()) / 2f,
+            (VIRTUAL_H - debugConsoleView.getHeight()) / 2f
+        );
+        stage = new Stage(viewport);
+        stage.addActor(debugConsoleView);
+        setConsoleVisible(false);
 
         debugConsole.setGameWorld(gameWorld);
         dijkstraOverlayRenderer.setGameWorld(gameWorld);
-        debugConsole.setDijkstraOverlayRenderer(dijkstraOverlayRenderer);
-        debugConsoleRenderer.setDebugConsole(debugConsole);
+        debugConsole.setDijkstraOverlayControl(dijkstraOverlayRenderer);
 
         hudRenderer.setPlayer(gameWorld.getPlayer());
 
         gameWorld.updateFov();
         gameWorld.addDijkstraMapManager(new DijkstraMapManager(gameWorld));
 
-        Gdx.input.setInputProcessor(inputHandler);
+        Gdx.input.setInputProcessor(new InputMultiplexer(inputHandler, stage));
 
         EventBus.on(LevelChangedEvent.class, this::onLevelChanged);
+        EventBus.on(ConsoleActiveChangedEvent.class, this::onConsoleActiveChanged);
 
         Point playerPos = gameWorld.getPlayer().getComponent(PositionComponent.class).getPosition();
         cameraController.centerOn(playerPos.x,  playerPos.y);
@@ -122,15 +157,33 @@ public class GameScreen implements Screen {
     }
 
     private void onLevelChanged(LevelChangedEvent event) {
-        tileset.setTheme(event.resolved().theme());
+        worldRenderer.setTerrain(terrains.get(event.resolved().theme()));
         PositionComponent pos = gameWorld.getPlayer().getComponent(PositionComponent.class);
         cameraController.centerOn(pos.getX(), pos.getY());
+    }
+
+    private void onConsoleActiveChanged(ConsoleActiveChangedEvent event) {
+        setConsoleVisible(event.active());
+    }
+
+    private void setConsoleVisible(boolean visible) {
+        debugConsoleView.setVisible(visible);
+        debugConsoleView.setTouchable(visible ? Touchable.enabled : Touchable.disabled);
+
+        if (visible) {
+            debugConsoleView.refresh();
+            stage.setKeyboardFocus(debugConsoleView.getInputField());
+            debugConsoleView.focusInput();
+        } else {
+            stage.setKeyboardFocus(null);
+        }
     }
 
     @Override
     public void render(float v) {
         input();
         logic();
+        stage.act(v);
         draw();
     }
 
@@ -182,9 +235,16 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Set the GL viewport to the game area only
-        // this makes the camera render into the correct screen region and not clip it
-        HdpiUtils.glViewport(VIEWPORT_X, VIEWPORT_Y, VIEWPORT_W, VIEWPORT_H);
+        // World renders into the game sub-rectangle of the scaled virtual screen.
+        // The virtual layout is scaled uniformly by the FitViewport, so the sub-rect
+        // is the virtual region transformed by the viewport's scale + letterbox offset.
+        float scale = viewport.getScreenWidth() / (float) VIRTUAL_W;
+        int worldX = viewport.getScreenX() + Math.round(VIEWPORT_X * scale);
+        int worldY = viewport.getScreenY() + Math.round(VIEWPORT_Y * scale);
+        int worldW = Math.round(VIEWPORT_W * scale);
+        int worldH = Math.round(VIEWPORT_H * scale);
+
+        HdpiUtils.glViewport(worldX, worldY, worldW, worldH);
 
         batch.setProjectionMatrix(cameraController.getCamera().combined);
         batch.begin();
@@ -194,19 +254,23 @@ public class GameScreen implements Screen {
         fovOverlayRenderer.render(gameWorld, cameraController.getCamera());
         dijkstraOverlayRenderer.render(cameraController.getCamera());
 
-        // restore full viewport for HUD rendering
-        HdpiUtils.glViewport(0, 0, WIN_W, WIN_H);
-        batch.setProjectionMatrix(new Matrix4().setToOrtho2D(0, 0 , WIN_W, WIN_H));
+        // Full virtual screen for the HUD, in virtual pixel coordinates.
+        viewport.apply();
+        Matrix4 hudProjection = viewport.getCamera().combined;
+        batch.setProjectionMatrix(hudProjection);
+        hudRenderer.setProjectionMatrix(hudProjection);
 
         batch.begin();
-        debugConsoleRenderer.render(batch);
         hudRenderer.render(batch);
         batch.end();
+
+        // console overlay on top, in virtual pixel coordinates
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-        cameraController.resize(width, height);
+        viewport.update(width, height, true);
     }
 
     @Override
@@ -228,11 +292,15 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();
         font.dispose();
-        tileset.dispose();
+        terrains.dispose();
+        textures.dispose();
         fovOverlayRenderer.dispose();
         dijkstraOverlayRenderer.dispose();
-        debugConsoleRenderer.dispose();
         hudRenderer.dispose();
+        debugConsoleView.dispose();
+        inputHandler.dispose();
+        stage.dispose();
+        uiSkin.dispose();
         debugConsole.dispose();
         gameWorld.dispose();
         EventBus.clear();

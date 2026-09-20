@@ -96,6 +96,57 @@ public class ActorRegistry {
 
         register(
             new ActorSpec(
+                ActorId.FIRE_ANT,
+                "Fire Ant",
+                Faction.MONSTER,
+                8,
+
+                new BodySpec(BodyTemplate.INSECT),
+
+                // base component specs
+                List.of(
+                    new AiSpec(
+                        5,
+                        4,
+                        2,
+                        0
+                    ),
+                    new FovSpec(9),
+                    new HealthSpec(40),
+                    new RenderableSpec("fireant", 0),
+                    new TimeValueSpec()
+                ),
+
+                // post body component specs
+                List.of(
+                    new DefensiveStatsSpec(
+                        10,
+                        0.05f,
+                        0.05f
+                    ),
+                    new NaturalWeaponsSpec(Map.of(
+                        "leg 1", new NaturalWeapon(DamageType.SLASHING, 0.5f, Map.of(
+                            ElementType.PHYSICAL, 13
+                        )),
+                        "leg 2", new NaturalWeapon(DamageType.SLASHING, 0.5f, Map.of(
+                            ElementType.PHYSICAL, 13
+                        )),
+                        "head", new NaturalWeapon(DamageType.PIERCING, 1.0f, Map.of(
+                            ElementType.PHYSICAL, 10,
+                            ElementType.POISON, 5
+                        ))
+                    )),
+                    new RegenSpec(
+                        5,
+                        4,
+                        0.1f
+                    )
+                )
+            )
+        );
+
+        register(
+            new ActorSpec(
                 ActorId.SCAVENGER,
                 "Scavenger",
                 Faction.LOOTER,
