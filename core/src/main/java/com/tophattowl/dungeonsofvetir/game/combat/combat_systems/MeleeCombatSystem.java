@@ -49,10 +49,14 @@ public class MeleeCombatSystem implements GameSystem {
         return meleeAttackAction;
     }
 
-    // TODO(death-ordering): damage is applied in a loop and die() may remove the target
-    //  mid-loop, after which we keep damaging its body parts and still apply counters
-    //  Intended: resolve the full hit first, then check death, and short-circuit
-    //  body-part damage + counter if the target died from this hit.
+    /**
+     * Resolves the whole hit before checking death, so a dead target is not damaged
+     * again and cannot counter.
+     * <p>
+     * Condition damage is intentionally scaled twice: a per-part multiplier (heads
+     * are frailer than limbs) applied here, and the global BodyPart condition scale
+     * applied inside {@link BodyPart#takeDamage(int)}. Actor HP takes full damage.
+     */
     private static void applyAttack(MeleeAttackResult attackResult,
                                     Entity attacker, Entity target,
                                     GameWorld gameWorld) {
@@ -63,14 +67,24 @@ public class MeleeCombatSystem implements GameSystem {
         BodyPart targetPart = attackResult.getBodyPart();
         HealthComponent targetHp = target.getComponent(HealthComponent.class);
 
-        for(Damage damage : damages) {
-            if (targetHp.takeDamage(damage.amount())) {
-                die(target, gameWorld, attacker);
-            }
-            int partDamage = (int) (damage.amount() * targetPart.damageMultiplier);
-            targetPart.takeDamage(partDamage);
+        int totalHpDamage = 0;
+        int totalPartDamage = 0;
+        for (Damage damage : damages) {
+            totalHpDamage += damage.amount();
+            totalPartDamage += (int) (damage.amount() * targetPart.damageMultiplier);
         }
+
+        boolean hpDepleted = targetHp.takeDamage(totalHpDamage);
+        targetPart.takeDamage(totalPartDamage);
+
         EventBus.emit(new MeleeAttackHitEvent(attacker, target, targetPart, damages, attackResult.getUsedWeapon()));
+
+        boolean vitalPartDestroyed = targetPart.isDestroyed() && targetPart.isVital();
+
+        if (hpDepleted || vitalPartDestroyed) {
+            die(target, gameWorld, attacker);
+            return; // dead men tell no tails (and do not counter either)
+        }
 
         if (attackResult.isCountered()) {
             applyCountered(attackResult, attacker, target, gameWorld);

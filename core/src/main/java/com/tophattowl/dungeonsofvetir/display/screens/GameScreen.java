@@ -26,29 +26,19 @@ import com.tophattowl.dungeonsofvetir.display.ui.debug.DebugConsoleView;
 import com.tophattowl.dungeonsofvetir.display.ui.HudRenderer;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.action.ActionHandler;
-import com.tophattowl.dungeonsofvetir.game.action.EquipAction;
-import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
-import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PlayerComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.event.events.LevelChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleActiveChangedEvent;
-import com.tophattowl.dungeonsofvetir.game.factory.action.ActionFactory;
-import com.tophattowl.dungeonsofvetir.game.factory.items.ItemFactory;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
-import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
-import com.tophattowl.dungeonsofvetir.game.items.Item;
-import com.tophattowl.dungeonsofvetir.game.items.ItemId;
 import com.tophattowl.dungeonsofvetir.game.rng.SeedConfig;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
-
-import java.util.Random;
 
 public class GameScreen implements Screen {
     // Layout constants (virtual design resolution; scaled to the window at runtime)
@@ -140,20 +130,6 @@ public class GameScreen implements Screen {
 
         Point playerPos = gameWorld.getPlayer().getComponent(PositionComponent.class).getPosition();
         cameraController.centerOn(playerPos.x,  playerPos.y);
-
-
-        // testing weapon equip
-        Entity player = gameWorld.getPlayer();
-        Item item = ItemFactory.makeItem(ItemId.STEEL_LONGSWORD);
-        Item itemOneHanded = ItemFactory.makeItem(ItemId.STEEL_MACE);
-        BodyPart bodyPart = player.getComponent(EquipmentComponent.class).getMainHandSlot().bodyPart;
-
-        Action actionn = ActionHandler.prepareAction(player,
-            ActionFactory.createEquipAction(player, item, bodyPart, EquipmentSlotType.HAND_SLOT));
-        ActionHandler.executeActionDebug(player, actionn);
-
-        EquipmentComponent ec = player.getComponent(EquipmentComponent.class);
-        System.out.println(ec);
     }
 
     private void onLevelChanged(LevelChangedEvent event) {

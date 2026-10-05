@@ -6,7 +6,6 @@ import com.tophattowl.dungeonsofvetir.game.combat.damage.DamageInstance;
 import com.tophattowl.dungeonsofvetir.game.combat.damage.DamageProfile;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 public class NaturalWeapon implements DamageProfile {

@@ -2,6 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.action;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
+import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.ActionCompletedEvent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
@@ -27,6 +28,14 @@ public class ActionHandler {
 
         TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);
         Action executedAction = action.execute(INSTANCE.gameWorld);
+
+        // actions must never return null; treat a null result as a failed action
+        if (executedAction == null) {
+            DebugLogger.log(DebugLogger.Category.ACTION, DebugLogger.Level.WARNING, "ActionHandler",
+                "Action returned null on execute: " + action
+            );
+            return action;
+        }
 
         if (executedAction.isSuccess()) {
             timeComp.addTime(executedAction.getCost());

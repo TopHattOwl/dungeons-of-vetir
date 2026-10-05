@@ -34,13 +34,13 @@ public class ActionFactory {
         return new EquipAction(owner, item, bodyPart, slotType);
     }
 
-    public static UnequipAction createUnequipAction(Entity owner, Item item,
-                                                    BodyPart bodyPart) {
-        return new UnequipAction();
+    public static UnequipAction createUnequipAction(Entity owner, Item item) {
+        return new UnequipAction(owner, item);
     }
 
     public static SwapEquipmentAction createSwapEquipmentAction(Entity owner, Item item,
-                                                                BodyPart bodyPart) {
-        return new SwapEquipmentAction(owner, item, bodyPart);
+                                                                BodyPart bodyPart,
+                                                                EquipmentSlotType slotType) {
+        return new SwapEquipmentAction(owner, item, bodyPart, slotType);
     }
 }

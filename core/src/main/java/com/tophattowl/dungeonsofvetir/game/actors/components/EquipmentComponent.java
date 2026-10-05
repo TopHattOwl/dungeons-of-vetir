@@ -64,6 +64,35 @@ public class EquipmentComponent implements Component {
         return result;
     }
 
+    /**
+     * All slots currently holding the given item (two-handed weapons occupy several).
+     */
+    public List<EquipmentSlot> getSlotsWithItem(Item item) {
+        List<EquipmentSlot> result = new ArrayList<>();
+        if (item == null) return result;
+        for (EquipmentSlot slot : equipment) {
+            if (slot.item == item) {
+                result.add(slot);
+            }
+        }
+        return result;
+    }
+
+    public boolean isEquipped(Item item) {
+        return !getSlotsWithItem(item).isEmpty();
+    }
+
+    /**
+     * Clears every slot that holds the given item.
+     */
+    public void clearItem(Item item) {
+        for (EquipmentSlot slot : equipment) {
+            if (slot.item == item) {
+                slot.item = null;
+            }
+        }
+    }
+
     public void initSlots(BodyComponent bodyComp) {
         for (BodyPart bodypart : bodyComp.bodyParts) {
             if (bodypart.equippableSlots == null || bodypart.equippableSlots.isEmpty()) {

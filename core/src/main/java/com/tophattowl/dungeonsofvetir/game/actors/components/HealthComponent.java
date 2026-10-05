@@ -13,6 +13,10 @@ public class HealthComponent implements Component {
         status = HealthStatus.HEALTHY;
     }
 
+    /**
+     * Damages Entity's main hp
+     * @return true if entity dies from damage taking
+     */
     public boolean takeDamage(int damage) {
         hp = Math.max(0, hp - damage);
         updateStatus();

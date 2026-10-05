@@ -10,6 +10,7 @@ import java.util.List;
 public class BodyPart {
     private Entity owner;
 
+    // all body part condition damage is 40% of the real damage
     private static final float BODY_PART_DAMAGE_MULTIPLIER = 0.4f;
 
     public final String name;
