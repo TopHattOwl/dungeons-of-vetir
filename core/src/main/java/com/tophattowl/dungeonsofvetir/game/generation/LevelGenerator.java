@@ -1,4 +1,4 @@
-package com.tophattowl.dungeonsofvetir.game.dungeon;
+package com.tophattowl.dungeonsofvetir.game.generation;
 
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 

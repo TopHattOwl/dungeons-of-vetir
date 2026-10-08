@@ -41,4 +41,16 @@ public class FovComponent implements Component {
             Arrays.fill(col, false);
         }
     }
+
+    /**
+     * Reallocates the visibility grids when the level size changes
+     * (e.g. entering a differently sized zone). No-op if the size already matches
+     */
+    public void resize(int levelWidth, int levelHeight) {
+        if (visibleTiles.length == levelWidth && visibleTiles[0].length == levelHeight) {
+            return;
+        }
+        this.visibleTiles = new boolean[levelWidth][levelHeight];
+        this.exploredTiles = new boolean[levelWidth][levelHeight];
+    }
 }

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Builds a BodyComponent from a template
+ * Builds a BodyComponent from a template <br>
  * Distributes hp to segments, min hp customizable
  */
 public class BodyComponentBuilder {

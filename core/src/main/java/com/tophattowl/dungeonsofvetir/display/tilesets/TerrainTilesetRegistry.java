@@ -3,7 +3,7 @@ package com.tophattowl.dungeonsofvetir.display.tilesets;
 import com.badlogic.gdx.utils.Disposable;
 import com.tophattowl.dungeonsofvetir.display.assets.AssetPaths;
 import com.tophattowl.dungeonsofvetir.display.assets.TextureRegistry;
-import com.tophattowl.dungeonsofvetir.game.dungeon.section.TileTheme;
+import com.tophattowl.dungeonsofvetir.game.world.TileTheme;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class TerrainTilesetRegistry implements Disposable {
             case CAVES_DANK -> new AssetTileset(
                 textures, AssetPaths.CAVE_FLOOR, AssetPaths.CAVE_WALL, AssetPaths.STAIR_DOWN
             );
-            case GROVE, RUINS_FORTRESS, REST -> new PaletteTileset(theme);
+            case GROVE, RUINS_FORTRESS, REST, SURFACE -> new PaletteTileset(theme);
         };
     }
 

@@ -2,7 +2,8 @@ package com.tophattowl.dungeonsofvetir.game.action;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.combat.AttackType;
-import com.tophattowl.dungeonsofvetir.game.combat.combat_systems.MeleeCombatSystem;
+import com.tophattowl.dungeonsofvetir.game.action.resolvers.MeleeResolver;
+import com.tophattowl.dungeonsofvetir.game.world.Capability;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class MeleeAttackAction extends Action {
@@ -20,12 +21,13 @@ public class MeleeAttackAction extends Action {
 
     @Override
     public Action prepare(GameWorld gameWorld) {
-        return MeleeCombatSystem.prepareMeleeAttack(this,  gameWorld);
+        if (!gameWorld.constraints().can(owner, Capability.ATTACK)) return this;
+        return MeleeResolver.prepareMeleeAttack(this,  gameWorld);
     }
 
     @Override
     public Action execute(GameWorld gameWorld) {
-        return MeleeCombatSystem.executeMeleeAttack(this, gameWorld);
+        return MeleeResolver.executeMeleeAttack(this, gameWorld);
     }
 
     @Override

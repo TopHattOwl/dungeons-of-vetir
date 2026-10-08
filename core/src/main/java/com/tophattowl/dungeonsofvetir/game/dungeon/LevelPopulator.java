@@ -33,8 +33,8 @@ public class LevelPopulator {
     private static List<Point> collectValidSpawnTiles(Level level, GameWorld gameWorld) {
         List<Point> tiles = new ArrayList<>();
 
-        for (int x = 1; x < Level.WIDTH - 1; x++) {
-            for (int y = 1; y < Level.HEIGHT - 1; y++) {
+        for (int x = 1; x < level.getWidth() - 1; x++) {
+            for (int y = 1; y < level.getHeight() - 1; y++) {
                 if (!level.isWalkable(x, y)) continue;
                 if (gameWorld.getEntity(x, y) != null) continue;
                 tiles.add(new Point(x, y));

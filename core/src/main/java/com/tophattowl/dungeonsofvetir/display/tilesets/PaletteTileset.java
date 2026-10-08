@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.tophattowl.dungeonsofvetir.game.dungeon.section.TileTheme;
+import com.tophattowl.dungeonsofvetir.game.world.TileTheme;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
 
 import java.util.HashMap;
@@ -91,6 +91,15 @@ public class PaletteTileset implements Tileset {
                 new Color(0.95f, 0.85f, 0.45f, 1f),
                 new Color(0.55f, 0.42f, 0.25f, 1f),
                 new Color(0.40f, 0.30f, 0.18f, 1f)
+            );
+            case SURFACE -> new Palette(
+                new Color(0.28f, 0.36f, 0.22f, 1f),
+                new Color(0.38f, 0.34f, 0.28f, 1f),
+                new Color(0.16f, 0.18f, 0.14f, 1f),
+                new Color(0.80f, 0.75f, 0.45f, 1f),
+                new Color(0.90f, 0.85f, 0.55f, 1f),
+                new Color(0.50f, 0.38f, 0.22f, 1f),
+                new Color(0.34f, 0.26f, 0.15f, 1f)
             );
         };
     }

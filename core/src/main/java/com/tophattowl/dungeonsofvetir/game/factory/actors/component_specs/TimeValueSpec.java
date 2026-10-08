@@ -2,6 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public record TimeValueSpec(
     float baseSpeed
@@ -17,7 +18,7 @@ public record TimeValueSpec(
     }
 
     @Override
-    public TimeValueComponent build(Entity entity) {
+    public TimeValueComponent build(Entity entity, GameWorld gameWorld) {
         return new TimeValueComponent(baseSpeed);
     }
 }

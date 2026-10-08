@@ -26,6 +26,15 @@ public class TimeTurnManager {
 
     private PriorityQueue<Entity> actorQueue;
     private TurnEvent turnEvent;
+    private Runnable turnEndListener = () -> {};
+
+    /**
+     * Called once per world turn (when the clock passes), driving the turn-end
+     * system pipeline. Survives {@link #reset(GameWorld)}.
+     */
+    public void setTurnEndListener(Runnable listener) {
+        this.turnEndListener = listener == null ? () -> {} : listener;
+    }
 
     public TimeTurnManager() {
         initActorQueue();
@@ -106,14 +115,14 @@ public class TimeTurnManager {
     private void processActor(Entity entity, GameWorld gameWorld) {
         Action action = chooseActionForAi(entity , gameWorld);
 
-        Action preparedAction = ActionHandler.prepareAction(entity, action);
+        Action preparedAction = ActionHandler.prepareAction(entity, action, gameWorld);
         if (preparedAction.notPossible()) {
-            ActionHandler.executeAction(entity, ActionFactory.createPassAction(entity));
+            ActionHandler.executeAction(entity, ActionFactory.createPassAction(entity), gameWorld);
         }
 
-        Action executedAction = ActionHandler.executeAction(entity, preparedAction);
+        Action executedAction = ActionHandler.executeAction(entity, preparedAction, gameWorld);
         if (!executedAction.isSuccess()) {
-            ActionHandler.executeAction(entity, ActionFactory.createPassAction(entity));
+            ActionHandler.executeAction(entity, ActionFactory.createPassAction(entity), gameWorld);
         }
     }
 
@@ -194,10 +203,11 @@ public class TimeTurnManager {
     private void passTurn() {
         turnEvent.passTurn();
 
-        // TODO: process projectiles here
         // add turn event back after calling its pass turn method
         addActor(turnEvent);
 
+        // turn-end pipeline (constraints, later buffs/projectiles) and legacy event
+        turnEndListener.run();
         EventBus.emit(new TurnPassedEvent());
     }
 

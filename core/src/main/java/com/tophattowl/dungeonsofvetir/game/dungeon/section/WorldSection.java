@@ -1,5 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.dungeon.section;
 
+import com.tophattowl.dungeonsofvetir.game.generation.GeneratorId;
+
 /**
  * A section resolved to concrete floor numbers.
  * <p>
@@ -14,7 +16,8 @@ public record WorldSection(
     int endFloor,
     int minibossFloor,
     int restFloor,
-    SectionVariation variation
+    SectionVariation variation,
+    GeneratorId generator
 ) {
     public boolean contains(int floorNumber) {
         return floorNumber >= startFloor && floorNumber <= endFloor;

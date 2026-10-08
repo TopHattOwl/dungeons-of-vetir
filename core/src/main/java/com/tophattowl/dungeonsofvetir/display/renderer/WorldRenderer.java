@@ -59,6 +59,8 @@ public class WorldRenderer {
         // calc which tiles are within the camera's view (culling)
         int tw = Tileset.TILE_W;
         int th = Tileset.TILE_H;
+        int levelW = level.getWidth();
+        int levelH = level.getHeight();
 
         // cam bounds in pixels
         float camLeft   = camera.position.x - camera.viewportWidth  / 2f;
@@ -68,11 +70,11 @@ public class WorldRenderer {
 
         // convert cam bounds to tile space
         int minTileX = Math.max(0, (int)(camLeft / tw) - 1);
-        int maxTileX = Math.min(Level.WIDTH - 1, (int)(camRight / tw) + 1);
+        int maxTileX = Math.min(levelW - 1, (int)(camRight / tw) + 1);
 
         // y is flipped
-        int minTileY = Math.max(0, (int)((Level.HEIGHT - 1) - camTop / th) - 1);
-        int maxTileY = Math.min(Level.HEIGHT - 1, (int)((Level.HEIGHT - 1) - camBottom / th) + 1);
+        int minTileY = Math.max(0, (int)((levelH - 1) - camTop / th) - 1);
+        int maxTileY = Math.min(levelH - 1, (int)((levelH - 1) - camBottom / th) + 1);
 
 
 //        batch.setColor(Color.WHITE);
@@ -81,7 +83,7 @@ public class WorldRenderer {
                 Tile tile = level.getTile(x, y);
                 TextureRegion region = terrain.getTile(tile.type, tile.variant);
                 float screenX = x * tw;
-                float screenY = (Level.HEIGHT - 1 - y) * th;
+                float screenY = (levelH - 1 - y) * th;
                 batch.setColor(Color.WHITE);
                 batch.draw(region, screenX, screenY, tw, th);
             }
@@ -92,7 +94,6 @@ public class WorldRenderer {
         Entity player = world.getPlayer();
         FovComponent fovComp = player.getComponent(FovComponent.class);
 
-
         List<Entity> renderables = world.query(PositionComponent.class, RenderableComponent.class);
         renderables.sort(Comparator.comparingInt(
             e -> e.getComponent(RenderableComponent.class).renderOrder
@@ -100,6 +101,7 @@ public class WorldRenderer {
 
         int tw = Tileset.TILE_W;
         int th = Tileset.TILE_H;
+        int levelH = world.getCurrentLevel().getHeight();
 
         batch.setColor(Color.WHITE);
         for (Entity entity : renderables) {
@@ -111,7 +113,7 @@ public class WorldRenderer {
             RenderableComponent renderable = entity.getComponent(RenderableComponent.class);
             TextureRegion region = sprites.get(renderable.spriteId);
             float screenX = pos.getX() * tw;
-            float screenY = (Level.HEIGHT - 1 - pos.getY()) * th;
+            float screenY = (levelH - 1 - pos.getY()) * th;
             batch.draw(region, screenX, screenY, tw, th);
         }
     }

@@ -1,52 +1,48 @@
 package com.tophattowl.dungeonsofvetir.game.actors.faction;
 
-
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 
 import java.util.EnumMap;
 
+/**
+ * Per-run faction relationship table, owned by a world
+ */
 public class FactionRelation {
+
     public enum Relation {
         FRIENDLY,
         NEUTRAL,
         HOSTILE,
     }
-    public static final FactionRelation INSTANCE = new FactionRelation();
 
     private final EnumMap<Faction, EnumMap<Faction, Relation>> relations = new EnumMap<>(Faction.class);
 
-    public FactionRelation() {}
-
-    public static void init() {
+    public FactionRelation() {
         for (Faction faction : Faction.values()) {
-            EnumMap<Faction, Relation> factionRelations = new EnumMap<>(Faction.class);
-
+            EnumMap<Faction, Relation> row = new EnumMap<>(Faction.class);
             for (Faction other : Faction.values()) {
-                if (other == faction) factionRelations.put(other, Relation.FRIENDLY);
-                else factionRelations.put(other, Relation.NEUTRAL);
+                row.put(other, other == faction ? Relation.FRIENDLY : Relation.NEUTRAL);
             }
-
-            INSTANCE.relations.put(faction, factionRelations);
+            relations.put(faction, row);
         }
         setRelations(Faction.HUNTER, Faction.MONSTER, Relation.HOSTILE);
     }
 
-    public static Relation getRelation(Faction faction, Faction other) {
-        EnumMap<Faction, Relation> factionRelations = INSTANCE.relations.get(faction);
-        return factionRelations.getOrDefault(other, Relation.NEUTRAL);
+    public Relation getRelation(Faction faction, Faction other) {
+        EnumMap<Faction, Relation> row = relations.get(faction);
+        return row.getOrDefault(other, Relation.NEUTRAL);
     }
 
-    public static void setRelations(Faction a, Faction b, Relation relation) {
-        INSTANCE.relations.get(a).put(b, relation);
-        INSTANCE.relations.get(b).put(a, relation);
+    public void setRelations(Faction a, Faction b, Relation relation) {
+        relations.get(a).put(b, relation);
+        relations.get(b).put(a, relation);
     }
 
-    public static void logFactionRelations() {
+    public void logFactionRelations() {
         StringBuilder sb = new StringBuilder();
         sb.append("Faction Relations:\n");
         for (Faction faction : Faction.values()) {
-            EnumMap<Faction, Relation> factionRelations = INSTANCE.relations.get(faction);
-            sb.append(faction.name()).append(" : ").append(factionRelations).append("\n");
+            sb.append(faction.name()).append(" : ").append(relations.get(faction)).append("\n");
         }
         DebugLogger.log(DebugLogger.Category.FACTION, "FactionRelation", sb.toString());
     }

@@ -14,7 +14,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
-import com.tophattowl.dungeonsofvetir.game.combat.combat_systems.MeleeCombatSystem;
+import com.tophattowl.dungeonsofvetir.game.action.resolvers.MeleeResolver;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.combat.EntityKilledEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.combat.MeleeAttackCounteredEvent;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MeleeCombatSystemTest {
+class MeleeResolverTest {
 
     private static GameWorld newWorld() {
         return new GameWorld(SeedConfig.custom(7));
@@ -70,7 +70,7 @@ class MeleeCombatSystemTest {
     }
 
     private static void attack(GameWorld world, Entity attacker, Entity target) {
-        MeleeCombatSystem.executeMeleeAttack(new MeleeAttackAction(attacker, target), world);
+        MeleeResolver.executeMeleeAttack(new MeleeAttackAction(attacker, target), world);
     }
 
     @Test

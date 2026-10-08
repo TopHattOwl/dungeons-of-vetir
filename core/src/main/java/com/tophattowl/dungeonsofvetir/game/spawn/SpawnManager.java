@@ -4,7 +4,6 @@ import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.EventSubscriptions;
 import com.tophattowl.dungeonsofvetir.game.event.events.EntityRemovedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.TurnPassedEvent;
@@ -106,8 +105,8 @@ public class SpawnManager {
 
         List<Point> validPositions = new ArrayList<>();
 
-        for (int x = 1; x < Level.WIDTH - 1; x++) {
-            for (int y = 1; y < Level.HEIGHT - 1; y++) {
+        for (int x = 1; x < level.getWidth() - 1; x++) {
+            for (int y = 1; y < level.getHeight() - 1; y++) {
                 if (!level.isWalkable(x, y)) continue;
                 if (gameWorld.getEntity(x, y) != null) continue;
 

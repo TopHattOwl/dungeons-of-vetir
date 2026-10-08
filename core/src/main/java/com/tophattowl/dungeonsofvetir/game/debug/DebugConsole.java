@@ -2,7 +2,6 @@ package com.tophattowl.dungeonsofvetir.game.debug;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
-import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleActiveChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleToggleRequestedEvent;
@@ -245,7 +244,8 @@ public class DebugConsole {
     }
 
     private String logFactionRelations() {
-        FactionRelation.logFactionRelations();
+        if (gameWorld == null) return "Error: GameWorld not initialized.";
+        gameWorld.getFactionRelations().logFactionRelations();
         return "Faction relations logged in debug logger";
     }
 

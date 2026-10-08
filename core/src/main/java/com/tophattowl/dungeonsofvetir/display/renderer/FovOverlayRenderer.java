@@ -49,6 +49,9 @@ public class FovOverlayRenderer {
         // TODO: put this shit into some helper class
         int tw = Tileset.TILE_W;
         int th = Tileset.TILE_H;
+        Level level = world.getCurrentLevel();
+        int levelW = level.getWidth();
+        int levelH = level.getHeight();
 
         // cull to camera view
         float camLeft   = camera.position.x - camera.viewportWidth  / 2f;
@@ -57,9 +60,9 @@ public class FovOverlayRenderer {
         float camTop    = camera.position.y + camera.viewportHeight / 2f;
 
         int minTileX = Math.max(0, (int)(camLeft / tw) - 1);
-        int maxTileX = Math.min(Level.WIDTH  - 1, (int)(camRight / tw) + 1);
-        int minTileY = Math.max(0, (int)((Level.HEIGHT - 1) - camTop    / th) - 1);
-        int maxTileY = Math.min(Level.HEIGHT - 1, (int)((Level.HEIGHT - 1) - camBottom / th) + 1);
+        int maxTileX = Math.min(levelW - 1, (int)(camRight / tw) + 1);
+        int minTileY = Math.max(0, (int)((levelH - 1) - camTop    / th) - 1);
+        int maxTileY = Math.min(levelH - 1, (int)((levelH - 1) - camBottom / th) + 1);
 
         // enable blending so the explored overlay is transparent
         com.badlogic.gdx.Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -71,7 +74,7 @@ public class FovOverlayRenderer {
         for (int x = minTileX; x <= maxTileX; x++) {
             for (int y = minTileY; y <= maxTileY; y++) {
                 float screenX = x * tw;
-                float screenY = (Level.HEIGHT - 1 - y) * th;
+                float screenY = (levelH - 1 - y) * th;
 
                 if (!fov.isExplored(x, y)) {
                     shapes.setColor(0f, 0f, 0f, ALPHA_UNSEEN);

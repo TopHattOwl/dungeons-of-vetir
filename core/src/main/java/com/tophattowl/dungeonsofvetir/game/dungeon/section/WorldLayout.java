@@ -1,5 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.dungeon.section;
 
+import com.tophattowl.dungeonsofvetir.game.world.PlaceRole;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,8 @@ public class WorldLayout {
 
             sections.add(new WorldSection(
                 descriptor.id(), descriptor.name(),
-                start, end, end, restFloor, pickVariation(descriptor, start)
+                start, end, end, restFloor, pickVariation(descriptor, start),
+                descriptor.generator()
             ));
 
             floorCursor = hasRestAfter ? end + 2 : end + 1;
@@ -68,14 +71,14 @@ public class WorldLayout {
 
         WorldSection restSection = restFloors.get(floorNumber);
         if (restSection != null) {
-            return new ResolvedFloor(restSection, restSection.variation(), FloorRole.REST, floorNumber, seed);
+            return new ResolvedFloor(restSection, restSection.variation(), PlaceRole.REST, floorNumber, seed);
         }
 
         for (WorldSection section : sections) {
             if (section.contains(floorNumber)) {
-                FloorRole role = floorNumber == section.minibossFloor()
-                    ? FloorRole.MINIBOSS
-                    : FloorRole.NORMAL;
+                PlaceRole role = floorNumber == section.minibossFloor()
+                    ? PlaceRole.MINIBOSS
+                    : PlaceRole.NORMAL;
                 return new ResolvedFloor(section, section.variation(), role, floorNumber, seed);
             }
         }
@@ -85,5 +88,13 @@ public class WorldLayout {
 
     public List<WorldSection> sections() {
         return List.copyOf(sections);
+    }
+
+    /**
+     * The highest floor number this layout resolves (the last section's end).
+     */
+    public int maxFloor() {
+        if (sections.isEmpty()) return 1;
+        return sections.get(sections.size() - 1).endFloor();
     }
 }

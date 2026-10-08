@@ -1,8 +1,8 @@
-package com.tophattowl.dungeonsofvetir.game.dungeon.generators;
+package com.tophattowl.dungeonsofvetir.game.generation.generators;
 
 /**
- * Tunables for the cellular-automata cave generator. Variations of the cave
- * section can supply different params to get a different feel
+ * Tunables for the cellular-automata cave generator.
+ * Variations of the cave section can supply different params to get a different feel
  */
 public record CaveParams(
     double fillChance,

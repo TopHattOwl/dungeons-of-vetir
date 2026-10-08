@@ -1,4 +1,4 @@
-package com.tophattowl.dungeonsofvetir.game.dungeon.generators;
+package com.tophattowl.dungeonsofvetir.game.generation.generators;
 
 /**
  * Tunables for the room-and-corridor generator

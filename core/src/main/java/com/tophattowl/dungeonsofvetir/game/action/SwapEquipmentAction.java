@@ -5,6 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.systems.EquipSystem;
+import com.tophattowl.dungeonsofvetir.game.world.Capability;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class SwapEquipmentAction extends Action {
 
     @Override
     public Action prepare(GameWorld gameWorld) {
+        if (!gameWorld.constraints().can(owner, Capability.EQUIP)) return this;
         return EquipSystem.prepareSwap(this, gameWorld);
     }
 

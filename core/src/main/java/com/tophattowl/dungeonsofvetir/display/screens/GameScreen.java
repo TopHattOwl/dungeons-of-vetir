@@ -31,12 +31,16 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.event.events.LevelChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.input.ConsoleActiveChangedEvent;
 import com.tophattowl.dungeonsofvetir.game.input.InputHandler;
+import com.tophattowl.dungeonsofvetir.game.meta.MetaState;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.rng.SeedConfig;
+import com.tophattowl.dungeonsofvetir.game.world.Capability;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
+import com.tophattowl.dungeonsofvetir.game.world.WorldContext;
+import com.tophattowl.dungeonsofvetir.game.world.ZoneConstraints;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugConsole;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
 
@@ -72,6 +76,7 @@ public class GameScreen implements Screen {
 
     // game
     private GameWorld gameWorld;
+    private WorldContext worldContext;
     private InputHandler inputHandler;
     private DebugConsole debugConsole;
 
@@ -79,6 +84,7 @@ public class GameScreen implements Screen {
     public void show() {
         // game first: the tileset palette depends on the starting floor
         gameWorld = new GameWorld(SeedConfig.custom(178439));
+        worldContext = new WorldContext(gameWorld, new MetaState());
         inputHandler = new InputHandler(gameWorld.getPlayer());
         debugConsole = new DebugConsole();
 
@@ -96,10 +102,11 @@ public class GameScreen implements Screen {
 
         cameraController = new CameraController(VIEWPORT_W, VIEWPORT_H);
         worldRenderer = new WorldRenderer(
-            batch, terrains.get(gameWorld.getCurrentResolved().theme()), sprites
+            batch, terrains.get(gameWorld.getCurrentPlace().theme()), sprites
         );
         fovOverlayRenderer = new FovOverlayRenderer();
         worldRenderer.setFovOverlayRenderer(fovOverlayRenderer);
+        updateVisionOverlay();
         dijkstraOverlayRenderer = new DijkstraOverlayRenderer(batch, font);
         hudRenderer = new HudRenderer(VIRTUAL_W, VIRTUAL_H, font);
 
@@ -120,7 +127,6 @@ public class GameScreen implements Screen {
 
         hudRenderer.setPlayer(gameWorld.getPlayer());
 
-        gameWorld.updateFov();
         gameWorld.addDijkstraMapManager(new DijkstraMapManager(gameWorld));
 
         Gdx.input.setInputProcessor(new InputMultiplexer(inputHandler, stage));
@@ -129,13 +135,28 @@ public class GameScreen implements Screen {
         EventBus.on(ConsoleActiveChangedEvent.class, this::onConsoleActiveChanged);
 
         Point playerPos = gameWorld.getPlayer().getComponent(PositionComponent.class).getPosition();
-        cameraController.centerOn(playerPos.x,  playerPos.y);
+        cameraController.centerOn(playerPos.x,  playerPos.y, currentLevelWidth(), currentLevelHeight());
+    }
+
+    private int currentLevelWidth() {
+        return gameWorld.getCurrentLevel().getWidth();
+    }
+
+    private int currentLevelHeight() {
+        return gameWorld.getCurrentLevel().getHeight();
     }
 
     private void onLevelChanged(LevelChangedEvent event) {
-        worldRenderer.setTerrain(terrains.get(event.resolved().theme()));
+        worldRenderer.setTerrain(terrains.get(event.place().theme()));
+        updateVisionOverlay();
         PositionComponent pos = gameWorld.getPlayer().getComponent(PositionComponent.class);
-        cameraController.centerOn(pos.getX(), pos.getY());
+        cameraController.centerOn(pos.getX(), pos.getY(), currentLevelWidth(), currentLevelHeight());
+    }
+
+    private void updateVisionOverlay() {
+        boolean visionDenied = ZoneConstraints.denies(
+            gameWorld.getCurrentPlace().id().kind(), Capability.VISION);
+        fovOverlayRenderer.setEnabled(!visionDenied);
     }
 
     private void onConsoleActiveChanged(ConsoleActiveChangedEvent event) {
@@ -159,6 +180,7 @@ public class GameScreen implements Screen {
     public void render(float v) {
         input();
         logic();
+
         stage.act(v);
         draw();
     }
@@ -175,21 +197,20 @@ public class GameScreen implements Screen {
         if (action == null) return;
 
 
-        Action actionFinal = ActionHandler.prepareAction(player, action);
+        Action actionFinal = ActionHandler.prepareAction(player, action, gameWorld);
         if (actionFinal.notPossible()) {
             return;
         }
 
-        Action executedAction = ActionHandler.executeAction(player, actionFinal);
+        Action executedAction = ActionHandler.executeAction(player, actionFinal, gameWorld);
 
         if (executedAction.isSuccess()) {
             DebugLogger.log(DebugLogger.Category.ACTION, "GameWorld",
                 "Action successful by player\n" + actionFinal
             );
             playerComp.isPlayersTurn = false;
-            gameWorld.updateFov();
             PositionComponent posComp = player.getComponent(PositionComponent.class);
-            cameraController.centerOn(posComp.getX(), posComp.getY());
+            cameraController.centerOn(posComp.getX(), posComp.getY(), currentLevelWidth(), currentLevelHeight());
             gameWorld.timeTurnManager.onPlayerActionCompleted(gameWorld);
         }
     }

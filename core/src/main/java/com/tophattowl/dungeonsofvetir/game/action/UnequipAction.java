@@ -3,6 +3,7 @@ package com.tophattowl.dungeonsofvetir.game.action;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.systems.EquipSystem;
+import com.tophattowl.dungeonsofvetir.game.world.Capability;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 /**
@@ -23,6 +24,7 @@ public class UnequipAction extends Action {
 
     @Override
     public Action prepare(GameWorld gameWorld) {
+        if (!gameWorld.constraints().can(owner, Capability.EQUIP)) return this;
         return EquipSystem.prepareUnequip(this, gameWorld);
     }
 

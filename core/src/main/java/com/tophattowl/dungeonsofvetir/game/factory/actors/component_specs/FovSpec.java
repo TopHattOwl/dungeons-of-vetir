@@ -2,6 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 
 public record FovSpec(
@@ -13,7 +14,8 @@ public record FovSpec(
     }
 
     @Override
-    public FovComponent build(Entity entity) {
-        return new FovComponent(visionRange, Level.WIDTH, Level.HEIGHT);
+    public FovComponent build(Entity entity, GameWorld gameWorld) {
+        Level level = gameWorld.getCurrentLevel();
+        return new FovComponent(visionRange, level.getWidth(), level.getHeight());
     }
 }

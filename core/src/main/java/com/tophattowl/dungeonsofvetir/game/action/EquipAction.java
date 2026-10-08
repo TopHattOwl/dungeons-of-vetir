@@ -5,6 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.items.EquipmentSlotType;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.systems.EquipSystem;
+import com.tophattowl.dungeonsofvetir.game.world.Capability;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class EquipAction extends Action {
@@ -21,6 +22,7 @@ public class EquipAction extends Action {
 
     @Override
     public Action prepare(GameWorld gameWorld) {
+        if (!gameWorld.constraints().can(owner, Capability.EQUIP)) return this;
         return EquipSystem.prepareEquip(this, gameWorld);
     }
 

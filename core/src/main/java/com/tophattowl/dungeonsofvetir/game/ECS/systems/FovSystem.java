@@ -1,34 +1,64 @@
 package com.tophattowl.dungeonsofvetir.game.ECS.systems;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
 import com.tophattowl.dungeonsofvetir.game.actors.components.FovComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
+import com.tophattowl.dungeonsofvetir.game.event.EventSubscriptions;
+import com.tophattowl.dungeonsofvetir.game.event.events.EntityAddedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.EntityMovedEvent;
+import com.tophattowl.dungeonsofvetir.game.event.events.LevelChangedEvent;
+import com.tophattowl.dungeonsofvetir.game.world.Capability;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 
-import java.util.List;
-
 /**
- * Recursive shadowcasting FOV
- * Runs every turn for every entity with Position and Fov components
- * Updates visibleTiles and exploredTiles
+ * Recursive shadowcasting FOV, recomputed per entity.
+ * <p>
+ * FOV depends only on the entity's own position and the level's opacity, so it is
+ * refreshed when the entity is added or moves, and for everyone on a level change.
+ * Every entity's FOV is therefore never stale for its own decisions (AI included),
+ * not just the player's.
  */
-public class FovSystem implements GameSystem {
+public class FovSystem implements Disposable {
 
-    @Override
-    public void process(GameWorld gameWorld) {
+    private final GameWorld gameWorld;
+    private final EventSubscriptions eventSubs = new EventSubscriptions();
+
+    public FovSystem(GameWorld gameWorld) {
+        this.gameWorld = gameWorld;
+        eventSubs.on(EntityAddedEvent.class, e -> update(e.entity()));
+        eventSubs.on(EntityMovedEvent.class, e -> update(e.entity()));
+        eventSubs.on(LevelChangedEvent.class, e -> updateAll());
+    }
+
+    /**
+     * Recomputes FOV for a single entity, if it has position and vision.
+     */
+    public void update(Entity entity) {
+        if (entity == null) return;
+
+        PositionComponent pos = entity.getComponent(PositionComponent.class);
+        FovComponent fov = entity.getComponent(FovComponent.class);
+        if (pos == null || fov == null) return;
+
+        // e.g. the overworld reveals the whole map: no per-entity FOV
+        if (!gameWorld.constraints().can(entity, Capability.VISION)) return;
+
         Level level = gameWorld.getCurrentLevel();
-
         if (level == null) return;
 
-        List<Entity> entities = gameWorld.query(PositionComponent.class, FovComponent.class);
-        if (entities.isEmpty()) return;
+        computeFov(level, pos.getX(), pos.getY(), fov);
+    }
 
-        for (Entity entity : entities) {
-            PositionComponent pos = entity.getComponent(PositionComponent.class);
-            FovComponent fov = entity.getComponent(FovComponent.class);
-            computeFov(level, pos.getX(), pos.getY(), fov);
+    /**
+     * Recomputes FOV for every entity that has position and vision (level change).
+     */
+    public void updateAll() {
+        if (gameWorld.getCurrentLevel() == null) return;
+
+        for (Entity entity : gameWorld.query(PositionComponent.class, FovComponent.class)) {
+            update(entity);
         }
     }
 
@@ -76,10 +106,6 @@ public class FovSystem implements GameSystem {
             if (!level.isInBounds(wx, wy)) continue;
 
             // circular distance check
-//            float dist = (float) Math.sqrt(col * col + row * row);
-//            if (dist <= fov.radius) {
-//                markVisible(fov, wx, wy);
-//            }
             if (col * col + row * row <= fov.visionRadius * fov.visionRadius) {
                 markVisible(fov, wx, wy);
             }
@@ -140,5 +166,8 @@ public class FovSystem implements GameSystem {
         };
     }
 
-
+    @Override
+    public void dispose() {
+        eventSubs.unsubscribeAll();
+    }
 }

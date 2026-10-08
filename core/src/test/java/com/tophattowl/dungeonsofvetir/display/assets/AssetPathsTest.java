@@ -6,6 +6,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.components.RenderableComponent
 import com.tophattowl.dungeonsofvetir.game.factory.actors.ActorRegistry;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.EntityFactory;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.RenderableSpec;
+import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,7 @@ class AssetPathsTest {
 
     @Test
     void playerUsesRegisteredSprite() {
-        Entity player = EntityFactory.makePlayer(new Point(0, 0));
+        Entity player = EntityFactory.makePlayer(new Level(1), new Point(0, 0));
         try {
             String spriteId = player.getComponent(RenderableComponent.class).spriteId;
             assertTrue(AssetPaths.hasSprite(spriteId), "player sprite id not registered: " + spriteId);

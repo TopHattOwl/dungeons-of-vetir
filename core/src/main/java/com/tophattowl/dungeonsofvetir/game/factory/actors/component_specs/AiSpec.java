@@ -2,6 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.AiComponent;
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapType;
 
 public record AiSpec(
@@ -17,7 +18,7 @@ public record AiSpec(
     }
 
     @Override
-    public AiComponent build(Entity entity) {
+    public AiComponent build(Entity entity, GameWorld gameWorld) {
         AiComponent comp = new AiComponent();
         comp.setWeight(DijkstraMapType.PLAYER, playerDijkstraWeight);
         comp.setWeight(DijkstraMapType.FACTION_MONSTER, monsterDijkstraWeight);

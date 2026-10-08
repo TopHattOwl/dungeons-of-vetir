@@ -1,0 +1,15 @@
+// Default dungeon surface/entrance. Distinct from the cave interior below.
+// The '>' is a stairs-down tile; GameWorld.buildExits wires it to floor 1.
+name: Vetir Surface
+width: 12
+height: 9
+tiles:
+############
+#..........#
+#...####...#
+#...#..#...#
+#....>.#...#
+#...####...#
+#..........#
+#..........#
+############

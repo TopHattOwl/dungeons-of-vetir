@@ -20,12 +20,12 @@ public class EntityFactory {
         return buildFromSpec(spec, gameWorld, spawnPos);
     }
 
-    public static Entity makePlayer(Point spawnPoint) {
+    public static Entity makePlayer(Level level, Point spawnPoint) {
         Entity player = new Entity();
         player.addComponent(new PositionComponent(spawnPoint))
             .addComponent(new RenderableComponent("player_knight", 10))
             .addComponent(new TimeValueComponent())
-            .addComponent(new FovComponent(10, Level.WIDTH, Level.HEIGHT))
+            .addComponent(new FovComponent(10, level.getWidth(), level.getHeight()))
             .addComponent(new PlayerComponent())
             .addComponent(new IdentityComponent("player", ActorId.PLAYER, Faction.HUNTER))
             .addComponent(new HealthComponent(350))
@@ -62,7 +62,7 @@ public class EntityFactory {
 
         // before body specs
         for (ActorComponentSpec<?> baseSpec : spec.baseSpecs()) {
-            entity.addComponent(baseSpec.build(entity));
+            entity.addComponent(baseSpec.build(entity, gameWorld));
         }
 
         // body
@@ -76,7 +76,7 @@ public class EntityFactory {
 
         // post body
         for (ActorComponentSpec<?> postBodySpec : spec.postBodySpecs()) {
-            entity.addComponent(postBodySpec.build(entity));
+            entity.addComponent(postBodySpec.build(entity, gameWorld));
         }
 
         // normalize time value

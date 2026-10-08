@@ -5,6 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyComponentBuilder;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public record BodySpec(
     }
 
     @Override
-    public BodyComponent build(Entity entity) {
+    public BodyComponent build(Entity entity, GameWorld gameWorld) {
         int maxHp = entity.getComponent(HealthComponent.class).maxHp;
         return BodyComponentBuilder.build(bodyTemplate, maxHp,  naturalProts);
     }

@@ -1,7 +1,7 @@
 package com.tophattowl.dungeonsofvetir.dungeon;
 
-import com.tophattowl.dungeonsofvetir.game.dungeon.GenerationContext;
-import com.tophattowl.dungeonsofvetir.game.dungeon.generators.CaveGenerator;
+import com.tophattowl.dungeonsofvetir.game.generation.GenerationContext;
+import com.tophattowl.dungeonsofvetir.game.generation.generators.CaveGenerator;
 import com.tophattowl.dungeonsofvetir.game.dungeon.section.ResolvedFloor;
 import com.tophattowl.dungeonsofvetir.game.dungeon.section.SectionCatalog;
 import com.tophattowl.dungeonsofvetir.game.dungeon.section.WorldLayout;
@@ -16,7 +16,7 @@ class CaveGeneratorTest {
     private static GenerationContext ctx(long worldSeed, int floor) {
         WorldLayout layout = new WorldLayout(worldSeed, SectionCatalog.defaultCatalog());
         ResolvedFloor resolved = layout.resolve(floor);
-        return new GenerationContext(resolved.seed(), floor, resolved);
+        return new GenerationContext(resolved.seed(), floor, Level.DEFAULT_WIDTH, Level.DEFAULT_HEIGHT, "");
     }
 
     private static Level generate(long worldSeed, int floor) {
@@ -39,8 +39,8 @@ class CaveGeneratorTest {
 
         boolean hasFloor = false;
         outer:
-        for (int x = 1; x < Level.WIDTH - 1; x++) {
-            for (int y = 1; y < Level.HEIGHT - 1; y++) {
+        for (int x = 1; x < Level.DEFAULT_WIDTH - 1; x++) {
+            for (int y = 1; y < Level.DEFAULT_HEIGHT - 1; y++) {
                 if (level.getTile(x, y).type == TileType.FLOOR) {
                     hasFloor = true;
                     break outer;
@@ -63,8 +63,8 @@ class CaveGeneratorTest {
 
         int up = 0;
         int down = 0;
-        for (int x = 0; x < Level.WIDTH; x++) {
-            for (int y = 0; y < Level.HEIGHT; y++) {
+        for (int x = 0; x < Level.DEFAULT_WIDTH; x++) {
+            for (int y = 0; y < Level.DEFAULT_HEIGHT; y++) {
                 if (level.getTile(x, y).type == TileType.STAIRS_UP) up++;
                 if (level.getTile(x, y).type == TileType.STAIRS_DOWN) down++;
             }
@@ -78,8 +78,8 @@ class CaveGeneratorTest {
         Level level1 = generate(12345, 1);
         Level level2 = generate(12345, 1);
 
-        for (int x = 0; x < Level.WIDTH; x++) {
-            for (int y = 0; y < Level.HEIGHT; y++) {
+        for (int x = 0; x < Level.DEFAULT_WIDTH; x++) {
+            for (int y = 0; y < Level.DEFAULT_HEIGHT; y++) {
                 assertEquals(level1.getTile(x, y).type, level2.getTile(x, y).type,
                     "Tiles should match at (" + x + "," + y + ")");
             }
@@ -93,8 +93,8 @@ class CaveGeneratorTest {
 
         boolean different = false;
         outer:
-        for (int x = 0; x < Level.WIDTH && !different; x++) {
-            for (int y = 0; y < Level.HEIGHT && !different; y++) {
+        for (int x = 0; x < Level.DEFAULT_WIDTH && !different; x++) {
+            for (int y = 0; y < Level.DEFAULT_HEIGHT && !different; y++) {
                 if (level1.getTile(x, y).type != level2.getTile(x, y).type) {
                     different = true;
                 }
@@ -107,13 +107,28 @@ class CaveGeneratorTest {
     void generate_BordersAreWalls() {
         Level level = generate(12345, 1);
 
-        for (int x = 0; x < Level.WIDTH; x++) {
+        for (int x = 0; x < Level.DEFAULT_WIDTH; x++) {
             assertEquals(TileType.WALL, level.getTile(x, 0).type, "Top border should be wall");
-            assertEquals(TileType.WALL, level.getTile(x, Level.HEIGHT - 1).type, "Bottom border should be wall");
+            assertEquals(TileType.WALL, level.getTile(x, Level.DEFAULT_HEIGHT - 1).type, "Bottom border should be wall");
         }
-        for (int y = 0; y < Level.HEIGHT; y++) {
+        for (int y = 0; y < Level.DEFAULT_HEIGHT; y++) {
             assertEquals(TileType.WALL, level.getTile(0, y).type, "Left border should be wall");
-            assertEquals(TileType.WALL, level.getTile(Level.WIDTH - 1, y).type, "Right border should be wall");
+            assertEquals(TileType.WALL, level.getTile(Level.DEFAULT_WIDTH - 1, y).type, "Right border should be wall");
         }
+    }
+
+    @Test
+    void generate_UsesRequestedSize() {
+        WorldLayout layout = new WorldLayout(12345, SectionCatalog.defaultCatalog());
+        ResolvedFloor resolved = layout.resolve(1);
+        GenerationContext ctx = new GenerationContext(resolved.seed(), 1, 40, 30, "");
+
+        Level level = new CaveGenerator().generate(ctx);
+
+        assertEquals(40, level.getWidth());
+        assertEquals(30, level.getHeight());
+        assertEquals(TileType.WALL, level.getTile(0, 0).type);
+        assertEquals(TileType.WALL, level.getTile(39, 29).type);
+        assertFalse(level.isInBounds(40, 30));
     }
 }

@@ -1,7 +1,6 @@
-package com.tophattowl.dungeonsofvetir.game.combat.combat_systems;
+package com.tophattowl.dungeonsofvetir.game.action.resolvers;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.GameSystem;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
 import com.tophattowl.dungeonsofvetir.game.action.Action;
@@ -17,8 +16,12 @@ import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 import java.util.List;
 
-public class MeleeCombatSystem implements GameSystem {
+/**
+ * Resolves a {@link MeleeAttackAction} on demand
+ */
+public final class MeleeResolver {
 
+    private MeleeResolver() {}
 
     public static Action prepareMeleeAttack(MeleeAttackAction meleeAttackAction, GameWorld gameWorld) {
         meleeAttackAction.possible();
@@ -60,7 +63,7 @@ public class MeleeCombatSystem implements GameSystem {
     private static void applyAttack(MeleeAttackResult attackResult,
                                     Entity attacker, Entity target,
                                     GameWorld gameWorld) {
-        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeCombatSystem",
+        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeResolver",
             "applying attack");
 
         List<Damage> damages = attackResult.getDamages();
@@ -94,7 +97,7 @@ public class MeleeCombatSystem implements GameSystem {
     private static void applyMissed(MeleeAttackResult attackResult,
                                     Entity attacker, Entity target,
                                     GameWorld gameWorld) {
-        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeCombatSystem",
+        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeResolver",
             "applying missed attack");
         EventBus.emit(new MeleeAttackMissedEvent(attacker, target));
     }
@@ -102,7 +105,7 @@ public class MeleeCombatSystem implements GameSystem {
     private static void applyBlocked(MeleeAttackResult attackResult,
                                     Entity attacker, Entity target,
                                     GameWorld gameWorld) {
-        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeCombatSystem",
+        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeResolver",
             "applying blocked attack");
         EventBus.emit(new MeleeAttackBlockedEvent(attacker, target));
     }
@@ -110,7 +113,7 @@ public class MeleeCombatSystem implements GameSystem {
     private static void applyCountered(MeleeAttackResult attackResult,
                                        Entity attacker, Entity target,
                                        GameWorld gameWorld) {
-        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeCombatSystem",
+        DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeResolver",
             "applying counter after attack");
         EventBus.emit(new MeleeAttackCounteredEvent(target, attacker));
     }

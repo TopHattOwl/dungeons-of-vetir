@@ -1,0 +1,11 @@
+// A demo side room reached from a parent door. No exits here (the reciprocal
+// link back to a procedural parent is wired when that content lands).
+name: Cellar
+width: 6
+height: 5
+tiles:
+######
+#....#
+#....#
+#....#
+######

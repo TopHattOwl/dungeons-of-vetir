@@ -4,26 +4,19 @@ import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.ActorId;
 import com.tophattowl.dungeonsofvetir.game.actors.components.*;
 import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
-import com.tophattowl.dungeonsofvetir.game.actors.faction.FactionRelation;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
 import com.tophattowl.dungeonsofvetir.util.Direction;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MovementSystemTest {
 
-    @BeforeEach
-    void setUp() {
-        FactionRelation.init();
-    }
-
     private Level createLevel() {
         Level level = new Level(1);
-        for (int x = 1; x < Level.WIDTH - 1; x++) {
-            for (int y = 1; y < Level.HEIGHT - 1; y++) {
+        for (int x = 1; x < Level.DEFAULT_WIDTH - 1; x++) {
+            for (int y = 1; y < Level.DEFAULT_HEIGHT - 1; y++) {
                 level.setTile(x, y, TileType.FLOOR);
             }
         }
@@ -176,7 +169,7 @@ class MovementSystemTest {
     void level_InBounds_Checks() {
         Level level = createLevel();
         assertTrue(level.isInBounds(0, 0));
-        assertTrue(level.isInBounds(Level.WIDTH - 1, Level.HEIGHT - 1));
+        assertTrue(level.isInBounds(Level.DEFAULT_WIDTH - 1, Level.DEFAULT_HEIGHT - 1));
         assertTrue(level.isInBounds(40, 24));
     }
 
@@ -190,8 +183,8 @@ class MovementSystemTest {
     @Test
     void level_InBounds_TooLarge() {
         Level level = createLevel();
-        assertFalse(level.isInBounds(Level.WIDTH, 0));
-        assertFalse(level.isInBounds(0, Level.HEIGHT));
+        assertFalse(level.isInBounds(Level.DEFAULT_WIDTH, 0));
+        assertFalse(level.isInBounds(0, Level.DEFAULT_HEIGHT));
     }
 
     @Test

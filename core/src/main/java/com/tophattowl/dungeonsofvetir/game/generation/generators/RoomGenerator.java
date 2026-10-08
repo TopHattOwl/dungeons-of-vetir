@@ -1,7 +1,7 @@
-package com.tophattowl.dungeonsofvetir.game.dungeon.generators;
+package com.tophattowl.dungeonsofvetir.game.generation.generators;
 
-import com.tophattowl.dungeonsofvetir.game.dungeon.GenerationContext;
-import com.tophattowl.dungeonsofvetir.game.dungeon.LevelGenerator;
+import com.tophattowl.dungeonsofvetir.game.generation.GenerationContext;
+import com.tophattowl.dungeonsofvetir.game.generation.LevelGenerator;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
 
@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Generates a fortress/ruins layout: non-overlapping rectangular rooms connected
- * by orthogonal L-shaped corridors. Openings where a corridor meets a room wall
- * are marked as doors
+ * Generates a fortress/ruins layout: non-overlapping rectangular rooms connected by orthogonal L-shaped corridors.
+ * Openings where a corridor meets a room wall are marked as doors
  */
 public class RoomGenerator implements LevelGenerator {
 
@@ -28,10 +27,10 @@ public class RoomGenerator implements LevelGenerator {
 
     @Override
     public Level generate(GenerationContext ctx) {
-        Level level = new Level(ctx.floorNumber());
+        Level level = new Level(ctx.floorNumber(), ctx.width(), ctx.height());
         Random rng = new Random(ctx.seed());
 
-        List<Room> rooms = placeRooms(rng);
+        List<Room> rooms = placeRooms(level, rng);
         if (rooms.size() < 2) {
             return new CaveGenerator().generate(ctx);
         }
@@ -54,7 +53,7 @@ public class RoomGenerator implements LevelGenerator {
         return level;
     }
 
-    private List<Room> placeRooms(Random rng) {
+    private List<Room> placeRooms(Level level, Random rng) {
         List<Room> rooms = new ArrayList<>();
         int attempts = 0;
 
@@ -63,8 +62,8 @@ public class RoomGenerator implements LevelGenerator {
 
             int w = randomSize(rng);
             int h = randomSize(rng);
-            int x = 1 + rng.nextInt(Level.WIDTH - 2 - w);
-            int y = 1 + rng.nextInt(Level.HEIGHT - 2 - h);
+            int x = 1 + rng.nextInt(level.getWidth() - 2 - w);
+            int y = 1 + rng.nextInt(level.getHeight() - 2 - h);
             Room candidate = new Room(x, y, w, h);
 
             if (overlapsAny(candidate, rooms)) continue;
@@ -141,8 +140,8 @@ public class RoomGenerator implements LevelGenerator {
      * is an opening between a room and a corridor -> make it a door.
      */
     private void placeDoors(Level level) {
-        for (int x = 1; x < Level.WIDTH - 1; x++) {
-            for (int y = 1; y < Level.HEIGHT - 1; y++) {
+        for (int x = 1; x < level.getWidth() - 1; x++) {
+            for (int y = 1; y < level.getHeight() - 1; y++) {
                 if (level.getTile(x, y).type != TileType.WALL) continue;
 
                 boolean horizontal = isWalkable(level, x - 1, y) && isWalkable(level, x + 1, y);

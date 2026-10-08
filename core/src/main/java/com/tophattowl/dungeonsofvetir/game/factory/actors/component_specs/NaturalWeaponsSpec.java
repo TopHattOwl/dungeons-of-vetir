@@ -5,6 +5,7 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPart;
 import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.NaturalWeaponsComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.monsters.NaturalWeapon;
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public record NaturalWeaponsSpec(
     }
 
     @Override
-    public NaturalWeaponsComponent build(Entity entity) {
+    public NaturalWeaponsComponent build(Entity entity, GameWorld gameWorld) {
         Map<BodyPart, NaturalWeapon> compArg = new HashMap<>();
 
         for (Map.Entry<String, NaturalWeapon> entry : naturalWeapons.entrySet()) {

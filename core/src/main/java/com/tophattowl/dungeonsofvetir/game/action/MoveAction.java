@@ -3,7 +3,8 @@ package com.tophattowl.dungeonsofvetir.game.action;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
 import com.tophattowl.dungeonsofvetir.util.Direction;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.ECS.systems.MovementSystem;
+import com.tophattowl.dungeonsofvetir.game.action.resolvers.MovementResolver;
+import com.tophattowl.dungeonsofvetir.game.world.Capability;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public class MoveAction extends Action {
@@ -30,12 +31,13 @@ public class MoveAction extends Action {
 
     @Override
     public Action prepare(GameWorld gameWorld) {
-        return MovementSystem.prepareMove(this, gameWorld);
+        if (!gameWorld.constraints().can(owner, Capability.MOVE)) return this;
+        return MovementResolver.prepareMove(this, gameWorld);
     }
 
     @Override
     public Action execute(GameWorld gameWorld) {
-        return MovementSystem.executeMove(this, gameWorld);
+        return MovementResolver.executeMove(this, gameWorld);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.dungeon.section;
 
+import com.tophattowl.dungeonsofvetir.game.generation.GeneratorId;
+
 import java.util.List;
 
 /**
@@ -11,7 +13,8 @@ public record SectionDescriptor(
     SectionId id,
     String name,
     int length,
-    List<SectionVariation> variations
+    List<SectionVariation> variations,
+    GeneratorId generator
 ) {
     public SectionDescriptor {
         if (length < 1) throw new IllegalArgumentException("Section length must be >= 1");

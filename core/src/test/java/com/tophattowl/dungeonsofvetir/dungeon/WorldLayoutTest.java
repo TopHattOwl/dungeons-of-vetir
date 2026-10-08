@@ -1,6 +1,6 @@
 package com.tophattowl.dungeonsofvetir.dungeon;
 
-import com.tophattowl.dungeonsofvetir.game.dungeon.section.FloorRole;
+import com.tophattowl.dungeonsofvetir.game.world.PlaceRole;
 import com.tophattowl.dungeonsofvetir.game.dungeon.section.ResolvedFloor;
 import com.tophattowl.dungeonsofvetir.game.dungeon.section.SectionCatalog;
 import com.tophattowl.dungeonsofvetir.game.dungeon.section.SectionId;
@@ -22,7 +22,7 @@ class WorldLayoutTest {
     void resolve_FirstFloor_IsFirstSectionNormal() {
         ResolvedFloor resolved = layout().resolve(1);
         assertEquals(SectionId.CAVES, resolved.section().id());
-        assertEquals(FloorRole.NORMAL, resolved.role());
+        assertEquals(PlaceRole.NORMAL, resolved.role());
     }
 
     @Test
@@ -47,13 +47,13 @@ class WorldLayoutTest {
     void resolve_LastFloorOfSection_IsMiniboss() {
         ResolvedFloor resolved = layout().resolve(5);
         assertEquals(SectionId.CAVES, resolved.section().id());
-        assertEquals(FloorRole.MINIBOSS, resolved.role());
+        assertEquals(PlaceRole.MINIBOSS, resolved.role());
     }
 
     @Test
     void resolve_FloorBetweenSections_IsRest() {
         ResolvedFloor resolved = layout().resolve(6);
-        assertEquals(FloorRole.REST, resolved.role());
+        assertEquals(PlaceRole.REST, resolved.role());
         assertEquals(SectionId.RUINS, resolved.section().id(), "Rest floor opens the next section");
     }
 
@@ -61,12 +61,12 @@ class WorldLayoutTest {
     void resolve_SecondSectionStartsAfterRest() {
         ResolvedFloor resolved = layout().resolve(7);
         assertEquals(SectionId.RUINS, resolved.section().id());
-        assertEquals(FloorRole.NORMAL, resolved.role());
+        assertEquals(PlaceRole.NORMAL, resolved.role());
     }
 
     @Test
     void resolve_SecondSectionMiniboss() {
-        assertEquals(FloorRole.MINIBOSS, layout().resolve(11).role());
+        assertEquals(PlaceRole.MINIBOSS, layout().resolve(11).role());
     }
 
     @Test

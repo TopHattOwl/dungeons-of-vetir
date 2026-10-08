@@ -53,7 +53,7 @@ public class DijkstraMapManager {
                 if (dx == 0 && dy == 0) continue;
 
                 int nx = x + dx, ny = y + dy;
-                if (nx < 0 || ny < 0 || nx >= Level.WIDTH || ny >= Level.HEIGHT) continue;
+                if (!inBounds(nx, ny)) continue;
 
                 int score = 0;
                 boolean blocked = false;
@@ -95,7 +95,7 @@ public class DijkstraMapManager {
                 if (dx == 0 && dy == 0) continue;
 
                 int nx = x + dx, ny = y + dy;
-                if (nx < 0 || ny < 0 || nx >= Level.WIDTH || ny >= Level.HEIGHT) continue;
+                if (!inBounds(nx, ny)) continue;
 
                 int score = 0;
                 boolean blocked = false;
@@ -107,7 +107,7 @@ public class DijkstraMapManager {
                     int[][] map;
 
                     if (dijkstraMap instanceof FactionDijkstraMap factionDijkstraMap) {
-                        FactionRelation.Relation relation = FactionRelation.getRelation(faction,
+                        FactionRelation.Relation relation = gameWorld.getFactionRelations().getRelation(faction,
                             factionDijkstraMap.faction
                         );
 
@@ -170,19 +170,28 @@ public class DijkstraMapManager {
     }
 
     private void addMaps() {
-        dijkstraMaps.put(DijkstraMapType.PLAYER, new PlayerDijkstraMap(Level.WIDTH, Level.HEIGHT));
+        Level level = gameWorld.getCurrentLevel();
+        int width = level.getWidth();
+        int height = level.getHeight();
+
+        dijkstraMaps.put(DijkstraMapType.PLAYER, new PlayerDijkstraMap(width, height));
         dijkstraMaps.put(
             DijkstraMapType.FACTION_MONSTER,
-            new FactionDijkstraMap(Level.WIDTH, Level.HEIGHT, Faction.MONSTER)
+            new FactionDijkstraMap(width, height, Faction.MONSTER)
         );
         dijkstraMaps.put(
             DijkstraMapType.FACTION_HUNTER,
-            new FactionDijkstraMap(Level.WIDTH, Level.HEIGHT, Faction.HUNTER)
+            new FactionDijkstraMap(width, height, Faction.HUNTER)
         );
         dijkstraMaps.put(
             DijkstraMapType.FACTION_LOOTER,
-            new FactionDijkstraMap(Level.WIDTH, Level.HEIGHT, Faction.LOOTER)
+            new FactionDijkstraMap(width, height, Faction.LOOTER)
         );
+    }
+
+    private boolean inBounds(int x, int y) {
+        Level level = gameWorld.getCurrentLevel();
+        return x >= 0 && y >= 0 && x < level.getWidth() && y < level.getHeight();
     }
 
     private void initMaps() {
@@ -193,9 +202,11 @@ public class DijkstraMapManager {
     }
 
     /**
-     * Re-initializes and recalculates every map. Call after the level changes.
+     * Recreates (if the level size changed) and recalculates every map.
+     * Call after the level changes.
      */
     public void rebuild() {
+        addMaps();
         initMaps();
     }
 

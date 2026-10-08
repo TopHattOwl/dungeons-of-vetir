@@ -8,10 +8,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class LevelTest {
 
     @Test
+    void constructor_CustomSize() {
+        Level level = new Level(1, 40, 30);
+
+        assertEquals(40, level.getWidth());
+        assertEquals(30, level.getHeight());
+        assertEquals(TileType.WALL, level.getTile(0, 0).type);
+        assertTrue(level.isInBounds(39, 29));
+        assertFalse(level.isInBounds(40, 29));
+        assertFalse(level.isInBounds(39, 30));
+    }
+
+    @Test
     void constructor_FillsWithWalls() {
         Level level = new Level(1);
-        for (int x = 0; x < Level.WIDTH; x++) {
-            for (int y = 0; y < Level.HEIGHT; y++) {
+        for (int x = 0; x < Level.DEFAULT_WIDTH; x++) {
+            for (int y = 0; y < Level.DEFAULT_HEIGHT; y++) {
                 assertEquals(TileType.WALL, level.getTile(x, y).type);
             }
         }
@@ -51,13 +63,13 @@ class LevelTest {
     @Test
     void getTile_OutOfBounds_XTooLarge_ReturnsBorderWall() {
         Level level = new Level(1);
-        assertEquals(TileType.BORDER_WALL, level.getTile(Level.WIDTH, 25).type);
+        assertEquals(TileType.BORDER_WALL, level.getTile(Level.DEFAULT_WIDTH, 25).type);
     }
 
     @Test
     void getTile_OutOfBounds_YTooLarge_ReturnsBorderWall() {
         Level level = new Level(1);
-        assertEquals(TileType.BORDER_WALL, level.getTile(25, Level.HEIGHT).type);
+        assertEquals(TileType.BORDER_WALL, level.getTile(25, Level.DEFAULT_HEIGHT).type);
     }
 
     @Test
@@ -80,7 +92,7 @@ class LevelTest {
         Level level = new Level(1);
         assertDoesNotThrow(() -> level.setTile(-1, 10, TileType.FLOOR));
         assertDoesNotThrow(() -> level.setTile(10, -1, TileType.FLOOR));
-        assertDoesNotThrow(() -> level.setTile(Level.WIDTH, 10, TileType.FLOOR));
+        assertDoesNotThrow(() -> level.setTile(Level.DEFAULT_WIDTH, 10, TileType.FLOOR));
     }
 
     @Test
@@ -167,7 +179,7 @@ class LevelTest {
     void isInBounds_Valid() {
         Level level = new Level(1);
         assertTrue(level.isInBounds(0, 0));
-        assertTrue(level.isInBounds(Level.WIDTH - 1, Level.HEIGHT - 1));
+        assertTrue(level.isInBounds(Level.DEFAULT_WIDTH - 1, Level.DEFAULT_HEIGHT - 1));
         assertTrue(level.isInBounds(40, 24));
     }
 
@@ -186,13 +198,13 @@ class LevelTest {
     @Test
     void isInBounds_XTooLarge() {
         Level level = new Level(1);
-        assertFalse(level.isInBounds(Level.WIDTH, 25));
+        assertFalse(level.isInBounds(Level.DEFAULT_WIDTH, 25));
     }
 
     @Test
     void isInBounds_YTooLarge() {
         Level level = new Level(1);
-        assertFalse(level.isInBounds(25, Level.HEIGHT));
+        assertFalse(level.isInBounds(25, Level.DEFAULT_HEIGHT));
     }
 
     @Test
@@ -200,7 +212,7 @@ class LevelTest {
         Level level = new Level(1);
         var tiles = level.getTiles();
         assertNotNull(tiles);
-        assertEquals(Level.WIDTH, tiles.length);
-        assertEquals(Level.HEIGHT, tiles[0].length);
+        assertEquals(Level.DEFAULT_WIDTH, tiles.length);
+        assertEquals(Level.DEFAULT_HEIGHT, tiles[0].length);
     }
 }

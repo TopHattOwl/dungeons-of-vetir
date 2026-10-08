@@ -1,7 +1,7 @@
-package com.tophattowl.dungeonsofvetir.game.dungeon.generators;
+package com.tophattowl.dungeonsofvetir.game.generation.generators;
 
-import com.tophattowl.dungeonsofvetir.game.dungeon.GenerationContext;
-import com.tophattowl.dungeonsofvetir.game.dungeon.LevelGenerator;
+import com.tophattowl.dungeonsofvetir.game.generation.GenerationContext;
+import com.tophattowl.dungeonsofvetir.game.generation.LevelGenerator;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.TileType;
 
@@ -34,14 +34,16 @@ public class CaveGenerator implements LevelGenerator {
 
     @Override
     public Level generate(GenerationContext ctx) {
-        Level level = new Level(ctx.floorNumber());
+        Level level = new Level(ctx.floorNumber(), ctx.width(), ctx.height());
+        int width = level.getWidth();
+        int height = level.getHeight();
         Random rng = new Random(ctx.seed());
-        boolean[][] grid = new boolean[Level.WIDTH][Level.HEIGHT]; // true = wall
+        boolean[][] grid = new boolean[width][height]; // true = wall
 
         // --- Step 1: Random fill ---
-        for (int x = 0; x < Level.WIDTH; x++) {
-            for (int y = 0; y < Level.HEIGHT; y++) {
-                if (x == 0 || y == 0 || x == Level.WIDTH - 1 || y == Level.HEIGHT - 1) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
                     grid[x][y] = true;
                 } else {
                     grid[x][y] = rng.nextDouble() < params.fillChance();
@@ -51,15 +53,15 @@ public class CaveGenerator implements LevelGenerator {
 
         // --- Step 2: Smooth passes ---
         for (int pass = 0; pass < params.smoothPasses(); pass++) {
-            grid = smooth(grid);
+            grid = smooth(grid, width, height);
         }
 
         // --- Step 3: Find largest connected open region ---
-        boolean[][] inMainRegion = largestRegion(grid);
+        boolean[][] inMainRegion = largestRegion(grid, width, height);
 
         // --- Step 4: Write tiles to level ---
-        for (int x = 0; x < Level.WIDTH; x++) {
-            for (int y = 0; y < Level.HEIGHT; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 if (!grid[x][y] && inMainRegion[x][y]) {
                     int variant = rng.nextInt(params.floorVariants());
                     level.setTile(x, y, TileType.FLOOR, variant);
@@ -75,29 +77,29 @@ public class CaveGenerator implements LevelGenerator {
         return level;
     }
 
-    private boolean[][] smooth(boolean[][] grid) {
-        boolean[][] next = new boolean[Level.WIDTH][Level.HEIGHT];
-        for (int x = 0; x < Level.WIDTH; x++) {
-            for (int y = 0; y < Level.HEIGHT; y++) {
-                if (x == 0 || y == 0 || x == Level.WIDTH - 1 || y == Level.HEIGHT - 1) {
+    private boolean[][] smooth(boolean[][] grid, int width, int height) {
+        boolean[][] next = new boolean[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
                     next[x][y] = true; // border always wall
                     continue;
                 }
-                int walls = countWallNeighbours(grid, x, y);
+                int walls = countWallNeighbours(grid, x, y, width, height);
                 next[x][y] = walls >= params.wallThreshold();
             }
         }
         return next;
     }
 
-    private int countWallNeighbours(boolean[][] grid, int cx, int cy) {
+    private int countWallNeighbours(boolean[][] grid, int cx, int cy, int width, int height) {
         int count = 0;
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 if (dx == 0 && dy == 0) continue;
                 int nx = cx + dx;
                 int ny = cy + dy;
-                if (nx < 0 || ny < 0 || nx >= Level.WIDTH || ny >= Level.HEIGHT) {
+                if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
                     count++; // out-of-bounds counts as wall
                 } else if (grid[nx][ny]) {
                     count++;
@@ -111,16 +113,16 @@ public class CaveGenerator implements LevelGenerator {
      * Flood fill from every open cell to find connected regions.
      * Returns a boolean grid marking only the largest region.
      */
-    private boolean[][] largestRegion(boolean[][] grid) {
-        boolean[][] visited = new boolean[Level.WIDTH][Level.HEIGHT];
-        boolean[][] bestRegion = new boolean[Level.WIDTH][Level.HEIGHT];
+    private boolean[][] largestRegion(boolean[][] grid, int width, int height) {
+        boolean[][] visited = new boolean[width][height];
+        boolean[][] bestRegion = new boolean[width][height];
         int bestSize = 0;
 
-        for (int startX = 0; startX < Level.WIDTH; startX++) {
-            for (int startY = 0; startY < Level.HEIGHT; startY++) {
+        for (int startX = 0; startX < width; startX++) {
+            for (int startY = 0; startY < height; startY++) {
                 if (grid[startX][startY] || visited[startX][startY]) continue;
 
-                boolean[][] region = new boolean[Level.WIDTH][Level.HEIGHT];
+                boolean[][] region = new boolean[width][height];
                 Queue<int[]> queue = new LinkedList<>();
                 queue.add(new int[]{startX, startY});
                 visited[startX][startY] = true;
@@ -135,7 +137,7 @@ public class CaveGenerator implements LevelGenerator {
                     for (int[] dir : DIRS) {
                         int nx = x + dir[0];
                         int ny = y + dir[1];
-                        if (nx < 0 || ny < 0 || nx >= Level.WIDTH || ny >= Level.HEIGHT) continue;
+                        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
                         if (visited[nx][ny] || grid[nx][ny]) continue;
                         visited[nx][ny] = true;
                         queue.add(new int[]{nx, ny});
@@ -153,8 +155,8 @@ public class CaveGenerator implements LevelGenerator {
 
     private void placeStairs(Level level) {
         List<int[]> floorTiles = new ArrayList<>();
-        for (int x = 1; x < Level.WIDTH - 1; x++)
-            for (int y = 1; y < Level.HEIGHT - 1; y++)
+        for (int x = 1; x < level.getWidth() - 1; x++)
+            for (int y = 1; y < level.getHeight() - 1; y++)
                 if (level.getTile(x, y).type == TileType.FLOOR)
                     floorTiles.add(new int[]{x, y});
 

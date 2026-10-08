@@ -2,6 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.RenderableComponent;
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public record RenderableSpec(
     String spriteId,
@@ -14,7 +15,7 @@ public record RenderableSpec(
     }
 
     @Override
-    public RenderableComponent build(Entity entity) {
+    public RenderableComponent build(Entity entity, GameWorld gameWorld) {
         return new RenderableComponent(spriteId, renderOrder);
     }
 }

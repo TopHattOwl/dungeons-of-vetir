@@ -1,5 +1,7 @@
 package com.tophattowl.dungeonsofvetir.game.dungeon.section;
 
+import com.tophattowl.dungeonsofvetir.game.world.TileTheme;
+
 /**
  * A playable flavor within a {@link SectionId}, variations of the same section
  * share a generator shape but differ in palette (maybe in params as well later)

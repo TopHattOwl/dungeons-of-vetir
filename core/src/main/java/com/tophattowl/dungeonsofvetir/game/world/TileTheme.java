@@ -1,4 +1,4 @@
-package com.tophattowl.dungeonsofvetir.game.dungeon.section;
+package com.tophattowl.dungeonsofvetir.game.world;
 
 /**
  * Pure palette key
@@ -9,5 +9,6 @@ public enum TileTheme {
     CAVES_DANK,
     GROVE,
     RUINS_FORTRESS,
-    REST
+    REST,
+    SURFACE,
 }

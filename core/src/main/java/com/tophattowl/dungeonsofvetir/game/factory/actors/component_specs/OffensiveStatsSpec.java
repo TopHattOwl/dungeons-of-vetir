@@ -2,6 +2,7 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public record OffensiveStatsSpec(
     int baseDamage,
@@ -16,7 +17,7 @@ public record OffensiveStatsSpec(
     }
 
     @Override
-    public OffensiveStatsComponent build(Entity entity) {
+    public OffensiveStatsComponent build(Entity entity, GameWorld gameWorld) {
         return new OffensiveStatsComponent(
             baseDamage,
             weaponDamageModifier,

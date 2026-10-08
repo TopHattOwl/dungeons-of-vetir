@@ -3,6 +3,7 @@ package com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs;
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
 import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.DefensiveStatsComponent;
+import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 public record DefensiveStatsSpec(
     int evasion,
@@ -15,7 +16,7 @@ public record DefensiveStatsSpec(
     }
 
     @Override
-    public DefensiveStatsComponent build(Entity entity) {
+    public DefensiveStatsComponent build(Entity entity, GameWorld gameWorld) {
         BodyComponent bodyComp = entity.getComponent(BodyComponent.class);
         return new DefensiveStatsComponent(evasion, counterChance, blockChance, bodyComp);
     }

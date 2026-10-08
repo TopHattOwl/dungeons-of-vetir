@@ -53,6 +53,9 @@ public class DijkstraOverlayRenderer implements DijkstraOverlayControl {
 
         int tw = Tileset.TILE_W;
         int th = Tileset.TILE_H;
+        Level level = gameWorld.getCurrentLevel();
+        int levelW = level.getWidth();
+        int levelH = level.getHeight();
 
         float camLeft   = camera.position.x - camera.viewportWidth  / 2f;
         float camRight  = camera.position.x + camera.viewportWidth  / 2f;
@@ -60,9 +63,9 @@ public class DijkstraOverlayRenderer implements DijkstraOverlayControl {
         float camTop    = camera.position.y + camera.viewportHeight / 2f;
 
         int minTileX = Math.max(0, (int)(camLeft / tw) - 1);
-        int maxTileX = Math.min(Level.WIDTH  - 1, (int)(camRight / tw) + 1);
-        int minTileY = Math.max(0, (int)((Level.HEIGHT - 1) - camTop    / th) - 1);
-        int maxTileY = Math.min(Level.HEIGHT - 1, (int)((Level.HEIGHT - 1) - camBottom / th) + 1);
+        int maxTileX = Math.min(levelW - 1, (int)(camRight / tw) + 1);
+        int minTileY = Math.max(0, (int)((levelH - 1) - camTop    / th) - 1);
+        int maxTileY = Math.min(levelH - 1, (int)((levelH - 1) - camBottom / th) + 1);
 
         com.badlogic.gdx.Gdx.gl.glEnable(GL20.GL_BLEND);
         com.badlogic.gdx.Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -73,7 +76,7 @@ public class DijkstraOverlayRenderer implements DijkstraOverlayControl {
         for (int x = minTileX; x <= maxTileX; x++) {
             for (int y = minTileY; y <= maxTileY; y++) {
                 float screenX = x * tw;
-                float screenY = (Level.HEIGHT - 1 - y) * th;
+                float screenY = (levelH - 1 - y) * th;
 
                 int value = map[x][y];
                 if (value == DijkstraMap.OBSTACLE_VALUE) {
@@ -96,7 +99,7 @@ public class DijkstraOverlayRenderer implements DijkstraOverlayControl {
         for (int x = minTileX; x <= maxTileX; x++) {
             for (int y = minTileY; y <= maxTileY; y++) {
                 float screenX = x * tw;
-                float screenY = (Level.HEIGHT - 1 - y) * th;
+                float screenY = (levelH - 1 - y) * th;
 
                 int value = map[x][y];
                 if (value == DijkstraMap.OBSTACLE_VALUE) {

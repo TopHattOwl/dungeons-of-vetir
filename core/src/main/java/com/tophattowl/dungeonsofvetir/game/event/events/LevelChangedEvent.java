@@ -1,10 +1,10 @@
 package com.tophattowl.dungeonsofvetir.game.event.events;
 
-import com.tophattowl.dungeonsofvetir.game.dungeon.section.ResolvedFloor;
+import com.tophattowl.dungeonsofvetir.game.world.Place;
 
 /**
- * Emitted after the world transitions to a new floor
- * Display layers use it to retheme the tileset and recenter the camera
+ * Emitted after the world transitions to a new place. Display layers use it to
+ * retheme the tileset and recenter the camera.
  */
-public record LevelChangedEvent(int floorNumber, ResolvedFloor resolved) implements Event {
+public record LevelChangedEvent(Place place) implements Event {
 }

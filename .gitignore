@@ -14,6 +14,9 @@ gradle-app.setting
 /server/build/
 /shared/build/
 
+## Docs:
+/docs/
+
 ## Java:
 *.class
 *.war
