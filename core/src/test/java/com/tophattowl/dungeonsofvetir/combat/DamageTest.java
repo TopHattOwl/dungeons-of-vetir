@@ -60,10 +60,11 @@ class DamageTest {
 
     @Test
     void allElementTypes_Exist() {
-        assertEquals(4, ElementType.values().length);
+        assertEquals(5, ElementType.values().length);
         assertNotNull(ElementType.PHYSICAL);
         assertNotNull(ElementType.FIRE);
         assertNotNull(ElementType.LIGHTNING);
         assertNotNull(ElementType.POISON);
+        assertNotNull(ElementType.ICE);
     }
 }

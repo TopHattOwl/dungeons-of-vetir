@@ -21,7 +21,11 @@ import com.tophattowl.dungeonsofvetir.game.rng.SeedConfig;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnConfig;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManager;
 import com.tophattowl.dungeonsofvetir.game.spawn.SpawnManagerRegistry;
+import com.tophattowl.dungeonsofvetir.game.stats.StatAggregator;
+import com.tophattowl.dungeonsofvetir.game.status.RegenRules;
+import com.tophattowl.dungeonsofvetir.game.status.StatusEffectSystem;
 import com.tophattowl.dungeonsofvetir.game.turn_system.TimeTurnManager;
+import com.tophattowl.dungeonsofvetir.game.event.events.item.EquipmentChangedEvent;
 import com.tophattowl.dungeonsofvetir.util.dijkstra.DijkstraMapManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +45,10 @@ public class GameWorld {
     private final Entity player;
     private final FovSystem fovSystem;
     private final FactionRelation factionRelations = new FactionRelation();
+    private final StatAggregator statAggregator = new StatAggregator();
+    private EventBus.ListenerHandle<EquipmentChangedEvent> equipmentListener;
+    private StatusEffectSystem statusEffectSystem;
+    private RegenRules regenRules;
 
     private DungeonGenerator dungeonGenerator;
     private ZoneResolver zoneResolver;
@@ -63,7 +71,7 @@ public class GameWorld {
         entityMap = new Entity[currentLevel.getWidth()][currentLevel.getHeight()];
         currentExits = buildExits(currentPlace, currentLevel);
         Point playerSpawnPoint = findSpawn(currentLevel);
-        player = EntityFactory.makePlayer(currentLevel, playerSpawnPoint);
+        player = EntityFactory.makePlayer(statAggregator, currentLevel, playerSpawnPoint);
         addEntity(player);
 
         spawnManagerRegistry = new SpawnManagerRegistry();
@@ -100,6 +108,22 @@ public class GameWorld {
 
     public ConstraintSystem constraints() {
         return constraintSystem;
+    }
+
+    /**
+     * The run's stat aggregator. Recomputes an entity's derived stats from its attributes and
+     * modifier sources; also triggered automatically on equipment changes.
+     */
+    public StatAggregator stats() {
+        return statAggregator;
+    }
+
+    /**
+     * The run's status effect system: owns effect lifetimes, compiles denials into constraints,
+     * and evaluates threshold/state rules each world turn.
+     */
+    public StatusEffectSystem statusEffects() {
+        return statusEffectSystem;
     }
 
     /**
@@ -339,6 +363,10 @@ public class GameWorld {
         dungeonGenerator = new DungeonGenerator(definition, worldSeed);
         zoneResolver = new ZoneResolver(dungeonGenerator);
         constraintSystem = new ConstraintSystem(this);
+        statusEffectSystem = new StatusEffectSystem(this);
+        regenRules = new RegenRules(this);
+        equipmentListener = EventBus.on(EquipmentChangedEvent.class,
+            event -> statAggregator.recompute(event.entity()));
     }
 
     private Point findSpawn(Level level) {
@@ -356,6 +384,9 @@ public class GameWorld {
     }
 
     public void dispose() {
+        if (equipmentListener != null) EventBus.off(equipmentListener);
+        if (regenRules != null) regenRules.dispose();
+        if (statusEffectSystem != null) statusEffectSystem.dispose();
         fovSystem.dispose();
         dijkstraMapManager.dispose();
         timeTurnManager.dispose();

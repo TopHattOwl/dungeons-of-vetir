@@ -16,10 +16,16 @@ import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.items.Item;
 import com.tophattowl.dungeonsofvetir.game.items.ItemGripType;
 import com.tophattowl.dungeonsofvetir.game.items.components.MeleeWeaponComponent;
+import com.tophattowl.dungeonsofvetir.game.stats.CombatStat;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 
 import java.util.*;
 
+/**
+ * Rolls a melee attack into one or more {@link MeleeAttackResult}s <br>
+ * Reads derived stats for hit/dodge/block/counter and unarmed damage; <br>
+ * damage mitigation (protection, resistance, block power, crit, procs) not implemented yet
+ */
 public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult, MeleeAttackContext> {
     private final Random rng = new Random(System.currentTimeMillis());
 
@@ -35,8 +41,10 @@ public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult
         }
 
         EquipmentComponent attackerEquipment = attacker.getComponent(EquipmentComponent.class);
-        Item mainHandItem = attackerEquipment.getMainHandSlot().item;
-        Item offHandItem = attackerEquipment.getOffHandSlot().item;
+        Item mainHandItem = attackerEquipment.getMainHandSlot() == null ? null
+            : attackerEquipment.getMainHandSlot().item;
+        Item offHandItem = attackerEquipment.getOffHandSlot() == null ? null
+            : attackerEquipment.getOffHandSlot().item;
 
         if (mainHandItem == null || !mainHandItem.hasComponent(MeleeWeaponComponent.class)) {
             DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
@@ -79,9 +87,8 @@ public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult
 
     private List<MeleeAttackResult> calculateUnarmed(MeleeAttackContext context) {
         Entity attacker = context.getAttacker();
-        OffensiveStatsComponent offensiveComp = attacker.getComponent(OffensiveStatsComponent.class);
 
-        int baseDamage = offensiveComp.baseDamage;
+        int baseDamage = offenseOf(attacker).getInt(CombatStat.MELEE_DAMAGE);
         // placeholder anon class for fists
         DamageProfile fist = new DamageProfile() {
 
@@ -133,23 +140,31 @@ public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult
         BodyComponent targetBody = target.getComponent(BodyComponent.class);
         result.setBodyPart(targetBody.getRandomBodyPart());
 
-        OffensiveStatsComponent attackerOffense = attacker.getComponent(OffensiveStatsComponent.class);
-        DefensiveStatsComponent targetDefense = target.getComponent(DefensiveStatsComponent.class);
+        DerivedStatsComponent attackerOffense = attacker.getComponent(DerivedStatsComponent.class);
+        DerivedStatsComponent targetDefense = target.getComponent(DerivedStatsComponent.class);
 
-        // acc check
-        if (isMissed(attackerOffense.accuracy, targetDefense.evasion)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "Attack missed"
-            );
+        float accuracy = attackerOffense == null ? 1f : attackerOffense.get(CombatStat.ACCURACY);
+        float dodge = targetDefense == null ? 0f : targetDefense.get(CombatStat.DODGE_CHANCE);
+        float block = targetDefense == null ? 0f : targetDefense.get(CombatStat.BLOCK_CHANCE);
+        float counter = targetDefense == null ? 0f : targetDefense.get(CombatStat.COUNTER_CHANCE);
+
+        // miss check
+        if (isMissed(accuracy)) {
+            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator", "Attack missed");
+            result.missed();
+            return result;
+        }
+
+        // dodge check
+        if (isDodged(dodge, accuracy)) {
+            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator", "Attack dodged");
             result.missed();
             return result;
         }
 
         // block check
-        if (isBlocked(targetDefense.blockChance)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "Attack blocked"
-            );
+        if (isBlocked(block)) {
+            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator", "Attack blocked");
             result.blocked();
             return result;
         }
@@ -164,21 +179,37 @@ public class MeleeAttackCalculator implements AttackCalculator<MeleeAttackResult
         }
 
         // counter check
-        if (isCountered(targetDefense.counterChance)) {
-            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator",
-                "attack countered"
-            );
+        if (isCountered(counter)) {
+            DebugLogger.log(DebugLogger.Category.COMBAT, "MeleeAttackCalculator", "attack countered");
             result.countered();
         }
 
         return result;
     }
 
+    private DerivedStatsComponent offenseOf(Entity entity) {
+        DerivedStatsComponent derived = entity.getComponent(DerivedStatsComponent.class);
+        if (derived == null) {
+            throw new IllegalStateException("Attacker has no derived stats:\n" + entity);
+        }
+        return derived;
+    }
 
+    /**
+     * Accuracy is a chance (1.0 == 100%). Below 100% it can miss; at or above 100% it connects.
+     */
+    private boolean isMissed(float accuracy) {
+        if (accuracy >= 1f) return false;
+        return rng.nextFloat() >= accuracy;
+    }
 
-    private boolean isMissed(int attackerAcc, int targetEvasion) {
-        int roll = rng.nextInt( attackerAcc + targetEvasion);
-        return roll >= attackerAcc;
+    /**
+     * Dodge is a chance, reduced multiplicatively by accuracy above 100%.
+     */
+    private boolean isDodged(float dodge, float accuracy) {
+        float excess = Math.max(0f, accuracy - 1f);
+        float effective = Math.max(0f, Math.min(dodge * (1f - excess), 0.95f));
+        return rng.nextFloat() < effective;
     }
 
     private boolean isBlocked(float blockChance) {

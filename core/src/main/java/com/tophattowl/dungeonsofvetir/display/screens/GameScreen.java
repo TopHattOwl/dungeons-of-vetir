@@ -83,7 +83,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         // game first: the tileset palette depends on the starting floor
-        gameWorld = new GameWorld(SeedConfig.custom(178439));
+        gameWorld = new GameWorld(SeedConfig.random());
         worldContext = new WorldContext(gameWorld, new MetaState());
         inputHandler = new InputHandler(gameWorld.getPlayer());
         debugConsole = new DebugConsole();

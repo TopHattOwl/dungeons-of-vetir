@@ -6,8 +6,9 @@ import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.actors.monsters.NaturalWeapon;
 import com.tophattowl.dungeonsofvetir.game.combat.DamageType;
 import com.tophattowl.dungeonsofvetir.game.combat.ElementType;
-import com.tophattowl.dungeonsofvetir.game.combat.damage.DamageInstance;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.*;
+import com.tophattowl.dungeonsofvetir.game.stats.CombatStat;
+import com.tophattowl.dungeonsofvetir.game.stats.Modifier;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ public class ActorRegistry {
 
                 // base component specs
                 List.of(
+                    new AttributesSpec(7, 4, 2, 0, 2),
                     new AiSpec(
                         5,
                         1,
@@ -57,25 +59,12 @@ public class ActorRegistry {
                         2
                     ),
                     new FovSpec(8),
-                    new HealthSpec(120),
-                    new OffensiveStatsSpec(
-                        20,
-                        1.0f,
-                        1.0f,
-                        1.0f,
-                        20
-                    ),
                     new RenderableSpec("iron_worm", 0),
                     new TimeValueSpec()
                 ),
 
                 // post body component specs
                 List.of(
-                    new DefensiveStatsSpec(
-                        10,
-                        0.05f,
-                        0.05f
-                    ),
                     new NaturalWeaponsSpec(Map.of(
                         "tail", new NaturalWeapon(DamageType.SLASHING, 0.5f, Map.of(
                                 ElementType.PHYSICAL, 13
@@ -84,12 +73,7 @@ public class ActorRegistry {
                                 ElementType.PHYSICAL, 10,
                                 ElementType.POISON, 5
                         ))
-                    )),
-                    new RegenSpec(
-                        5,
-                        4,
-                        0.1f
-                    )
+                    ))
                 )
             )
         );
@@ -105,6 +89,7 @@ public class ActorRegistry {
 
                 // base component specs
                 List.of(
+                    new AttributesSpec(3, 4, 0, 0, 0),
                     new AiSpec(
                         5,
                         4,
@@ -112,18 +97,12 @@ public class ActorRegistry {
                         0
                     ),
                     new FovSpec(9),
-                    new HealthSpec(40),
                     new RenderableSpec("fireant", 0),
                     new TimeValueSpec()
                 ),
 
                 // post body component specs
                 List.of(
-                    new DefensiveStatsSpec(
-                        10,
-                        0.05f,
-                        0.05f
-                    ),
                     new NaturalWeaponsSpec(Map.of(
                         "leg 1", new NaturalWeapon(DamageType.SLASHING, 0.5f, Map.of(
                             ElementType.PHYSICAL, 13
@@ -135,12 +114,7 @@ public class ActorRegistry {
                             ElementType.PHYSICAL, 10,
                             ElementType.POISON, 5
                         ))
-                    )),
-                    new RegenSpec(
-                        5,
-                        4,
-                        0.1f
-                    )
+                    ))
                 )
             )
         );
@@ -156,6 +130,12 @@ public class ActorRegistry {
 
                 // base component specs
                 List.of(
+                    new AttributesSpec(6, 8, 3, 0, 4),
+                    new ModifiersSpec(
+                        Modifier.percent(CombatStat.WEAPON_DAMAGE_MODIFIER, 0.1f),
+                        Modifier.percent(CombatStat.MAIN_HAND_EFFICIENCY, 0.1f),
+                        Modifier.percent(CombatStat.OFF_HAND_EFFICIENCY, 0.05f)
+                    ),
                     new AiSpec(
                         0,
                         -1,
@@ -163,31 +143,13 @@ public class ActorRegistry {
                         2
                     ),
                     new FovSpec(11),
-                    new HealthSpec(150),
-                    new OffensiveStatsSpec(
-                        15,
-                        1.1f,
-                        1.1f,
-                        1.05f,
-                        40
-                    ),
                     new RenderableSpec("scavenger", 0),
                     new TimeValueSpec()
                 ),
 
                 // post body component specs
                 List.of(
-                    new DefensiveStatsSpec(
-                        75,
-                        0.1f,
-                        0.05f
-                    ),
-                    new EquipmentSpec(),
-                    new RegenSpec(
-                        7,
-                        5,
-                        0.2f
-                    )
+                    new EquipmentSpec()
                 )
             )
         );

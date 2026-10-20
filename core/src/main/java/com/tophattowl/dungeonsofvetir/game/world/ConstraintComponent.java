@@ -6,20 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Timed constraints carried by an entity (injuries, status effects). Ticked once
- * per world turn by {@link ConstraintSystem}. Zone-derived denials are not stored
- * here; they are derived from the current place.
+ * The compiled set of capability denials currently affecting an entity. Rebuilt from active
+ * status effects by the status system; zone-derived denials are checked live and never stored.
  */
 public class ConstraintComponent implements Component {
 
     private final List<Constraint> constraints = new ArrayList<>();
 
-    public void add(Constraint constraint) {
-        constraints.add(constraint);
+    /**
+     * Replaces the whole set (the status system recompiles from scratch each time).
+     */
+    public void setAll(List<Constraint> newConstraints) {
+        constraints.clear();
+        constraints.addAll(newConstraints);
+    }
+
+    public void deny(Capability capability, String reason) {
+        constraints.add(new Constraint(capability, reason));
     }
 
     public void clear() {
         constraints.clear();
+    }
+
+    public boolean isEmpty() {
+        return constraints.isEmpty();
     }
 
     public List<Constraint> constraints() {
@@ -28,24 +39,10 @@ public class ConstraintComponent implements Component {
 
     public boolean allows(Capability capability) {
         for (Constraint constraint : constraints) {
-            if (constraint.capability() == capability && constraint.active()) {
+            if (constraint.capability() == capability) {
                 return false;
             }
         }
         return true;
-    }
-
-    /**
-     * Ages every timed constraint by one turn, dropping expired ones.
-     */
-    public void tick() {
-        for (int i = constraints.size() - 1; i >= 0; i--) {
-            Constraint next = constraints.get(i).ticked();
-            if (next == null) {
-                constraints.remove(i);
-            } else {
-                constraints.set(i, next);
-            }
-        }
     }
 }
