@@ -37,6 +37,13 @@ public class Entity implements Disposable {
         return components.containsKey(type);
     }
 
+    /**
+     * @return a live view of this entity's components (iteration order is unspecified)
+     */
+    public Collection<Component> getComponents() {
+        return components.values();
+    }
+
     @SafeVarargs
     public final boolean hasAllComponents(Class<? extends Component>... type) {
         return Arrays.stream(type)

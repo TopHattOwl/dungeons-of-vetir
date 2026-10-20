@@ -8,29 +8,40 @@ import com.tophattowl.dungeonsofvetir.game.world.PlaceKind;
 import com.tophattowl.dungeonsofvetir.game.world.ZoneConstraints;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CapabilitiesTest {
 
     @Test
-    void timedConstraint_expiresAfterItsDuration() {
+    void compiledConstraints_denyTheirCapability() {
         ConstraintComponent component = new ConstraintComponent();
-        component.add(Constraint.forTurns(Capability.REST, "wounded", 2));
+        component.setAll(List.of(Constraint.of(Capability.ATTACK, "stunned")));
 
-        assertFalse(component.allows(Capability.REST));
-        component.tick();
-        assertFalse(component.allows(Capability.REST));
-        component.tick();
-        assertTrue(component.allows(Capability.REST), "should expire after 2 turns");
+        assertFalse(component.allows(Capability.ATTACK));
+        assertTrue(component.allows(Capability.MOVE));
+        assertFalse(component.isEmpty());
     }
 
     @Test
-    void permanentConstraint_neverExpires() {
+    void clear_restoresAllCapabilities() {
         ConstraintComponent component = new ConstraintComponent();
-        component.add(Constraint.permanent(Capability.ATTACK, "curse"));
+        component.setAll(List.of(Constraint.of(Capability.ATTACK, "stunned")));
+        component.clear();
 
-        for (int i = 0; i < 10; i++) component.tick();
-        assertFalse(component.allows(Capability.ATTACK));
+        assertTrue(component.allows(Capability.ATTACK));
+        assertTrue(component.isEmpty());
+    }
+
+    @Test
+    void setAll_replacesPreviousSet() {
+        ConstraintComponent component = new ConstraintComponent();
+        component.setAll(List.of(Constraint.of(Capability.ATTACK, "stunned")));
+        component.setAll(List.of(Constraint.of(Capability.REST, "wounded")));
+
+        assertTrue(component.allows(Capability.ATTACK));
+        assertFalse(component.allows(Capability.REST));
     }
 
     @Test

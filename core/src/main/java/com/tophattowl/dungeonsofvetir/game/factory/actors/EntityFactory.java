@@ -9,6 +9,8 @@ import com.tophattowl.dungeonsofvetir.game.actors.faction.Faction;
 import com.tophattowl.dungeonsofvetir.game.debug.DebugLogger;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.ActorComponentSpec;
 import com.tophattowl.dungeonsofvetir.game.factory.actors.component_specs.BodySpec;
+import com.tophattowl.dungeonsofvetir.game.stats.StatAggregator;
+import com.tophattowl.dungeonsofvetir.game.status.StatusEffectComponent;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import com.tophattowl.dungeonsofvetir.game.world.Level;
 import com.tophattowl.dungeonsofvetir.game.world.Point;
@@ -20,7 +22,7 @@ public class EntityFactory {
         return buildFromSpec(spec, gameWorld, spawnPos);
     }
 
-    public static Entity makePlayer(Level level, Point spawnPoint) {
+    public static Entity makePlayer(StatAggregator stats, Level level, Point spawnPoint) {
         Entity player = new Entity();
         player.addComponent(new PositionComponent(spawnPoint))
             .addComponent(new RenderableComponent("player_knight", 10))
@@ -28,25 +30,20 @@ public class EntityFactory {
             .addComponent(new FovComponent(10, level.getWidth(), level.getHeight()))
             .addComponent(new PlayerComponent())
             .addComponent(new IdentityComponent("player", ActorId.PLAYER, Faction.HUNTER))
-            .addComponent(new HealthComponent(350))
-            .addComponent(new OffensiveStatsComponent(
-                30, 1.0f,
-                1.0f, 1.0f,
-                60))
+            .addComponent(new AttributesComponent(10, 10, 10, 10, 10))
             .addComponent(new EquipmentComponent())
-            .addComponent(new RegenComponent(10, 4, 0.2f))
+            .addComponent(new StatusEffectComponent())
         ;
+
+        stats.recompute(player);
 
         int maxHp = player.getComponent(HealthComponent.class).maxHp;
         BodyComponent bodyComp = BodyComponentBuilder.build(BodyTemplate.HUMANOID, maxHp, null);
         player.addComponent(bodyComp);
 
-        DefensiveStatsComponent defenseComp = new DefensiveStatsComponent(
-            25, 0.1f, 0.1f, bodyComp);
-
-        player.addComponent(defenseComp);
-
         player.getComponent(EquipmentComponent.class).initSlots(bodyComp);
+
+        stats.recompute(player);
 
         return player;
     }
@@ -64,6 +61,10 @@ public class EntityFactory {
         for (ActorComponentSpec<?> baseSpec : spec.baseSpecs()) {
             entity.addComponent(baseSpec.build(entity, gameWorld));
         }
+        entity.addComponent(new StatusEffectComponent());
+
+        // derive stats from attributes before the body is built (creates HealthComponent)
+        gameWorld.stats().recompute(entity);
 
         // body
         BodySpec bodySpec = spec.bodySpec();
@@ -78,6 +79,9 @@ public class EntityFactory {
         for (ActorComponentSpec<?> postBodySpec : spec.postBodySpecs()) {
             entity.addComponent(postBodySpec.build(entity, gameWorld));
         }
+
+        // rebuild with the body present (protection map, part max HP)
+        gameWorld.stats().recompute(entity);
 
         // normalize time value
         TimeValueComponent timeComp = entity.getComponent(TimeValueComponent.class);

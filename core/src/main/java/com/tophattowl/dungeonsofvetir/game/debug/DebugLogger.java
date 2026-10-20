@@ -27,6 +27,9 @@ public class DebugLogger {
         SPAWN,
         EQUIPMENT,
         EQUIP_SYSTEM,
+        STATS,
+        STATUS,
+        RESOURCES,
     }
 
     public enum Level {

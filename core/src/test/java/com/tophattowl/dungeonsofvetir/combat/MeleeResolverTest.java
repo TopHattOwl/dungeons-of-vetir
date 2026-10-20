@@ -8,10 +8,9 @@ import com.tophattowl.dungeonsofvetir.game.actors.body.BodyPartType;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyComponentBuilder;
 import com.tophattowl.dungeonsofvetir.game.actors.body.BodyTemplate;
 import com.tophattowl.dungeonsofvetir.game.actors.components.BodyComponent;
-import com.tophattowl.dungeonsofvetir.game.actors.components.DefensiveStatsComponent;
+import com.tophattowl.dungeonsofvetir.game.actors.components.DerivedStatsComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.EquipmentComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.HealthComponent;
-import com.tophattowl.dungeonsofvetir.game.actors.components.OffensiveStatsComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.PositionComponent;
 import com.tophattowl.dungeonsofvetir.game.actors.components.TimeValueComponent;
 import com.tophattowl.dungeonsofvetir.game.action.resolvers.MeleeResolver;
@@ -19,6 +18,7 @@ import com.tophattowl.dungeonsofvetir.game.event.EventBus;
 import com.tophattowl.dungeonsofvetir.game.event.events.combat.EntityKilledEvent;
 import com.tophattowl.dungeonsofvetir.game.event.events.combat.MeleeAttackCounteredEvent;
 import com.tophattowl.dungeonsofvetir.game.rng.SeedConfig;
+import com.tophattowl.dungeonsofvetir.game.stats.CombatStat;
 import com.tophattowl.dungeonsofvetir.game.world.GameWorld;
 import org.junit.jupiter.api.Test;
 
@@ -44,9 +44,13 @@ class MeleeResolverTest {
         EquipmentComponent equipment = new EquipmentComponent();
         equipment.initSlots(body);
 
+        DerivedStatsComponent stats = new DerivedStatsComponent();
+        stats.set(CombatStat.MELEE_DAMAGE, baseDamage);
+        stats.set(CombatStat.ACCURACY, 1f);
+
         attacker.addComponent(body)
-            .addComponent(new OffensiveStatsComponent(baseDamage, 1f, 1f, 1f, 100))
             .addComponent(equipment)
+            .addComponent(stats)
             .addComponent(new PositionComponent(x, y))
             .addComponent(new TimeValueComponent());
 
@@ -55,13 +59,18 @@ class MeleeResolverTest {
     }
 
     private static Entity spawnTarget(GameWorld world, BodyPart part, int hp,
-                                      int evasion, float counter, float block, int x, int y) {
+                                      float dodge, float counter, float block, int x, int y) {
         Entity target = new Entity();
         BodyComponent body = new BodyComponent(List.of(part));
 
+        DerivedStatsComponent stats = new DerivedStatsComponent();
+        stats.set(CombatStat.DODGE_CHANCE, dodge);
+        stats.set(CombatStat.BLOCK_CHANCE, block);
+        stats.set(CombatStat.COUNTER_CHANCE, counter);
+
         target.addComponent(body)
             .addComponent(new HealthComponent(hp))
-            .addComponent(new DefensiveStatsComponent(evasion, counter, block, body))
+            .addComponent(stats)
             .addComponent(new PositionComponent(x, y))
             .addComponent(new TimeValueComponent());
 

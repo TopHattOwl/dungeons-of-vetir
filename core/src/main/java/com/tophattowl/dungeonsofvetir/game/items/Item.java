@@ -41,6 +41,13 @@ public class Item {
         return components.containsKey(type);
     }
 
+    /**
+     * @return a live view of this item's components (iteration order is unspecified)
+     */
+    public java.util.Collection<ItemComponent> getComponents() {
+        return components.values();
+    }
+
     @SafeVarargs
     public final boolean hasAllComponents(Class<? extends ItemComponent>... type) {
         return Arrays.stream(type)

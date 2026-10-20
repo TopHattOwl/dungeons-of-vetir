@@ -23,7 +23,7 @@ public class WorldContext {
         this.meta = meta;
         this.runMode = RunMode.forMeta(meta);
         world.timeTurnManager.setTurnEndListener(this::processTurn);
-        addSystem(world.constraints());
+        addSystem(world.statusEffects());
     }
 
     public GameWorld world() {
@@ -45,7 +45,8 @@ public class WorldContext {
     /**
      * Ordered world turn-end pipeline: runs every system in registration order.
      * Driven by the turn clock ({@code TimeTurnManager.passTurn}), not by the player.
-     * Currently holds the {@link ConstraintSystem}; buffs/projectiles join later.
+     * Holds the {@link com.tophattowl.dungeonsofvetir.game.status.StatusEffectSystem};
+     * resources/projectiles join later.
      */
     public void processTurn() {
         for (TurnSystem system : turnSystems) {

@@ -1,29 +1,15 @@
 package com.tophattowl.dungeonsofvetir.game.world;
 
 /**
- * A denial of a {@link Capability} from some source. {@code turnsRemaining < 0}
- * means permanent; otherwise it is a duration ticked down over turns.
+ * A compiled denial of a {@link Capability} for an entity.
+ * <p>
+ * Denials are not timed here: the duration lives on the status effect that produced them, and
+ * the status system recompiles this set whenever effects change. Zone denials are not stored
+ * here (they are checked live from the current place).
  */
-public record Constraint(Capability capability, String reason, int turnsRemaining) {
+public record Constraint(Capability capability, String reason) {
 
-    public static Constraint permanent(Capability capability, String reason) {
-        return new Constraint(capability, reason, -1);
-    }
-
-    public static Constraint forTurns(Capability capability, String reason, int turns) {
-        return new Constraint(capability, reason, turns);
-    }
-
-    public boolean active() {
-        return turnsRemaining != 0;
-    }
-
-    /**
-     * @return this constraint one turn older, or {@code null} if it has expired
-     */
-    public Constraint ticked() {
-        if (turnsRemaining <= 0) return this; // permanent
-        int remaining = turnsRemaining - 1;
-        return remaining == 0 ? null : new Constraint(capability, reason, remaining);
+    public static Constraint of(Capability capability, String reason) {
+        return new Constraint(capability, reason);
     }
 }

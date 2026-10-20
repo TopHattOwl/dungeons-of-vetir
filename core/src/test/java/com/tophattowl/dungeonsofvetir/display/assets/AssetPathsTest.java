@@ -37,7 +37,7 @@ class AssetPathsTest {
 
     @Test
     void playerUsesRegisteredSprite() {
-        Entity player = EntityFactory.makePlayer(new Level(1), new Point(0, 0));
+        Entity player = EntityFactory.makePlayer(new com.tophattowl.dungeonsofvetir.game.stats.StatAggregator(), new Level(1), new Point(0, 0));
         try {
             String spriteId = player.getComponent(RenderableComponent.class).spriteId;
             assertTrue(AssetPaths.hasSprite(spriteId), "player sprite id not registered: " + spriteId);

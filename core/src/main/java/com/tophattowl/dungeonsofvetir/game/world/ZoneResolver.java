@@ -7,8 +7,8 @@ import com.tophattowl.dungeonsofvetir.game.generation.GeneratorRegistry;
 import com.tophattowl.dungeonsofvetir.game.generation.LevelGenerator;
 
 /**
- * Decides which generator builds a place, from its kind and definition. Dungeon
- * floors/surfaces go through the dungeon plan; everything else is looked up in the
+ * Decides which generator builds a place, from its kind and definition <br>
+ * Dungeon floors/surfaces go through the dungeon plan, everything else is looked up in the
  * relevant content registry. Single source of truth for generator selection.
  */
 public class ZoneResolver {

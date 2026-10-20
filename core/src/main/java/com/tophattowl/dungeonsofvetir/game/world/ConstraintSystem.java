@@ -1,16 +1,13 @@
 package com.tophattowl.dungeonsofvetir.game.world;
 
 import com.tophattowl.dungeonsofvetir.game.ECS.Entity;
-import com.tophattowl.dungeonsofvetir.game.system.TurnSystem;
 
 /**
- * Answers {@code can(entity, capability)} by aggregating sources (current zone +
- * the entity's timed constraints), and ticks timed constraints at world turn end.
- * <p>
- * Both concerns live here deliberately: gating is per-entity and every actor is an
- * entity; ticking is a turn-end system.
+ * Answers {@code can(entity, capability)} by combining live zone denials with the entity's
+ * compiled {@link ConstraintComponent} (which the status system rebuilds). Ticking of timed
+ * denials lives on status effects, not here.
  */
-public class ConstraintSystem implements TurnSystem {
+public class ConstraintSystem {
 
     private final GameWorld world;
 
@@ -29,12 +26,5 @@ public class ConstraintSystem implements TurnSystem {
 
         ConstraintComponent component = entity.getComponent(ConstraintComponent.class);
         return component == null || component.allows(capability);
-    }
-
-    @Override
-    public void process(WorldContext context) {
-        for (Entity entity : world.query(ConstraintComponent.class)) {
-            entity.getComponent(ConstraintComponent.class).tick();
-        }
     }
 }
